@@ -1,11 +1,19 @@
-import { Dispatch, DragEvent, useCallback } from 'react';
+import { DragEvent, useCallback, useState } from 'react';
 import { DocumentIcon } from '../../assets/icons.tsx';
+import { FileUploadProgress } from '@/components/upload/FileUploadProgress.tsx';
+import { Button } from '@/components/ui/button.tsx';
 
-type DropZoneProps = {
-  onFileDrop: Dispatch<FileList>;
-};
+// type DropZoneProps = {
+//   getFileList: Dispatch<FileList>;
+// };
 
-export const DropZone = ({ onFileDrop }: DropZoneProps) => {
+export const DropZone = () => {
+  const [fileList, setFileList] = useState<FileList>();
+
+  const handleFileDrop = (files: FileList) => {
+    files && setFileList(files);
+  };
+
   const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -15,10 +23,12 @@ export const DropZone = ({ onFileDrop }: DropZoneProps) => {
     (e: DragEvent<HTMLDivElement>) => {
       preventDefaults(e);
       let files = e.dataTransfer.files;
-      onFileDrop(files);
+      handleFileDrop(files);
     },
-    [onFileDrop, preventDefaults],
+    [handleFileDrop, preventDefaults],
   );
+
+  console.log(fileList);
 
   return (
     <div
@@ -31,6 +41,9 @@ export const DropZone = ({ onFileDrop }: DropZoneProps) => {
       <p>
         Drag & Drop Here or <b>Browse</b>
       </p>
+
+      <Button className="self-center">Upload Manifest</Button>
+      {fileList && <FileUploadProgress fileList={fileList} />}
     </div>
   );
 };
