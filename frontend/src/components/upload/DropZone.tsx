@@ -1,5 +1,5 @@
 import { ChangeEvent, DragEvent, useCallback, useRef, useState } from 'react';
-import { DocumentIcon } from '../../assets/icons.tsx';
+import { DocumentIcon, FileUploadIcon } from '../../assets/icons.tsx';
 import { FileUpload } from '@/components/upload/FileUpload.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
@@ -53,9 +53,10 @@ export const DropZone = () => {
           <FileUpload fileList={fileList} />
           <Button
             disabled={hasSubmitted}
-            className="self-start ml-10"
+            className="self-start"
             onClick={() => setHasSubmit(true)}
           >
+            <i className="mr-2">{FileUploadIcon}</i>
             Upload
           </Button>
         </>
