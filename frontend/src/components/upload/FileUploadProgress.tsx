@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export const FileUpload = ({ fileList }: { fileList: FileList }) => {
+export const FileUploadProgress = ({ fileList }: { fileList: FileList }) => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [bytes, setBytes] = useState(0);
 
