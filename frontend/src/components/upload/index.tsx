@@ -1,4 +1,4 @@
 import { DropZone } from './DropZone.tsx';
-import { FileUploadProgress } from './FileUploadProgress.tsx';
+import { FileUpload } from './FileUpload.tsx';
 
-export { DropZone, FileUploadProgress };
+export { DropZone, FileUpload };
