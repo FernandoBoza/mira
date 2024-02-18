@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FileUploadIcon } from '@/assets/icons.tsx';
+import { formatBytes } from '../../../../utils';
 
 type FileUploadProgressProps = {
   fileList: FileList;
@@ -28,15 +29,6 @@ export const FileUploadProgress = ({ fileList }: FileUploadProgressProps) => {
 
     setBytes(fileList[0].size);
   }, [fileList]);
-
-  const formatBytes = (bytes: number) => {
-    if (!+bytes) return '0 Bytes';
-    const k = 1024;
-    const dm = 2 < 0 ? 0 : 2;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${Math.floor(parseFloat((bytes / Math.pow(k, i)).toFixed(dm)))} ${sizes[i]}`;
-  };
 
   return (
     <div className="flex gap-4 items-center mt-4 pt-4 border-t border-gray-200">
