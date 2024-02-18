@@ -7,7 +7,7 @@ import { useFileStore } from '@/stores/file.store.ts';
 export const DropZone = () => {
   const [fileList, setFileList] = useState<FileList>();
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { hasSubmitted, setSubmit } = useFileStore((state) => state);
+  const { hasSubmitted, setHasSubmit } = useFileStore((state) => state);
 
   /*
    * @Description
@@ -44,7 +44,7 @@ export const DropZone = () => {
       onDragOver={preventDefaults}
       onDrop={handleDrop}
     >
-      <span className="text-primary">{DocumentIcon}</span>
+      <i className="text-primary">{DocumentIcon}</i>
       <p className="font-semibold">Drag & Drop Here or</p>
       <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
 
@@ -54,7 +54,7 @@ export const DropZone = () => {
           <Button
             disabled={hasSubmitted}
             className="self-start ml-10"
-            onClick={() => setSubmit(true)}
+            onClick={() => setHasSubmit(true)}
           >
             Upload
           </Button>

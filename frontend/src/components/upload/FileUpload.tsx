@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FileUploadIcon } from '@/assets/icons.tsx';
-import { ProgressBar } from '@/components/upload/ProgressBar.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
+import { Progress } from '@/components/ui/progress.tsx';
+import { formatBytes } from '../../../../utils';
 
 type FileUploadProgressProps = {
   fileList: FileList;
@@ -9,7 +10,7 @@ type FileUploadProgressProps = {
 
 export const FileUpload = ({ fileList }: FileUploadProgressProps) => {
   const [uploadProgress, setUploadProgress] = useState(0);
-  const { hasSubmitted, setSubmit } = useFileStore((state) => state);
+  const { hasSubmitted, setHasSubmit } = useFileStore((state) => state);
 
   const uploadFileInChunks = async (file: File) => {
     const chunkSize = 1048576; // 1MB
@@ -46,20 +47,27 @@ export const FileUpload = ({ fileList }: FileUploadProgressProps) => {
       [...fileList].forEach((file) => {
         uploadFileInChunks(file)
           .then(simulateUpload)
-          .finally(() => setSubmit(false));
+          .finally(() => setHasSubmit(false));
       });
     }
   }, [fileList, hasSubmitted]);
 
+  const ProgressProps = ({ file }: { file: File }) => (
+    <p className="flex justify-between gap-3">
+      <span id="fileName">{file.name.slice(0, 20)}... </span>
+      <span id="fileSize">{formatBytes(file.size)}</span>
+    </p>
+  );
+
   return (
-    <div className="flex gap-4 items-center pt-2 border-t w-full">
+    <div className="flex gap-4 items-center pt-2 border-t w-full text-primary">
       {FileUploadIcon}
       <div className="w-full">
         {[...fileList].map((file, index) => (
-          <ProgressBar
-            key={file.name + index}
-            file={file}
-            progress={uploadProgress}
+          <Progress
+            key={`${file.name}_${index}`}
+            value={uploadProgress}
+            children={<ProgressProps file={file} />}
           />
         ))}
       </div>

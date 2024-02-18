@@ -4,7 +4,7 @@ type FileStoreType = {
   fileList: FileList | [];
   setFileList: (files: FileList) => void;
   hasSubmitted: boolean;
-  setSubmit: (hasSubmitted: boolean) => void;
+  setHasSubmit: (hasSubmitted: boolean) => void;
 };
 
 export const useFileStore = create<FileStoreType>((set) => ({
@@ -13,7 +13,7 @@ export const useFileStore = create<FileStoreType>((set) => ({
     set({ fileList: files });
   },
   hasSubmitted: false,
-  setSubmit: (hasSubmitted: boolean) => {
+  setHasSubmit: (hasSubmitted: boolean) => {
     set({ hasSubmitted });
   },
 }));
