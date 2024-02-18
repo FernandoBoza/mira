@@ -1,41 +1,13 @@
 import { ChangeEvent, useState } from 'react';
-import { DropDown, DropZone, FileUpload } from './components/Upload';
-import {
-  ChevronDownIcon,
-  ClockIcon,
-  CloseIcon,
-  FileUploadIcon,
-} from './assets/icons';
-
-const testingCenters = [
-  {
-    id: 1,
-    name: 'Testing Center 1',
-  },
-  {
-    id: 2,
-    name: 'Testing Center 2',
-  },
-  {
-    id: 3,
-    name: 'Testing Center 3',
-  },
-  {
-    id: 4,
-    name: 'Testing Center 4',
-  },
-];
+import { DropZone, FileUpload } from './components/Upload';
+import { Button } from '@/components/ui/button.tsx';
+import { ChevronDownIcon, CloseIcon, FileUploadIcon } from './assets/icons';
+import { ToggleIcon } from '@/components/ui/toggleIcon.tsx';
 
 function App() {
   const [fileList, setFileList] = useState<FileList>();
-  const [toleranceWindow, setToleranceWindow] = useState(false);
-  const [currentlyOpen, setCurrentlyOpen] = useState<number | null>(0);
   const [splitSchedule, setSplitSchedule] = useState<string>();
   const [clientType, setClientType] = useState<string>();
-
-  const handleToleranceWindow = () => {
-    setToleranceWindow(!toleranceWindow);
-  };
 
   const handleFileDrop = (files: FileList) => {
     files && setFileList(files);
@@ -56,24 +28,17 @@ function App() {
   const handleOnSubmit = () => {
     console.log({
       file: fileList,
-      toleranceWindow,
       splitSchedule,
       clientType,
-      currentlyOpen,
     });
   };
 
   return (
     <>
       <main className="p-4 md:p-8 relative">
-        <button
-          id="closingModal"
-          type="button"
-          onClick={() => handleClose}
-          className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-800 text-white absolute left-8"
-        >
+        <Button className="absolute left-8" onClick={handleClose}>
           {CloseIcon}
-        </button>
+        </Button>
 
         <h1 className="text-blue-800 mx-auto text-center mb-4 border-b border-gray-300 pb-4">
           Document Upload
@@ -94,9 +59,7 @@ function App() {
                 <DropZone
                   onFileDrop={(files: FileList) => handleFileDrop(files)}
                 />
-                <button className="mt-4 self-center bg-blue-800 text-white py-2 px-6 rounded-lg hover:bg-blue-700">
-                  Upload Manifest
-                </button>
+                <Button className="self-center">Upload Manifest</Button>
               </div>
             </div>
 
@@ -115,20 +78,7 @@ function App() {
             </div>
 
             <div className="border-t border-gray-300 pt-4">
-              <h3>Tolerance Window:</h3>
-              <div className="flex items-center">
-                <div
-                  className={`w-8 h-4 rounded-full p-1 cursor-pointer relative mr-2 bg-blue-800 ${toleranceWindow ? 'bg-blue-800' : 'bg-gray-400'}`}
-                  onClick={() => handleToleranceWindow()}
-                >
-                  <div
-                    className={`w-4 h-4 bg-white rounded-full ${toleranceWindow ? 'translate-x-4' : 'translate-x-0'}`}
-                  ></div>
-                </div>
-                Toggle {toleranceWindow ? 'ON' : 'OFF'}{' '}
-                <span className="mx-4">|</span> {ClockIcon} Select Tolerance
-                Level
-              </div>
+              <ToggleIcon getValue={(val) => console.log(val)} />
             </div>
           </div>
 
@@ -190,22 +140,6 @@ function App() {
                   Multiple
                 </label>
               </div>
-              <ul className="list-none p-0 m-0">
-                {testingCenters.map((center) => (
-                  <li
-                    key={center.id}
-                    className="flex justify-between items-center py-2"
-                  >
-                    <p>{center.name}</p>
-                    <DropDown
-                      key={center.id}
-                      clientCenter={center}
-                      currentlyOpen={currentlyOpen}
-                      setCurrentlyOpen={setCurrentlyOpen}
-                    />
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
         </div>
@@ -215,19 +149,12 @@ function App() {
           Data in import file is correct. Please press continue to import.
         </h2>
         <div className="flex justify-center gap-4 mt-4">
-          <button
-            onClick={handleOnSubmit}
-            className="bg-blue-800 text-white py-2 px-6 rounded-lg hover:bg-blue-700"
-            id="continueBtn"
-          >
+          <Button onClick={handleOnSubmit} id="continueBtn">
             Continue Import
-          </button>
-          <button
-            className="text-orange-600 bg-transparent border border-orange-600 py-2 px-6 rounded-lg hover:bg-orange-600 hover:text-white"
-            id="cancelBtn"
-          >
+          </Button>
+          <Button variant="outline" id="cancelBtn">
             Cancel
-          </button>
+          </Button>
         </div>
       </footer>
     </>
