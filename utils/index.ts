@@ -1,3 +1,10 @@
+/**
+ * @description
+ * Convert bytes to human-readable string
+ * @param bytes as number
+ * @returns string with the size in human-readable format
+ */
+
 export const formatBytes = (bytes: number) => {
   if (!+bytes) return "0 Bytes";
   const k = 1024;

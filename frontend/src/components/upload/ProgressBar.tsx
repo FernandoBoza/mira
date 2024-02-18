@@ -11,11 +11,6 @@ export const ProgressBar = ({ file, progress }: ProgressBarProps) => (
       <span id="fileName">{file.name.slice(0, 20)}... </span>
       <span id="fileSize">{formatBytes(file.size)}</span>
     </p>
-    <progress
-      className="w-full"
-      value={progress}
-      id="progressBar"
-      max="100"
-    ></progress>
+    <progress className="w-full" value={progress} id="progressBar" max="100" />
   </div>
 );

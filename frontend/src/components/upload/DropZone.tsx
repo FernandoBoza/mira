@@ -3,23 +3,22 @@ import { DocumentIcon } from '../../assets/icons.tsx';
 import { FileUpload } from '@/components/upload/FileUpload.tsx';
 import { Button } from '@/components/ui/button.tsx';
 
-// type DropZoneProps = {
-//   getFileList: Dispatch<FileList>;
-// };
-
 export const DropZone = () => {
   const [fileList, setFileList] = useState<FileList>();
   const [submit, setSubmit] = useState(false);
-  const inputFile = useRef<HTMLInputElement>(null);
+  const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const handleFileDrop = (files: FileList) => {
-    files && setFileList(files);
-  };
-
-  const handleFileSelection = (e: ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target;
-    if (files && files.length) {
+  /*
+   * @Description
+   * This function is used to set files to the state
+   * @param files - The files to be added from either dropping files or selecting files from the file input
+   * */
+  const addFiles = (files: FileList | ChangeEvent<HTMLInputElement>) => {
+    if (files instanceof FileList) {
       setFileList(files);
+    } else {
+      const file = files?.target?.files;
+      file && setFileList(file);
     }
   };
 
@@ -31,40 +30,39 @@ export const DropZone = () => {
   const handleDrop = useCallback(
     (e: DragEvent<HTMLDivElement>) => {
       preventDefaults(e);
-      let files = e.dataTransfer.files;
-      handleFileDrop(files);
+      addFiles(e.dataTransfer.files);
     },
-    [handleFileDrop, preventDefaults],
+    [addFiles, preventDefaults],
   );
-
-  const onButtonClick = () => {
-    inputFile?.current?.click();
-  };
 
   return (
     <div
+      id="dropZone"
+      className="p-4 border border-gray-300 rounded-lg flex flex-col items-center gap-4"
       onDragEnter={preventDefaults}
       onDragOver={preventDefaults}
       onDrop={handleDrop}
-      id="dropZone"
-      className="p-4 border border-gray-300 rounded-lg flex flex-col items-center gap-4"
     >
-      {DocumentIcon}
-      <p>Drag & Drop Here or</p>
-      <Button onClick={onButtonClick}>Browse</Button>
+      <span className="text-primary">{DocumentIcon}</span>
+      <p className="font-semibold">Drag & Drop Here or</p>
+      <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
 
       {fileList && (
         <>
           <FileUpload submit={submit} fileList={fileList} />
-          <Button className="self-start ml-10" onClick={() => setSubmit(true)}>
+          <Button
+            disabled={submit}
+            className="self-start ml-10"
+            onClick={() => setSubmit(true)}
+          >
             Upload
           </Button>
         </>
       )}
       <input
         style={{ display: 'none' }}
-        ref={inputFile}
-        onChange={handleFileSelection}
+        ref={inputFileRef}
+        onChange={addFiles}
         type="file"
         multiple
       />
