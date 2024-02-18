@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { FileUploadIcon } from '@/assets/icons.tsx';
 import { ProgressBar } from '@/components/upload/ProgressBar.tsx';
+import { useFileStore } from '@/stores/file.store.ts';
 
 type FileUploadProgressProps = {
   fileList: FileList;
-  submit: boolean;
 };
 
-export const FileUpload = ({ submit, fileList }: FileUploadProgressProps) => {
+export const FileUpload = ({ fileList }: FileUploadProgressProps) => {
   const [uploadProgress, setUploadProgress] = useState(0);
+  const { hasSubmitted, setSubmit } = useFileStore((state) => state);
 
   const uploadFileInChunks = async (file: File) => {
     const chunkSize = 1048576; // 1MB
@@ -41,14 +42,14 @@ export const FileUpload = ({ submit, fileList }: FileUploadProgressProps) => {
   useEffect(() => {
     // TODO Fetch API here
 
-    if (fileList && submit) {
+    if (fileList && hasSubmitted) {
       [...fileList].forEach((file) => {
         uploadFileInChunks(file)
           .then(simulateUpload)
-          .finally(() => console.log('done'));
+          .finally(() => setSubmit(false));
       });
     }
-  }, [fileList, submit]);
+  }, [fileList, hasSubmitted]);
 
   return (
     <div className="flex gap-4 items-center pt-2 border-t w-full">
