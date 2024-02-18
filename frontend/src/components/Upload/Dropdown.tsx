@@ -1,5 +1,5 @@
 import { Dispatch, useEffect, useState } from 'react';
-import { ChevronDownIcon, ClockIcon } from '../assets/icons';
+import { ChevronDownIcon, ClockIcon } from '../../assets/icons.tsx';
 
 type DropdownProps = {
   clientCenter: { id: number; name: string };

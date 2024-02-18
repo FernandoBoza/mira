@@ -1,7 +1,5 @@
 import { ChangeEvent, useState } from 'react';
-import { DropZone } from './components/DragZone.tsx';
-import { DropDown } from './components/Dropdown.tsx';
-import { FileUpload } from './components/FileUpload.tsx';
+import { DropDown, DropZone, FileUpload } from './components/Upload';
 import {
   ChevronDownIcon,
   ClockIcon,

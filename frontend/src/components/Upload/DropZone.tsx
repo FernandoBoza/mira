@@ -1,5 +1,5 @@
 import { Dispatch, DragEvent, useCallback } from 'react';
-import { DocumentIcon } from '../assets/icons';
+import { DocumentIcon } from '../../assets/icons.tsx';
 
 type DropZoneProps = {
   onFileDrop: Dispatch<FileList>;
