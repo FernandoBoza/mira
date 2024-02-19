@@ -16,11 +16,20 @@ export const DropZone = () => {
    * @param files - The files to be added from either dropping files or selecting files from the file input
    * */
   const addFiles = (files: FileList | ChangeEvent<HTMLInputElement>) => {
+    let newFiles: File[] | FileList | null;
+
     if (files instanceof FileList) {
-      setFileList([...fileList, ...files]);
+      newFiles = files;
     } else {
-      const file = files?.target?.files;
-      file && setFileList([...fileList, ...file]);
+      newFiles = files?.target?.files;
+    }
+
+    if (newFiles) {
+      const filteredList = [...newFiles].filter(
+        (file) => ![...fileList].some((f) => f.name === file.name),
+      );
+
+      setFileList([...fileList, ...filteredList]);
     }
   };
 
