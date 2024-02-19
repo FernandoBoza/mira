@@ -1,4 +1,4 @@
-export const PdfViewer = ({ fileUrl }: { fileUrl: string }) => {
+export const PDFViewer = ({ fileUrl }: { fileUrl: string }) => {
   return fileUrl ? (
     <object data={fileUrl} type="application/pdf" width="100%" height="500px">
       <embed src={fileUrl} type="application/pdf" width="100%" height="500px" />

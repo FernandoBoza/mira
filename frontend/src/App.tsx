@@ -12,8 +12,8 @@ function App() {
       <DropZone />
       {fileList.length >= 1 && (
         <section className="flex flex-wrap gap-4 p-8">
-          {[...fileList].map((file) => (
-            <FilePreview key={file.name} file={file} />
+          {[...fileList].map((file, index) => (
+            <FilePreview key={`${file.name}_${index}`} file={file} />
           ))}
         </section>
       )}

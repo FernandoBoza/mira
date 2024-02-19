@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PdfViewer } from '@/components/PDFViewer.tsx';
+import { PDFViewer } from '@/components/PDFViewer.tsx';
 
 export const FilePreview = ({ file }: { file: File }) => {
   const [fileUrl, setFileUrl] = useState('');
@@ -8,8 +8,7 @@ export const FilePreview = ({ file }: { file: File }) => {
   useEffect(() => {
     if (file) {
       const url = URL.createObjectURL(file);
-      const fileType = file.type.split('/')[0];
-      setFileType(fileType);
+      setFileType(file.type.split('/')[0]);
       setFileUrl(url);
 
       return () => URL.revokeObjectURL(url);
@@ -36,8 +35,8 @@ export const FilePreview = ({ file }: { file: File }) => {
     );
   }
 
-  if (fileType === 'application' && file.type === 'application/pdf') {
-    return <PdfViewer fileUrl={fileUrl} />;
+  if (fileType === 'application') {
+    return <PDFViewer fileUrl={fileUrl} />;
   }
 
   return null;
