@@ -16,13 +16,7 @@ export const DropZone = () => {
    * @param files - The files to be added from either dropping files or selecting files from the file input
    * */
   const addFiles = (files: FileList | ChangeEvent<HTMLInputElement>) => {
-    let newFiles: File[] | FileList | null;
-
-    if (files instanceof FileList) {
-      newFiles = files;
-    } else {
-      newFiles = files?.target?.files;
-    }
+    const newFiles = files instanceof FileList ? files : files?.target?.files;
 
     if (newFiles) {
       const filteredList = [...newFiles].filter(
