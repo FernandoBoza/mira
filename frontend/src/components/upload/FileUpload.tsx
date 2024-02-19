@@ -50,10 +50,10 @@ export const FileUpload = () => {
   return (
     //flex gap-4 items-center pt-2 border-t w-full text-primary
     <div className="w-full flex flex-col gap-4 text-primary">
-      {[...fileList].map((file, index) => (
+      {[...fileList].map((file) => (
         <FileProgress
           file={file}
-          key={`${file.name}_${index}`}
+          key={`${file.name}_${file.lastModified}`}
           value={uploadProgress}
         />
       ))}

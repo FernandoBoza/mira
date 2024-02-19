@@ -13,15 +13,20 @@ export const FilePreview = ({ file }: { file: File }) => {
 
       return () => URL.revokeObjectURL(url);
     }
+
+    return () => {};
   }, [file]);
 
   if (fileType === 'image') {
-    return <img src={fileUrl} alt={file.name} />;
+    return <img className="h-28 w-auto" src={fileUrl} alt={file.name} />;
   }
 
   if (fileType === 'video') {
+    if (file.size > 314572800) {
+      return <p>Can't preview video, file is over 300MB</p>;
+    }
     return (
-      <video controls>
+      <video className="h-48 w-auto" controls>
         <source src={fileUrl} type={file.type} />
       </video>
     );
@@ -35,9 +40,7 @@ export const FilePreview = ({ file }: { file: File }) => {
     );
   }
 
-  if (fileType === 'application') {
-    return <PDFViewer fileUrl={fileUrl} />;
-  }
+  if (fileType === 'application') return <PDFViewer fileUrl={fileUrl} />;
 
   return null;
 };
