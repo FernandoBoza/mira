@@ -1,5 +1,5 @@
 import { ChangeEvent, DragEvent, useCallback, useRef } from 'react';
-import { DocumentIcon, FileUploadIcon } from '../../assets/icons.tsx';
+import { CloudUploadIcon, FileUploadIcon } from '../../assets/icons.tsx';
 import { FileUpload } from '@/components/upload/FileUpload.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
@@ -15,17 +15,20 @@ export const DropZone = () => {
    * This function is used to set files to the state
    * @param files - The files to be added from either dropping files or selecting files from the file input
    * */
-  const addFiles = useCallback((files: FileList | ChangeEvent<HTMLInputElement>) => {
-    const newFiles = files instanceof FileList ? files : files?.target?.files;
+  const addFiles = useCallback(
+    (files: FileList | ChangeEvent<HTMLInputElement>) => {
+      const newFiles = files instanceof FileList ? files : files?.target?.files;
 
-    if (newFiles) {
-      const filteredList = [...newFiles].filter(
-        (file) => ![...fileList].some((f) => f.name === file.name),
-      );
+      if (newFiles) {
+        const filteredList = [...newFiles].filter(
+          (file) => ![...fileList].some((f) => f.name === file.name),
+        );
 
-      setFileList([...fileList, ...filteredList]);
-    }
-  }, [fileList, setFileList]);
+        setFileList([...fileList, ...filteredList]);
+      }
+    },
+    [fileList, setFileList],
+  );
 
   const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -48,7 +51,7 @@ export const DropZone = () => {
       onDragOver={preventDefaults}
       onDrop={handleDrop}
     >
-      <i className="text-primary">{DocumentIcon}</i>
+      <i className="text-primary h-20 w-20">{CloudUploadIcon}</i>
       <p className="font-semibold">Drag & Drop Here or</p>
       <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
 

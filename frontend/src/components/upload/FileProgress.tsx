@@ -16,7 +16,7 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
   const removeFile = useFileStore((state) => state.removeFile);
   // TODO: make it personal per file
   const progressStatusStyle =
-    value >= 100 ? 'opacity-50 pointer-events-none' : '';
+    value >= 100 ? 'opacity-50 pointer-events-none mb-5' : 'mb-5';
 
   return (
     <div className={progressStatusStyle}>
@@ -25,7 +25,7 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
         {value <= 100 && (
           <Button
             variant={'ghost'}
-            className={'h-auto p-1 hover:bg-red-700 hover:text-white'}
+            className={'h-auto p-0 hover:bg-red-700 hover:text-white'}
             onClick={() => removeFile(file)}
           >
             {CloseIcon}
