@@ -15,7 +15,7 @@ export const DropZone = () => {
    * This function is used to set files to the state
    * @param files - The files to be added from either dropping files or selecting files from the file input
    * */
-  const addFiles = (files: FileList | ChangeEvent<HTMLInputElement>) => {
+  const addFiles = useCallback((files: FileList | ChangeEvent<HTMLInputElement>) => {
     const newFiles = files instanceof FileList ? files : files?.target?.files;
 
     if (newFiles) {
@@ -25,7 +25,7 @@ export const DropZone = () => {
 
       setFileList([...fileList, ...filteredList]);
     }
-  };
+  }, [fileList, setFileList]);
 
   const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
