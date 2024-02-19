@@ -18,7 +18,9 @@ export const FilePreview = ({ file }: { file: File }) => {
   }, [file]);
 
   if (fileType === 'image') {
-    return <img className="h-28 w-auto" src={fileUrl} alt={file.name} />;
+    return (
+      <img className="h-auto w-auto contain" src={fileUrl} alt={file.name} />
+    );
   }
 
   if (fileType === 'video') {
@@ -26,7 +28,7 @@ export const FilePreview = ({ file }: { file: File }) => {
       return <p>Can't preview video, file is over 300MB</p>;
     }
     return (
-      <video className="h-48 w-auto" controls>
+      <video className="h-auto w-auto" controls>
         <source src={fileUrl} type={file.type} />
       </video>
     );

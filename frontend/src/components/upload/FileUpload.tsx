@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FileProgress } from '@/components/upload/FileProgress.tsx';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const FileUpload = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -48,8 +49,7 @@ export const FileUpload = () => {
   }, [fileList, hasSubmitted]);
 
   return (
-    //flex gap-4 items-center pt-2 border-t w-full text-primary
-    <div className="w-full flex flex-col gap-4 text-primary">
+    <ScrollArea className="max-h-96 w-full flex flex-col gap-4 text-primary pr-5">
       {[...fileList].map((file) => (
         <FileProgress
           file={file}
@@ -57,6 +57,6 @@ export const FileUpload = () => {
           value={uploadProgress}
         />
       ))}
-    </div>
+    </ScrollArea>
   );
 };

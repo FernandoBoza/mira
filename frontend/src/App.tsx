@@ -10,7 +10,7 @@ function App() {
     <div className="p-8">
       <ModeToggle />
       <DropZone />
-      <Gallery files={fileList} />
+      <Gallery className={'mt-10'} files={fileList} />
     </div>
   );
 }
