@@ -1,13 +1,14 @@
-import { ChangeEvent, DragEvent, useCallback, useRef, useState } from 'react';
+import { ChangeEvent, DragEvent, useCallback, useRef } from 'react';
 import { DocumentIcon, FileUploadIcon } from '../../assets/icons.tsx';
 import { FileUpload } from '@/components/upload/FileUpload.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 
 export const DropZone = () => {
-  const [fileList, setFileList] = useState<FileList>();
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { hasSubmitted, setHasSubmit } = useFileStore((state) => state);
+  const { hasSubmitted, setHasSubmit, setFileList, fileList } = useFileStore(
+    (state) => state,
+  );
 
   /*
    * @Description
@@ -48,9 +49,9 @@ export const DropZone = () => {
       <p className="font-semibold">Drag & Drop Here or</p>
       <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
 
-      {fileList && (
+      {fileList.length >= 1 && (
         <>
-          <FileUpload fileList={fileList} />
+          <FileUpload />
           <Button
             disabled={hasSubmitted}
             className="self-start"

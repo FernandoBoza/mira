@@ -1,5 +1,7 @@
 // Icons are from Heroicons: https://heroicons.com/
 
+import { ReactNode } from 'react';
+
 export const ChevronDownIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -109,3 +111,14 @@ export const PhotoIcon = (
     />
   </svg>
 );
+
+export type MediaIconType = {
+  image: ReactNode;
+  video: ReactNode;
+  [key: string]: ReactNode;
+};
+
+export const MediaIcon: MediaIconType = {
+  image: PhotoIcon,
+  video: VideoIcon,
+};
