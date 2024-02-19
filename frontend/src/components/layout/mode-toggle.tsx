@@ -6,17 +6,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useThemeStore } from '@/stores/theme.store.ts';
+import { Theme, useThemeStore } from '@/stores/theme.store.ts';
 import { useEffect } from 'react';
 
 export const ModeToggle = () => {
   const { theme, setTheme } = useThemeStore();
-
+  const sysTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
   useEffect(() => {
-    document.documentElement.className = theme;
-    // if (window.matchMedia('(prefers-color-scheme: dark)')) {
-    //   setTheme('dark');
-    // }
+    const localTheme = localStorage.getItem('theme') as Theme;
+    if (!localTheme && theme === 'system') {
+      // console.log('no local theme and on initial load');
+      document.documentElement.className = sysTheme;
+    } else if (!localTheme) {
+      // console.log('theme set', theme, sysTheme, localTheme);
+      document.documentElement.className = theme;
+    } else {
+      // console.log('last');
+    }
   }, [theme]);
 
   return (
@@ -35,7 +43,7 @@ export const ModeToggle = () => {
         <DropdownMenuItem onClick={() => setTheme('dark')}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
+        <DropdownMenuItem onClick={() => setTheme(sysTheme)}>
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
