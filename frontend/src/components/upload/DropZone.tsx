@@ -17,10 +17,10 @@ export const DropZone = () => {
    * */
   const addFiles = (files: FileList | ChangeEvent<HTMLInputElement>) => {
     if (files instanceof FileList) {
-      setFileList(files);
+      setFileList([...fileList, ...files]);
     } else {
       const file = files?.target?.files;
-      file && setFileList(file);
+      file && setFileList([...fileList, ...file]);
     }
   };
 

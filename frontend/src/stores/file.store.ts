@@ -3,7 +3,7 @@ import { create } from 'zustand';
 type FileStoreType = {
   fileList: FileList | File[];
   hasSubmitted: boolean;
-  setFileList: (files: FileList) => void;
+  setFileList: (files: FileList | File[]) => void;
   removeFile: (file: File) => void;
   setHasSubmit: (hasSubmitted: boolean) => void;
 };
@@ -11,7 +11,7 @@ type FileStoreType = {
 export const useFileStore = create<FileStoreType>((set) => ({
   fileList: [],
   hasSubmitted: false,
-  setFileList: (files: FileList) => {
+  setFileList: (files: FileList | File[]) => {
     set({ fileList: files });
   },
   removeFile: (file: File) => {

@@ -121,4 +121,5 @@ export type MediaIconType = {
 export const MediaIcon: MediaIconType = {
   image: PhotoIcon,
   video: VideoIcon,
+  application: DocumentIcon,
 };
