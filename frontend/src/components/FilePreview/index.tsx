@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { PDFViewer } from '@/components/PDFViewer.tsx';
+import { PDFViewer } from '@/components/FilePreview/PDFViewer.tsx';
 
 export const FilePreview = ({ file }: { file: File }) => {
   const [fileUrl, setFileUrl] = useState('');
