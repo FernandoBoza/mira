@@ -4,46 +4,57 @@ import { FileProgress } from '@/components/upload/FileProgress.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const FileUpload = () => {
+  const uploadURL = 'http://localhost:3000/media/upload';
   const [uploadProgress, setUploadProgress] = useState(0);
   const { hasSubmitted, setHasSubmit, fileList } = useFileStore(
     (state) => state,
   );
 
-  const uploadFileInChunks = async (file: File) => {
-    const chunkSize = 1048576; // 1MB
-    const totalChunks = Math.ceil(file.size / chunkSize);
+  // const uploadFiles = async (file: File) => {
+  //   const formData = new FormData();
+  //   formData.append(file.name, file);
+  //
+  //   try {
+  //     const res = await fetch(uploadURL, {
+  //       method: 'POST',
+  //       body: formData,
+  //     });
+  //     const data = await res.json();
+  //     // get progress
+  //
+  //     console.log(data);
+  //   } catch (err) {
+  //     return console.error(err);
+  //   }
+  // };
 
-    for (let i = 0; i < totalChunks; i++) {
-      const chunk = file.slice(i * chunkSize, (i + 1) * chunkSize);
-      const formData = new FormData();
-      formData.append('file', chunk);
-      formData.append('chunkIndex', `${i}`);
+  const uploadFiles = async (file: File) => {
+    const formData = new FormData();
+    formData.append(file.name, file);
 
-      console.log(formData);
-      // Replace with your API endpoint
-      // await fetch('/upload-chunk', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-    }
-  };
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', uploadURL, true);
 
-  const simulateUpload = async () => {
-    let progress = 0;
-    while (progress <= 100) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      progress += 10;
-      setUploadProgress(progress);
-    }
+    xhr.upload.onprogress = function (event) {
+      if (event.lengthComputable) {
+        const percentCompleted = Math.round((event.loaded * 100) / event.total);
+        setUploadProgress(percentCompleted);
+      }
+    };
+
+    xhr.onload = function () {
+      if (this.status === 200) {
+        console.log(JSON.parse(this.response));
+      }
+    };
+
+    xhr.send(formData);
   };
 
   useEffect(() => {
-    // TODO Fetch API here
     if (fileList && hasSubmitted) {
       [...fileList].forEach((file) => {
-        uploadFileInChunks(file)
-          .then(simulateUpload)
-          .finally(() => setHasSubmit(false));
+        uploadFiles(file).finally(() => setHasSubmit(false));
       });
     }
   }, [fileList, hasSubmitted]);
