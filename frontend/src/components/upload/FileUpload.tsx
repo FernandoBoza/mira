@@ -6,7 +6,9 @@ import axios, { AxiosProgressEvent } from 'axios';
 
 export const FileUpload = () => {
   const uploadURL = 'http://localhost:3000/media/upload';
-  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadProgress, setUploadProgress] = useState<{
+    [k: string]: number;
+  }>({});
   const { hasSubmitted, setHasSubmit, fileList } = useFileStore(
     (state) => state,
   );
@@ -22,7 +24,10 @@ export const FileUpload = () => {
           const percentCompleted = Math.round(
             (progressEvent.loaded * 100) / progressEvent?.total,
           );
-          setUploadProgress(percentCompleted);
+          setUploadProgress((prevState) => ({
+            ...prevState,
+            [file.name]: percentCompleted,
+          }));
         },
       });
       console.log(res.data);
@@ -45,7 +50,7 @@ export const FileUpload = () => {
         <FileProgress
           file={file}
           key={`${file.name}_${file.lastModified}`}
-          value={uploadProgress}
+          value={uploadProgress[file.name] || 0}
         />
       ))}
     </ScrollArea>
