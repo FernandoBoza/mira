@@ -11,9 +11,10 @@ import { useEffect } from 'react';
 
 export const ModeToggle = () => {
   const { theme, setTheme } = useThemeStore();
+  let sysTheme = window.matchMedia('(prefers-color-scheme: dark)');
   useEffect(() => {
-    let sysTheme = window.matchMedia('(prefers-color-scheme: dark)');
     const localTheme = localStorage.getItem('theme') as Theme;
+    sysTheme = window.matchMedia('(prefers-color-scheme: dark)');
 
     if (!localTheme && theme === 'system') {
       document.documentElement.className = sysTheme.matches ? 'dark' : 'light';
@@ -51,7 +52,9 @@ export const ModeToggle = () => {
         <DropdownMenuItem onClick={() => setTheme('dark')}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme(sysTheme)}>
+        <DropdownMenuItem
+          onClick={() => setTheme(sysTheme.matches ? 'dark' : 'light')}
+        >
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
