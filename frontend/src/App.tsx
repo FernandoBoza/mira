@@ -1,4 +1,4 @@
-import { DropZone } from './components/upload';
+import { DropZone } from './components/upload/DropZone.tsx';
 import { ModeToggle } from '@/components/layout/mode-toggle.tsx';
 import { Gallery } from '@/components/Gallery.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
