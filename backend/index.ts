@@ -1,10 +1,15 @@
-import {deconstructFile} from "./services/videoService.ts";
+import { Hono } from "hono";
+import mediaRoute from "./routes/media.route.ts";
 
-const fileSample = Bun.file('./assets/2020NYE.mp4')
+const app = new Hono();
 
-const server = Bun.serve({
-    port: 3000,
-    fetch: () => new Response(JSON.stringify(deconstructFile(fileSample)))
+app.get("/", (c) => {
+  return c.json({ message: "Hello, World!" });
 });
 
-console.log(`Listening on http://localhost:${server.port}`)
+app.route("/media", mediaRoute);
+
+Bun.serve({
+  fetch: app.fetch,
+  port: Bun.env.PORT,
+});
