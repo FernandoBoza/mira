@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter } from '@/components/ui/card.tsx';
 import { FilePreview } from '@/components/FilePreview';
-import { formatBytes, getFileName, getFileType } from '../../../utils';
+import { formatBytes, getFileFormat, getFileName } from '../../../utils';
 
 type GalleryProps = {
   files: File[] | FileList;
@@ -23,7 +23,7 @@ export const Gallery = ({ files, className = '' }: GalleryProps) => (
           <p className="flex justify-between w-full">
             {formatBytes(file.size)}
             <span className="text-muted-foreground">
-              {getFileType(file.type)}
+              {getFileFormat(file.type)}
             </span>
           </p>
         </CardFooter>

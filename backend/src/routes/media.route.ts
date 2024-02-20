@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { getFileType } from "../../../utils";
+import { getFileFormat } from "../../../utils";
 
 const media = new Hono();
 
@@ -25,7 +25,7 @@ media.post("/upload", async (c) => {
       return {
         name: fileName,
         data: file,
-        type: getFileType(file.type),
+        type: getFileFormat(file.type),
       };
     }
 
@@ -38,10 +38,11 @@ media.post("/upload", async (c) => {
 
   for (const file of filesArray) {
     const filePath = `${uploadPath}/${file.name}.${file.type}`;
+
     // TODO: Upload only new ones and skip existing ones
-    if (await Bun.file(filePath).exists()) {
-      return c.text(`${file.name} already exists`);
-    }
+    // if (await Bun.file(filePath).exists()) {
+    //   return c.text(`${file.name} already exists`);
+    // }
 
     await Bun.write(filePath, file.data);
   }

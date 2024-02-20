@@ -1,6 +1,6 @@
 import ffmpeg from "fluent-ffmpeg";
 import { type BunFile } from "bun";
-import type { MediaType } from "../../types.ts";
+import type { VideoTypes } from "../../types.ts";
 import { formatBytes, getFileName } from "../../../utils";
 
 const command = ffmpeg();
@@ -15,7 +15,7 @@ export const deconstructFile = ({ name, size, type }: BunFile) => ({
 export const convertVideo = (
   fileName: string,
   output: string,
-  type: MediaType = "mp4",
+  type: VideoTypes = "mp4",
 ) => {
   command
     .input(`${pathToAssets}${fileName}`)

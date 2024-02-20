@@ -1,1 +1,1 @@
-export type MediaType = 'mp4' | 'webm' | 'ogg' | 'mkv' | 'avi' | 'mov'
+export type VideoTypes = "mp4" | "webm" | "ogg" | "mkv" | "avi" | "mov";

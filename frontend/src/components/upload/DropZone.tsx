@@ -1,12 +1,14 @@
 import { ChangeEvent, DragEvent, useCallback, useRef } from 'react';
+import { toast } from 'sonner';
+import { FileUpload } from '@/components/upload/FileUpload.tsx';
+import { Button } from '@/components/ui/button.tsx';
+import { useFileStore } from '@/stores/file.store.ts';
+import { getFileFormat } from '../../../../utils';
 import {
   CloudUploadIcon,
   FileUploadIcon,
   SpinnerLoader,
 } from '../../assets/icons.tsx';
-import { FileUpload } from '@/components/upload/FileUpload.tsx';
-import { Button } from '@/components/ui/button.tsx';
-import { useFileStore } from '@/stores/file.store.ts';
 
 export const DropZone = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
@@ -16,7 +18,8 @@ export const DropZone = () => {
 
   /*
    * @Description
-   * This function is used to set files to the state
+   * This function is used to set files to the state, while filtering out files that already exist in the fileList
+   * and file types that are not supported
    * @param files - The files to be added from either dropping files or selecting files from the file input
    * */
   const addFiles = useCallback(
@@ -24,9 +27,17 @@ export const DropZone = () => {
       const newFiles = files instanceof FileList ? files : files?.target?.files;
 
       if (newFiles) {
-        const filteredList = [...newFiles].filter(
-          (file) => ![...fileList].some((f) => f.name === file.name),
-        );
+        const filteredList = [...newFiles].filter((file) => {
+          if (!file.type.match(/image|video|pdf/)) {
+            toast('Supported file types are image, video and pdf', {
+              description: `${file.name} of type ${getFileFormat(file.type)} is not supported. `,
+            });
+          }
+          return (
+            ![...fileList].some((f) => f.name === file.name) &&
+            file.type.match(/image|video|pdf/)
+          );
+        });
 
         setFileList([...fileList, ...filteredList]);
       }
@@ -75,11 +86,12 @@ export const DropZone = () => {
         </>
       )}
       <input
-        style={{ display: 'none' }}
+        multiple
+        type="file"
         ref={inputFileRef}
         onChange={addFiles}
-        type="file"
-        multiple
+        style={{ display: 'none' }}
+        accept="image/*,video/*,application/pdf"
       />
     </div>
   );

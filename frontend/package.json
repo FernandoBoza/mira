@@ -20,6 +20,7 @@
     "lucide-react": "^0.331.0",
     "react": "latest",
     "react-dom": "latest",
+    "sonner": "^1.4.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "zustand": "^4.5.1"

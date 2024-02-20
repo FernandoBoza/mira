@@ -31,6 +31,19 @@ export const getFileName = (path: string | undefined) =>
 export const getFileType = (path: string | undefined) => {
   if (!path) return "";
   return (
+    path.includes(".") ? path.split(".").pop() : path.split("/")[0]
+  ) as string;
+};
+
+/**
+ * @description
+ * Get the file format
+ * @param path as string
+ * @returns string with the file format
+ */
+export const getFileFormat = (path: string | undefined) => {
+  if (!path) return "";
+  return (
     path.includes(".") ? path.split(".").pop() : path.split("/").pop()
   ) as string;
 };
