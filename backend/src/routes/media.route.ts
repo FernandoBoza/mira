@@ -4,6 +4,16 @@ import { getFileFormat } from "../../../utils";
 
 const media = new Hono();
 
+media.use(
+  "/upload",
+  cors({
+    origin: ["*", "http://localhost:5173"],
+    allowHeaders: ["X-Custom-Header", "Content-Type"],
+    allowMethods: ["POST", "GET", "OPTIONS"],
+    exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
+  }),
+);
+
 media.get("/", (c) => c.json({ message: "Hello, Media!" }));
 
 media.get("/id/:id", (c) => {
@@ -57,15 +67,5 @@ media.post("/upload", async (c) => {
     }),
   );
 });
-
-media.use(
-  "/upload",
-  cors({
-    origin: ["*", "http://localhost:5173"],
-    allowHeaders: ["X-Custom-Header", "Upgrade-Insecure-Requests"],
-    allowMethods: ["POST", "GET", "OPTIONS"],
-    credentials: false,
-  }),
-);
 
 export default media;

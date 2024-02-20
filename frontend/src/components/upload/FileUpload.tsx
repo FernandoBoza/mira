@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FileProgress } from '@/components/upload/FileProgress.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import axios, { AxiosProgressEvent } from 'axios';
 
 export const FileUpload = () => {
   const uploadURL = 'http://localhost:3000/media/upload';
@@ -10,45 +11,24 @@ export const FileUpload = () => {
     (state) => state,
   );
 
-  // const uploadFiles = async (file: File) => {
-  //   const formData = new FormData();
-  //   formData.append(file.name, file);
-  //
-  //   try {
-  //     const res = await fetch(uploadURL, {
-  //       method: 'POST',
-  //       body: formData,
-  //     });
-  //     const data = await res.json();
-  //     // get progress
-  //
-  //     console.log(data);
-  //   } catch (err) {
-  //     return console.error(err);
-  //   }
-  // };
-
   const uploadFiles = async (file: File) => {
     const formData = new FormData();
     formData.append(file.name, file);
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', uploadURL, true);
-
-    xhr.upload.onprogress = function (event) {
-      if (event.lengthComputable) {
-        const percentCompleted = Math.round((event.loaded * 100) / event.total);
-        setUploadProgress(percentCompleted);
-      }
-    };
-
-    xhr.onload = function () {
-      if (this.status === 200) {
-        console.log(JSON.parse(this.response));
-      }
-    };
-
-    xhr.send(formData);
+    try {
+      const res = await axios.post(uploadURL, formData, {
+        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+          if (!progressEvent.total) return;
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent?.total,
+          );
+          setUploadProgress(percentCompleted);
+        },
+      });
+      console.log(res.data);
+    } catch (err) {
+      return console.error(err);
+    }
   };
 
   useEffect(() => {

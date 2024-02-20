@@ -13,3 +13,5 @@ Bun.serve({
   fetch: app.fetch,
   port: Bun.env.PORT,
 });
+
+console.log(`Listening on http://localhost:${Bun.env.PORT} 😊`);
