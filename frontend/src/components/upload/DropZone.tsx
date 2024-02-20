@@ -1,5 +1,9 @@
 import { ChangeEvent, DragEvent, useCallback, useRef } from 'react';
-import { CloudUploadIcon, FileUploadIcon } from '../../assets/icons.tsx';
+import {
+  CloudUploadIcon,
+  FileUploadIcon,
+  SpinnerLoader,
+} from '../../assets/icons.tsx';
 import { FileUpload } from '@/components/upload/FileUpload.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
@@ -63,7 +67,9 @@ export const DropZone = () => {
             className="self-start"
             onClick={() => setHasSubmit(true)}
           >
-            <i className="mr-2">{FileUploadIcon}</i>
+            <i className={`mr-2 ${hasSubmitted && 'animate-spin'}`}>
+              {hasSubmitted ? SpinnerLoader : FileUploadIcon}
+            </i>
             Upload
           </Button>
         </>

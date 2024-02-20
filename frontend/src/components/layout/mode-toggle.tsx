@@ -11,25 +11,33 @@ import { useEffect } from 'react';
 
 export const ModeToggle = () => {
   const { theme, setTheme } = useThemeStore();
-  const sysTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
   useEffect(() => {
+    let sysTheme = window.matchMedia('(prefers-color-scheme: dark)');
     const localTheme = localStorage.getItem('theme') as Theme;
+
     if (!localTheme && theme === 'system') {
-      // console.log('no local theme and on initial load');
-      document.documentElement.className = sysTheme;
+      document.documentElement.className = sysTheme.matches ? 'dark' : 'light';
     } else if (!localTheme) {
-      // console.log('theme set', theme, sysTheme, localTheme);
       document.documentElement.className = theme;
-    } else {
-      // console.log('last');
     }
+    const changeColorScheme = () => {
+      const newSysTheme = sysTheme.matches ? 'dark' : 'light';
+      if (theme === 'system') {
+        document.documentElement.className = newSysTheme;
+      }
+      setTheme(newSysTheme);
+    };
+
+    sysTheme.addEventListener('change', changeColorScheme);
+
+    return () => {
+      sysTheme.removeEventListener('change', changeColorScheme);
+    };
   }, [theme]);
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="mb-5" asChild>
+      <DropdownMenuTrigger asChild>
         <Button variant="outline" size="icon">
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
