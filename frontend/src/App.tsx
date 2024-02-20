@@ -8,12 +8,14 @@ function App() {
   const fileList = useFileStore((state) => state.fileList);
 
   return (
-    <div className="p-8 flex flex-col gap-8">
-      <ModeToggle />
+    <>
       <Toaster />
-      <DropZone />
-      <Gallery files={fileList} />
-    </div>
+      <div className="p-8 flex flex-col gap-8">
+        <ModeToggle />
+        <DropZone />
+        <Gallery files={fileList} />
+      </div>
+    </>
   );
 }
 

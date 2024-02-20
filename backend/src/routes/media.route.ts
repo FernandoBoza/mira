@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { getFileFormat } from "../../../utils";
 
 const media = new Hono();
@@ -37,7 +38,7 @@ media.post("/upload", async (c) => {
   });
 
   for (const file of filesArray) {
-    const filePath = `${uploadPath}/${file.name}.${file.type}`;
+    const filePath = `${uploadPath}/${file.name}`;
 
     // TODO: Upload only new ones and skip existing ones
     // if (await Bun.file(filePath).exists()) {
@@ -56,5 +57,15 @@ media.post("/upload", async (c) => {
     }),
   );
 });
+
+media.use(
+  "/upload",
+  cors({
+    origin: ["*", "http://localhost:5173"],
+    allowHeaders: ["X-Custom-Header", "Upgrade-Insecure-Requests"],
+    allowMethods: ["POST", "GET", "OPTIONS"],
+    credentials: false,
+  }),
+);
 
 export default media;
