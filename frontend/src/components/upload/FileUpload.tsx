@@ -49,8 +49,8 @@ export const FileUpload = () => {
       {[...fileList].map((file) => (
         <FileProgress
           file={file}
-          key={`${file.name}_${file.lastModified}`}
           value={uploadProgress[file.name] || 0}
+          key={`${file.name}_${file.lastModified}`}
         />
       ))}
     </ScrollArea>

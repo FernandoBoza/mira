@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { getFileFormat } from "../../../utils";
+import { getFileFormat, getFileName } from "../../../utils";
 
 const media = new Hono();
 
@@ -25,9 +25,7 @@ media.post("/upload", async (c) => {
   const files = await c.req.parseBody();
   const uploadPath = "./uploads";
 
-  if (!files) {
-    return c.text("No files were uploaded");
-  }
+  if (!files) return c.text("No files were uploaded");
 
   const filesArray = Object.keys(files).map((fileName) => {
     const file = files[fileName];
@@ -50,10 +48,10 @@ media.post("/upload", async (c) => {
   for (const file of filesArray) {
     const filePath = `${uploadPath}/${file.name}`;
 
-    // TODO: Upload only new ones and skip existing ones
-    // if (await Bun.file(filePath).exists()) {
-    //   return c.text(`${file.name} already exists`);
-    // }
+    if (await Bun.file(filePath).exists()) {
+      filesArray.splice(filesArray.indexOf(file), 1);
+      return c.text(`${getFileName(file.name)} already exists`);
+    }
 
     await Bun.write(filePath, file.data);
   }
