@@ -58,17 +58,4 @@
     body {
         @apply bg-background text-foreground;
     }
-
-    /* For IE10+ */
-    progress#progressBar {
-        @apply bg-gray-200
-    }
-
-    progress#progressBar::-webkit-progress-value {
-        @apply bg-primary
-    }
-
-    progress#progressBar::-moz-progress-bar {
-        @apply bg-primary
-    }
 }
