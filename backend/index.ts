@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import mediaRoute from "./routes/media.route.ts";
+import mediaRoute from "./src/routes/media.route.ts";
 
 const app = new Hono();
 

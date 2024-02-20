@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button.tsx';
 import { CloseIcon, MediaIcon } from '@/assets/icons.tsx';
-import { formatBytes } from '../../../../utils';
+import { formatBytes, getFileType } from '../../../../utils';
 import { Progress } from '@/components/ui/progress.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 
@@ -12,7 +12,7 @@ type FileProgressProps = {
 export const FileProgress = ({ file, value }: FileProgressProps) => {
   const { name, size, type } = file;
   const fileName = name.length > 60 ? `${name.slice(0, 60)} ...` : name;
-  const fileIcon = MediaIcon[type?.split('/')[0]];
+  const fileIcon = MediaIcon[getFileType(type)];
   const removeFile = useFileStore((state) => state.removeFile);
   // TODO: make it personal per file
   const progressStatusStyle =

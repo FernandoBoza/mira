@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PDFViewer } from '@/components/FilePreview/PDFViewer.tsx';
+import { getFileType } from '../../../../utils';
 
 export const FilePreview = ({ file }: { file: File }) => {
   const [fileUrl, setFileUrl] = useState('');
@@ -8,9 +9,8 @@ export const FilePreview = ({ file }: { file: File }) => {
   useEffect(() => {
     if (file) {
       const url = URL.createObjectURL(file);
-      setFileType(file.type.split('/')[0]);
+      setFileType(getFileType(file.type));
       setFileUrl(url);
-
       return () => URL.revokeObjectURL(url);
     }
 

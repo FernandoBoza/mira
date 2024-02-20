@@ -4,7 +4,6 @@
  * @param bytes as number
  * @returns string with the size in human-readable format
  */
-
 export const formatBytes = (bytes: number) => {
   if (!+bytes) return "0 Bytes";
   const k = 1024;
@@ -12,4 +11,26 @@ export const formatBytes = (bytes: number) => {
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${Math.floor(parseFloat((bytes / Math.pow(k, i)).toFixed(dm)))} ${sizes[i]}`;
+};
+
+/**
+ * @description
+ * Get the file name from a path
+ * @param path as string
+ * @returns string with the file name
+ */
+export const getFileName = (path: string | undefined) =>
+  path ? path.split(".").shift() : "";
+
+/**
+ * @description
+ * Get the file type
+ * @param path as string
+ * @returns string with the file type
+ */
+export const getFileType = (path: string | undefined) => {
+  if (!path) return "";
+  return (
+    path.includes(".") ? path.split(".").pop() : path.split("/").pop()
+  ) as string;
 };

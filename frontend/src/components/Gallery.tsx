@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter } from '@/components/ui/card.tsx';
 import { FilePreview } from '@/components/FilePreview';
-import { formatBytes } from '../../../utils';
+import { formatBytes, getFileName, getFileType } from '../../../utils';
 
 type GalleryProps = {
   files: File[] | FileList;
@@ -18,12 +18,12 @@ export const Gallery = ({ files, className = '' }: GalleryProps) => (
         </CardContent>
         <CardFooter className={'p-3 flex flex-col items-start'}>
           <b className="text-ellipsis overflow-hidden text-nowrap w-full">
-            {file.name.split('.')[0]}
+            {getFileName(file.name)}
           </b>
           <p className="flex justify-between w-full">
             {formatBytes(file.size)}
             <span className="text-muted-foreground">
-              {file.type.split('/')[1]}
+              {getFileType(file.type)}
             </span>
           </p>
         </CardFooter>

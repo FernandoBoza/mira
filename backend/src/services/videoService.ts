@@ -1,13 +1,10 @@
 import ffmpeg from "fluent-ffmpeg";
 import { type BunFile } from "bun";
-import type { MediaType } from "../types.ts";
-import { formatBytes } from "../../utils";
+import type { MediaType } from "../../types.ts";
+import { formatBytes, getFileName } from "../../../utils";
 
 const command = ffmpeg();
 const pathToAssets = "./assets/";
-
-const getFileName = (path: string | undefined) =>
-  path ? path.split("/").pop() : "";
 
 export const deconstructFile = ({ name, size, type }: BunFile) => ({
   name: getFileName(name),
