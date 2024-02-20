@@ -14,7 +14,10 @@ export const FilePreview = ({ file }: { file: File }) => {
       return () => URL.revokeObjectURL(url);
     }
 
-    return () => {};
+    return () => {
+      setFileUrl('');
+      setFileType('');
+    };
   }, [file]);
 
   if (fileType === 'image') {
