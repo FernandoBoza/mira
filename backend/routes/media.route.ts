@@ -10,17 +10,48 @@ media.get("/id/:id", (c) => {
 });
 
 media.post("/upload", async (c) => {
-  const body = await c.req.parseBody();
-  const file = body.image;
+  const files = await c.req.parseBody();
+  const uploadPath = "./uploads";
 
-  console.log(file);
-
-  if (!file) {
+  if (!files) {
     return c.text("No files were uploaded");
   }
 
-  await Bun.write("./uploads/profilePicture.jpg", file);
-  return c.json({ files: file });
+  const filesArray = Object.keys(files).map((fileName) => {
+    const file = files[fileName];
+
+    if (file instanceof File) {
+      return {
+        name: fileName,
+        data: file,
+        type: file.type.split("/")[1],
+      };
+    }
+
+    return {
+      name: fileName,
+      data: file,
+      type: "unknown",
+    };
+  });
+
+  for (const file of filesArray) {
+    // TODO: Upload only new ones and skip existing ones
+    if (await Bun.file(`${uploadPath}/${file.name}.${file.type}`).exists()) {
+      return c.text(`${file.name} already exists`);
+    }
+
+    await Bun.write(`${uploadPath}/${file.name}.${file.type}`, file.data);
+  }
+
+  return c.json(
+    filesArray.map((file) => {
+      return {
+        name: file.name,
+        type: file.type,
+      };
+    }),
+  );
 });
 
 export default media;
