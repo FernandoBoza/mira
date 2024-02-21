@@ -26,7 +26,7 @@ media.get("/files", async (c) => {
 media.post(API_UPLOAD_ENDPOINT, async (c) => {
   const files = await c.req.parseBody();
   try {
-    return await writeFiles(files, c);
+    return await writeFiles({ files, ctx: c });
   } catch (error) {
     return c.text("Error uploading files");
   }

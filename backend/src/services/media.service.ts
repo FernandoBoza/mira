@@ -1,23 +1,12 @@
 // @ts-ignore
 import type { BodyData } from "hono/dist/types/utils/body";
-import type { Context, Env } from "hono";
-import type { BlankInput } from "hono/types";
 import { type BunFile, Glob } from "bun";
 import { getFileFormat, getFileName } from "../../../utils";
-import {
-  API_UPLOAD_ENDPOINT,
-  API_UPLOAD_PATH,
-} from "../../../utils/constants.ts";
+import { API_UPLOAD_PATH } from "../../../utils/constants.ts";
+import type { WriteFilesTypes } from "../types.ts";
 
-export const writeFiles = async (
-  files: BodyData,
-  ctx: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
-) => {
-  const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
-
-  if (!files) return ctx.text("No files were uploaded");
-
-  const filesArray = Object.keys(files).map((fileName) => {
+const getFilesArray = (files: BodyData) =>
+  Object.keys(files).map((fileName) => {
     const file = files[fileName];
 
     if (file instanceof File) {
@@ -34,6 +23,10 @@ export const writeFiles = async (
       type: "unknown",
     };
   });
+
+export const writeFiles = async ({ files, ctx }: WriteFilesTypes) => {
+  const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
+  const filesArray = getFilesArray(files);
 
   for await (const file of filesArray) {
     const filePath = `${uploadPath}/${file.name}`;

@@ -29,37 +29,6 @@ export default class FileService {
 
   uploadFiles = async () => {
     if (this.files) {
-      // const fileUploadPromises = [...this.files].map(async (file) => {
-      //   const formData = new FormData();
-      //
-      //   if (file.size > this.MAX_UPLOAD_SIZE) {
-      //     const chunkArray = this.splitLargeFileForUpload(file);
-      //     console.log('File is too large to upload in one go', chunkArray);
-      //     chunkArray.forEach((chunk, index) => {
-      //       formData.append(`${file.name}_${index}`, chunk);
-      //     });
-      //   }
-      //
-      //   formData.append(file.name, file);
-      //
-      //   try {
-      //     const res = await axios.post(CLIENT_UPLOAD_ENDPOINT, formData, {
-      //       onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-      //         if (!progressEvent.total) return;
-      //         const percentCompleted = Math.round(
-      //           (progressEvent.loaded * 100) / progressEvent?.total,
-      //         );
-      //         this.setFileProgress(file.name, percentCompleted);
-      //       },
-      //     });
-      //     console.log(res.data);
-      //   } catch (err) {
-      //     return console.error(err);
-      //   }
-      // });
-      //
-      // await Promise.all(fileUploadPromises);
-
       const smallFiles = [...this.files].filter(
         (file) => file.size <= this.MAX_UPLOAD_SIZE,
       );
