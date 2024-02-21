@@ -3,26 +3,11 @@ import type { BodyData } from "hono/dist/types/utils/body";
 import type { Context, Env } from "hono";
 import type { BlankInput } from "hono/types";
 import { getFileFormat, getFileName } from "../../../utils";
-import { API_UPLOAD_ENDPOINT, LOCAL_UPLOAD_PATH } from "../../../utils/constants.ts";
-
-// async function listFilesInDirectory(dirPath: string) {
-//   try {
-//     // The readdir method returns a Promise<string[]> indicating an array of file names
-//     const files: string[] = await Bun.(dirPath);
-//     console.log("Files and directories in:", dirPath);
-//     files.forEach((file: string) => {
-//       console.log(file);
-//     });
-//   } catch (error) {
-//     console.error("Error listing files in directory:", error);
-//   }
-// }
-//
-// // Example usage
-// const directoryPath: string = "./path/to/your/directory";
-// listFilesInDirectory(directoryPath);
-//
-// const files = await readdir(import.meta.dir);
+import {
+  API_UPLOAD_ENDPOINT,
+  LOCAL_UPLOAD_PATH,
+} from "../../../utils/constants.ts";
+import { Glob } from "bun";
 
 export const writeFiles = async (
   files: BodyData,
@@ -69,17 +54,16 @@ export const writeFiles = async (
   );
 };
 
-export const reassembleLargeFile = async (file: File) => {
-  const chunkSize = 5242880; // 5MB
-  const chunks = Math.ceil(file.size / chunkSize);
-  const chunkPromises: Blob[] = [];
+export const getSingleFileFromUploads = async () => {
+  const uploadPath = Bun.env.UPLOAD_PATH || LOCAL_UPLOAD_PATH;
+  const glob = new Glob("**/*");
+  const arrayFromGlob = async (glob: Glob) => {
+    const files = [];
+    for await (const file of glob.scan({ cwd: uploadPath, onlyFiles: true })) {
+      files.push(Bun.file(`${uploadPath}/${file}`));
+    }
+    return files;
+  };
 
-  for (let i = 0; i < chunks; i++) {
-    const start = i * chunkSize;
-    const end = Math.min(file.size, start + chunkSize);
-    const chunk = file.slice(start, end);
-    chunkPromises.push(chunk);
-  }
-
-  return Promise.all(chunkPromises);
+  return await arrayFromGlob(glob);
 };

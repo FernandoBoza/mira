@@ -1,23 +1,11 @@
-import { Glob } from "bun";
 import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { writeFiles } from "../services/media.service";
 import {
-  API_UPLOAD_ENDPOINT,
-  LOCAL_UPLOAD_PATH,
-} from "../../../utils/constants.ts";
+  getSingleFileFromUploads,
+  writeFiles,
+} from "../services/media.service";
+import { API_UPLOAD_ENDPOINT } from "../../../utils/constants.ts";
 
 const media = new Hono();
-
-media.use(
-  API_UPLOAD_ENDPOINT,
-  cors({
-    origin: ["*", "http://localhost:5173"],
-    allowHeaders: ["X-Custom-Header", "Content-Type"],
-    allowMethods: ["POST", "GET", "OPTIONS"],
-    exposeHeaders: ["Content-Length", "X-Kuma-Revision"],
-  }),
-);
 
 media.get("/", (c) => c.json({ message: "Hello, Media!" }));
 
@@ -27,19 +15,12 @@ media.get("/id/:id", (c) => {
 });
 
 media.get("/files", async (c) => {
-  const uploadPath = Bun.env.UPLOAD_PATH || LOCAL_UPLOAD_PATH;
-  const glob = new Glob("**/*");
-  const arrayFromGlob = async (glob: Glob) => {
-    const files = [];
-    for await (const file of glob.scan({ cwd: uploadPath, onlyFiles: true })) {
-      files.push(Bun.file(`${uploadPath}/${file}`));
-    }
-    return files;
-  };
-
-  const files = await arrayFromGlob(glob);
-
-  return new Response(files[1]);
+  const files = await getSingleFileFromUploads();
+  try {
+    return new Response(files[1]);
+  } catch (error) {
+    return c.text("Error getting files");
+  }
 });
 
 media.post(API_UPLOAD_ENDPOINT, async (c) => {
