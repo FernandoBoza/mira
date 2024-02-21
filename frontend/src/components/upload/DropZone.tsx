@@ -12,9 +12,8 @@ import {
 
 export const DropZone = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { hasSubmitted, setHasSubmit, setFileList, fileList } = useFileStore(
-    (state) => state,
-  );
+  const { hasSubmitted, setHasSubmit, setUploadFileList, uploadFileList } =
+    useFileStore((state) => state);
 
   /*
    * @Description
@@ -34,15 +33,15 @@ export const DropZone = () => {
             });
           }
           return (
-            ![...fileList].some((f) => f.name === file.name) &&
+            ![...uploadFileList].some((f) => f.name === file.name) &&
             file.type.match(/image|video|pdf/)
           );
         });
 
-        setFileList([...fileList, ...filteredList]);
+        setUploadFileList([...uploadFileList, ...filteredList]);
       }
     },
-    [fileList, setFileList],
+    [uploadFileList, setUploadFileList],
   );
 
   const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {
@@ -70,7 +69,7 @@ export const DropZone = () => {
       <p className="font-semibold">Drag & Drop Here or</p>
       <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
 
-      {fileList.length >= 1 && (
+      {uploadFileList.length >= 1 && (
         <>
           <FileUpload />
           <Button

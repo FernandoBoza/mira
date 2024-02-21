@@ -5,7 +5,7 @@ import { useFileStore } from '@/stores/file.store.ts';
 import { Toaster } from '@/components/ui/sonner';
 
 function App() {
-  const fileList = useFileStore((state) => state.fileList);
+  const uploadFileList = useFileStore((state) => state.uploadFileList);
 
   return (
     <>
@@ -13,7 +13,7 @@ function App() {
       <div className="p-8 flex flex-col gap-8">
         <ModeToggle />
         <DropZone />
-        <Gallery files={fileList} />
+        <Gallery files={uploadFileList} />
       </div>
     </>
   );

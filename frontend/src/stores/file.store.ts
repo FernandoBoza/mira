@@ -1,23 +1,23 @@
 import { create } from 'zustand';
 
 type FileStoreType = {
-  fileList: FileList | File[];
+  uploadFileList: FileList | File[];
   hasSubmitted: boolean;
-  setFileList: (files: FileList | File[]) => void;
+  setUploadFileList: (files: FileList | File[]) => void;
   removeFile: (file: File) => void;
   setHasSubmit: (hasSubmitted: boolean) => void;
 };
 
 export const useFileStore = create<FileStoreType>((set) => ({
-  fileList: [],
+  uploadFileList: [],
   hasSubmitted: false,
-  setFileList: (files: FileList | File[]) => {
-    set({ fileList: files });
+  setUploadFileList: (files: FileList | File[]) => {
+    set({ uploadFileList: files });
   },
   removeFile: (file: File) => {
-    const fileList = useFileStore.getState().fileList;
+    const fileList = useFileStore.getState().uploadFileList;
     set({
-      fileList: [...fileList].filter((f) => f.name !== file.name),
+      uploadFileList: [...fileList].filter((f) => f.name !== file.name),
     });
   },
   setHasSubmit: (hasSubmitted: boolean) => {
