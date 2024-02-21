@@ -14,12 +14,13 @@ media.get("/id/:id", (c) => {
   return c.text(`You requested media with id: ${id}`);
 });
 
-media.get("/files", async (c) => {
-  const files = await getSingleFileFromUploads();
+media.get("/file/:fileName", async (c) => {
+  const fileName = c.req.param("fileName");
+  const files = await getSingleFileFromUploads(fileName);
   try {
-    return new Response(files[1]);
+    return new Response(files[0]);
   } catch (error) {
-    return c.text("Error getting files");
+    return c.text(`Looks like ${fileName} does not exist`);
   }
 });
 

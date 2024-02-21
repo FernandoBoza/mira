@@ -5,7 +5,13 @@ import { getFileFormat, getFileName } from "../../../utils";
 import { API_UPLOAD_PATH } from "../../../utils/constants.ts";
 import type { WriteFilesTypes } from "../types.ts";
 
-const getFilesArray = (files: BodyData) =>
+type fileArrayType = {
+  name: string;
+  data: File | (string | (string | File)[]);
+  type: string;
+};
+
+const getFilesArray = (files: BodyData): fileArrayType[] =>
   Object.keys(files).map((fileName) => {
     const file = files[fileName];
 
@@ -47,13 +53,15 @@ export const writeFiles = async ({ files, ctx }: WriteFilesTypes) => {
   );
 };
 
-export const getSingleFileFromUploads = async () => {
+export const getSingleFileFromUploads = async (fileName: string) => {
   const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
   const glob = new Glob("**/*");
   const arrayFromGlob = async (glob: Glob) => {
     const files: BunFile[] = [];
     for await (const file of glob.scan({ cwd: uploadPath, onlyFiles: true })) {
-      files.push(Bun.file(`${uploadPath}/${file}`));
+      if (file === fileName) {
+        files.push(Bun.file(`${uploadPath}/${file}`));
+      }
     }
     return files;
   };
