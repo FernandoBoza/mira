@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import mediaRoute from "./src/routes/media.route.ts";
+import { PORT } from "../utils/constants.ts";
 
 const app = new Hono();
 
@@ -22,7 +23,7 @@ app.route("/media", mediaRoute);
 
 Bun.serve({
   fetch: app.fetch,
-  port: Bun.env.PORT,
+  port: Bun.env.PORT || PORT,
 });
 
-console.log(`Listening on http://localhost:${Bun.env.PORT} 😊`);
+console.log(`Listening on http://localhost:${Bun.env.PORT || PORT} 😊`);

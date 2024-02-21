@@ -3,9 +3,9 @@ import { useFileStore } from '@/stores/file.store.ts';
 import { FileProgress } from '@/components/upload/FileProgress.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import axios, { AxiosProgressEvent } from 'axios';
+import { UPLOAD_ENDPOINT } from '../../../../utils/constants.ts';
 
 export const FileUpload = () => {
-  const uploadURL = 'http://localhost:3000/media/upload';
   const [uploadProgress, setUploadProgress] = useState<{
     [k: string]: number;
   }>({});
@@ -18,7 +18,7 @@ export const FileUpload = () => {
     formData.append(file.name, file);
 
     try {
-      const res = await axios.post(uploadURL, formData, {
+      const res = await axios.post(UPLOAD_ENDPOINT, formData, {
         onUploadProgress: (progressEvent: AxiosProgressEvent) => {
           if (!progressEvent.total) return;
           const percentCompleted = Math.round(

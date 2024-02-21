@@ -2,11 +2,15 @@ import { Glob } from "bun";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { writeFiles } from "../services/media.service";
+import {
+  API_UPLOAD_ENDPOINT,
+  LOCAL_UPLOAD_PATH,
+} from "../../../utils/constants.ts";
 
 const media = new Hono();
 
 media.use(
-  "/upload",
+  API_UPLOAD_ENDPOINT,
   cors({
     origin: ["*", "http://localhost:5173"],
     allowHeaders: ["X-Custom-Header", "Content-Type"],
@@ -23,7 +27,7 @@ media.get("/id/:id", (c) => {
 });
 
 media.get("/files", async (c) => {
-  const uploadPath = Bun.env.UPLOAD_PATH;
+  const uploadPath = Bun.env.UPLOAD_PATH || LOCAL_UPLOAD_PATH;
   const glob = new Glob("**/*");
   const arrayFromGlob = async (glob: Glob) => {
     const files = [];
@@ -38,7 +42,7 @@ media.get("/files", async (c) => {
   return new Response(files[1]);
 });
 
-media.post("/upload", async (c) => {
+media.post(API_UPLOAD_ENDPOINT, async (c) => {
   const files = await c.req.parseBody();
   try {
     return await writeFiles(files, c);

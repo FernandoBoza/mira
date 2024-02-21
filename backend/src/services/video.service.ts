@@ -1,6 +1,6 @@
 import ffmpeg from "fluent-ffmpeg";
 import { type BunFile } from "bun";
-import type { VideoTypes } from "../../types.ts";
+import type { VideoTypes } from "../types.ts";
 import { formatBytes, getFileName } from "../../../utils";
 
 const command = ffmpeg();
@@ -64,4 +64,3 @@ export const generateThumbnailFromVideo = (
 };
 
 // convertVideo('2020NYE.mp4', '2020NYE', 'avi')
-
