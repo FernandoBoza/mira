@@ -2,12 +2,12 @@
 import type { BodyData } from "hono/dist/types/utils/body";
 import type { Context, Env } from "hono";
 import type { BlankInput } from "hono/types";
+import { type BunFile, Glob } from "bun";
 import { getFileFormat, getFileName } from "../../../utils";
 import {
   API_UPLOAD_ENDPOINT,
   LOCAL_UPLOAD_PATH,
 } from "../../../utils/constants.ts";
-import { Glob } from "bun";
 
 export const writeFiles = async (
   files: BodyData,
@@ -58,7 +58,7 @@ export const getSingleFileFromUploads = async () => {
   const uploadPath = Bun.env.UPLOAD_PATH || LOCAL_UPLOAD_PATH;
   const glob = new Glob("**/*");
   const arrayFromGlob = async (glob: Glob) => {
-    const files = [];
+    const files: BunFile[] = [];
     for await (const file of glob.scan({ cwd: uploadPath, onlyFiles: true })) {
       files.push(Bun.file(`${uploadPath}/${file}`));
     }
