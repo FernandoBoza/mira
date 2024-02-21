@@ -27,7 +27,7 @@ export default class FileService {
     return this.fileProgress;
   };
 
-  uploadFiles = async () => {
+  public uploadFiles = async () => {
     if (this.files) {
       const smallFiles = [...this.files].filter(
         (file) => file.size <= this.MAX_UPLOAD_SIZE,
@@ -51,27 +51,23 @@ export default class FileService {
     }
   };
 
-  uploadFile = async (file: File, fileName: string = file.name) => {
+  private uploadFile = async (file: File, fileName: string = file.name) => {
     const formData = new FormData();
     formData.append(fileName, file);
 
     try {
-      const res = await axios.post(CLIENT_UPLOAD_ENDPOINT, formData, {
-        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-          if (!progressEvent.total) return;
-          const percentCompleted = Math.round(
-            (progressEvent.loaded * 100) / progressEvent?.total,
-          );
-          this.setFileProgress(fileName, percentCompleted);
-        },
-      });
+      const res = await axios.postForm(
+        CLIENT_UPLOAD_ENDPOINT,
+        formData,
+        this.createConfig(fileName),
+      );
       console.log(res.data);
     } catch (err) {
       console.error(err);
     }
   };
 
-  splitLargeFileForUpload = (file: File) => {
+  private splitLargeFileForUpload = (file: File) => {
     const BYTES_PER_CHUNK = this.MAX_UPLOAD_SIZE; //100MB chunk sizes.
     const SIZE = file.size;
     const NUM_CHUNKS = Math.max(SIZE / BYTES_PER_CHUNK, 1);
@@ -95,4 +91,17 @@ export default class FileService {
 
     return chunkArray;
   };
+
+  private createConfig = (fileName: string) => ({
+    onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+      if (!progressEvent.total) return;
+      const percentCompleted = Math.round(
+        (progressEvent.loaded * 100) / progressEvent?.total,
+      );
+      this.setFileProgress(fileName, percentCompleted);
+    },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 }
