@@ -27,26 +27,50 @@ export default class FileService {
     return this.fileProgress;
   };
 
-  public uploadFiles = async () => {
+  public uploadFiles = async (test?: boolean) => {
+    if (test) {
+      await this.testUploadFiles();
+    } else {
+      if (this.files) {
+        const smallFiles = [...this.files].filter(
+          (file) => file.size <= this.MAX_UPLOAD_SIZE,
+        );
+        const largeFiles = [...this.files].filter(
+          (file) => file.size > this.MAX_UPLOAD_SIZE,
+        );
+
+        const smallFileUploadPromises = smallFiles.map((file) =>
+          this.uploadFile(file),
+        );
+        await Promise.all(smallFileUploadPromises);
+
+        for (const file of largeFiles) {
+          const chunkArray = this.splitLargeFileForUpload(file);
+          await chunkArray.reduce(async (promiseChain, chunk, index) => {
+            await promiseChain;
+            return await this.uploadFile(chunk, `${file.name}_${index}`);
+          }, Promise.resolve());
+        }
+      }
+    }
+  };
+
+  testUploadFiles = async () => {
     if (this.files) {
-      const smallFiles = [...this.files].filter(
-        (file) => file.size <= this.MAX_UPLOAD_SIZE,
-      );
-      const largeFiles = [...this.files].filter(
-        (file) => file.size > this.MAX_UPLOAD_SIZE,
-      );
-
-      const smallFileUploadPromises = smallFiles.map((file) =>
-        this.uploadFile(file),
-      );
-      await Promise.all(smallFileUploadPromises);
-
-      for (const file of largeFiles) {
-        const chunkArray = this.splitLargeFileForUpload(file);
-        await chunkArray.reduce(async (promiseChain, chunk, index) => {
-          await promiseChain;
-          return await this.uploadFile(chunk, `${file.name}_${index}`);
-        }, Promise.resolve());
+      const formData = new FormData();
+      // const blob = new Blob([...this.files]);
+      [...this.files].map((file) => formData.append(file.name, file));
+      // formData.append('buffer', blob);
+      console.log(formData.get('j355yc4-k3tl3n--js-extract.mp4'));
+      try {
+        const res = await axios.post(
+          'http://localhost:3000/media/upload-large',
+          formData,
+          this.createConfig(),
+        );
+        console.log(res.data);
+      } catch (err) {
+        console.error(err);
       }
     }
   };
@@ -92,16 +116,16 @@ export default class FileService {
     return chunkArray;
   };
 
-  private createConfig = (fileName: string) => ({
+  private createConfig = (fileName?: string) => ({
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
     onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-      if (!progressEvent.total) return;
+      if (!progressEvent.total || !fileName) return;
       const percentCompleted = Math.round(
         (progressEvent.loaded * 100) / progressEvent?.total,
       );
       this.setFileProgress(fileName, percentCompleted);
-    },
-    headers: {
-      'Content-Type': 'multipart/form-data',
     },
   });
 }

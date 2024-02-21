@@ -16,7 +16,7 @@ export const FileUpload = () => {
     if (uploadFileList && hasSubmitted) {
       fileService.setFiles(uploadFileList);
       fileService
-        .uploadFiles()
+        .uploadFiles(true)
         .then(() => setUploadProgress(fileService.getFileProgress()))
         .finally(() => setHasSubmit(false));
     }
