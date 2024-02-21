@@ -6,14 +6,14 @@ import { type BunFile, Glob } from "bun";
 import { getFileFormat, getFileName } from "../../../utils";
 import {
   API_UPLOAD_ENDPOINT,
-  LOCAL_UPLOAD_PATH,
+  API_UPLOAD_PATH,
 } from "../../../utils/constants.ts";
 
 export const writeFiles = async (
   files: BodyData,
   ctx: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
 ) => {
-  const uploadPath = Bun.env.UPLOAD_PATH || LOCAL_UPLOAD_PATH;
+  const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
 
   if (!files) return ctx.text("No files were uploaded");
 
@@ -55,7 +55,7 @@ export const writeFiles = async (
 };
 
 export const getSingleFileFromUploads = async () => {
-  const uploadPath = Bun.env.UPLOAD_PATH || LOCAL_UPLOAD_PATH;
+  const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
   const glob = new Glob("**/*");
   const arrayFromGlob = async (glob: Glob) => {
     const files: BunFile[] = [];

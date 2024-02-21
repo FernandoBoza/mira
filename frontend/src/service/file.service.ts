@@ -1,5 +1,5 @@
 import axios, { AxiosProgressEvent } from 'axios';
-import { UPLOAD_ENDPOINT } from '../../../utils/constants.ts';
+import { CLIENT_UPLOAD_ENDPOINT } from '../../../utils/constants.ts';
 import { UploadProgressType } from '@/lib/types.ts';
 
 export default class FileService {
@@ -32,7 +32,7 @@ export default class FileService {
         formData.append(file.name, file);
 
         try {
-          const res = await axios.post(UPLOAD_ENDPOINT, formData, {
+          const res = await axios.post(CLIENT_UPLOAD_ENDPOINT, formData, {
             onUploadProgress: (progressEvent: AxiosProgressEvent) => {
               if (!progressEvent.total) return;
               const percentCompleted = Math.round(
