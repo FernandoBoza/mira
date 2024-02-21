@@ -28,7 +28,13 @@ export const FilePreview = ({ file }: { file: File }) => {
 
   if (fileType === 'video') {
     if (file.size > 314572800) {
-      return <p>Can't preview video, file is over 300MB</p>;
+      return (
+        <div className="flex h-full text-center items-center">
+          <p className="my-0 mx-auto">
+            Can't preview video, file is over 300MB
+          </p>
+        </div>
+      );
     }
     return (
       <video className="h-auto w-auto" controls>

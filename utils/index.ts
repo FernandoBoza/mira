@@ -26,7 +26,7 @@ export const getFileName = (path: string | undefined) =>
  * @description
  * Get the file type
  * @param path as string
- * @returns string with the file type
+ * @returns string with the file type i.e. image, video, audio, application
  */
 export const getFileType = (path: string | undefined) => {
   if (!path) return "";
@@ -39,7 +39,7 @@ export const getFileType = (path: string | undefined) => {
  * @description
  * Get the file format
  * @param path as string
- * @returns string with the file format
+ * @returns string with the file format i.e. mp4, jpg, pdf
  */
 export const getFileFormat = (path: string | undefined) => {
   if (!path) return "";
