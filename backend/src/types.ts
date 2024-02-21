@@ -10,3 +10,9 @@ export type WriteFilesTypes = {
   files: BodyData;
   ctx: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>;
 };
+
+export type CustomFileType = {
+  name: string;
+  data: File | (string | (string | File)[]);
+  type: string;
+};
