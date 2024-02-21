@@ -27,7 +27,7 @@ export const writeFiles = async (
   files: BodyData,
   ctx: Context<Env, "/upload", BlankInput>,
 ) => {
-  const uploadPath = "./uploads";
+  const uploadPath = Bun.env.UPLOAD_PATH;
 
   if (!files) return ctx.text("No files were uploaded");
 
@@ -66,4 +66,19 @@ export const writeFiles = async (
       type: file.type,
     })),
   );
+};
+
+export const reassembleLargeFile = async (file: File) => {
+  const chunkSize = 5242880; // 5MB
+  const chunks = Math.ceil(file.size / chunkSize);
+  const chunkPromises: Blob[] = [];
+
+  for (let i = 0; i < chunks; i++) {
+    const start = i * chunkSize;
+    const end = Math.min(file.size, start + chunkSize);
+    const chunk = file.slice(start, end);
+    chunkPromises.push(chunk);
+  }
+
+  return Promise.all(chunkPromises);
 };
