@@ -35,7 +35,9 @@ media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
   console.log("hitting large file endpoint");
   console.log(await c.req.parseBody());
   //
-  // const stream = file.stream();
+
+  await mediaService.assembleStream(c.req);
+
   return c.text("testing large files");
 });
 

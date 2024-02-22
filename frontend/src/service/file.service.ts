@@ -57,20 +57,25 @@ export default class FileService {
 
   testUploadFiles = async () => {
     if (this.files) {
-      const formData = new FormData();
-      // const blob = new Blob([...this.files]);
-      [...this.files].map((file) => formData.append(file.name, file));
-      // formData.append('buffer', blob);
-      console.log(formData.get('j355yc4-k3tl3n--js-extract.mp4'));
-      try {
-        const res = await axios.post(
-          'http://localhost:3000/media/upload-large',
-          formData,
-          this.createConfig(),
-        );
-        console.log(res.data);
-      } catch (err) {
-        console.error(err);
+      const chunkSize = 1024 * 1024 * 5; // for example, 5MB chunk sizes
+      let start = 0;
+
+      while (start < this.files[0].size) {
+        let end = Math.min(start + chunkSize, this.files[0].size);
+        const chunk = this.files[0].slice(start, end); // Create a chunk
+        // Create a new FormData instance and append the chunk to it
+        const formData = new FormData();
+        formData.append('file', chunk, this.files[0].name);
+
+        // Use Axios to send the chunk
+        await axios.post('/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        // Update the start position for the next chunk
+        start = end;
       }
     }
   };
