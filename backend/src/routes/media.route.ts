@@ -33,7 +33,7 @@ media.post(API_UPLOAD_ENDPOINT, async (c) => {
 
 media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
   try {
-    await mediaService.assembleStream(c);
+    return await mediaService.assembleStream(c);
   } catch (e) {
     return c.json(mediaService.createError(c, e));
   }
