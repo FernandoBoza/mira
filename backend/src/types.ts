@@ -8,7 +8,7 @@ export type VideoTypes = "mp4" | "webm" | "ogg" | "mkv" | "avi" | "mov";
 
 export type WriteFilesTypes = {
   files: BodyData;
-  ctx: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>;
+  c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>;
 };
 
 export type CustomFileType = {

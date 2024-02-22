@@ -15,29 +15,6 @@ import { appendFile } from "fs/promises";
 export default class MediaService {
   constructor() {}
 
-  public writeFiles = async ({ files, ctx }: WriteFilesTypes) => {
-    const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
-    const filesArray = this.getFilesArray(files);
-
-    for await (const file of filesArray) {
-      const filePath = `${uploadPath}/${file.name}`;
-
-      if (await Bun.file(filePath).exists()) {
-        filesArray.splice(filesArray.indexOf(file), 1);
-        return ctx.text(`${getFileName(file.name)} already exists`);
-      }
-
-      await Bun.write(filePath, file.data);
-    }
-
-    return ctx.json(
-      filesArray.map((file) => ({
-        name: file.name,
-        type: file.type,
-      })),
-    );
-  };
-
   public getSingleFileFromUploads = async (fileName: string) => {
     const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
     const glob = new Glob("**/*");
@@ -57,7 +34,30 @@ export default class MediaService {
     return await arrayFromGlob(glob);
   };
 
-  assembleStream = async (
+  public writeFiles = async ({ files, c }: WriteFilesTypes) => {
+    const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
+    const filesArray = this.getFilesArray(files);
+
+    for await (const file of filesArray) {
+      const filePath = `${uploadPath}/${file.name}`;
+
+      if (await Bun.file(filePath).exists()) {
+        filesArray.splice(filesArray.indexOf(file), 1);
+        return c.text(`${getFileName(file.name)} already exists`);
+      }
+
+      await Bun.write(filePath, file.data);
+    }
+
+    return c.json(
+      filesArray.map((file) => ({
+        name: file.name,
+        type: file.type,
+      })),
+    );
+  };
+
+  public assembleStream = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
   ) => {
     const arr = this.getFilesArray(await c.req.parseBody());
@@ -71,6 +71,16 @@ export default class MediaService {
         await appendFile(filePath, byteArray);
       }
     }
+    return c.text("Uploaded large files");
+  };
+
+  public createError = async (
+    c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
+    e: unknown,
+  ) => {
+    const fileName = await c.req.parseBody().then((res) => res.fileName);
+    const fileWithError = `Error uploading file ${fileName}`;
+    return c.json({ [fileWithError]: e });
   };
 
   private getFilesArray = (files: BodyData): CustomFileType[] =>

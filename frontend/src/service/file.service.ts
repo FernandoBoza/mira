@@ -12,9 +12,7 @@ export default class FileService {
     this.files = file;
   }
 
-  public setFiles = (files: FileList | File[]) => {
-    this.files = files;
-  };
+  public setFiles = (files: FileList | File[]) => (this.files = files);
 
   public setFileProgress = (fileName: string, progress: number) => {
     this.fileProgress = {
@@ -23,9 +21,7 @@ export default class FileService {
     };
   };
 
-  public getFileProgress = () => {
-    return this.fileProgress;
-  };
+  public getFileProgress = () => this.fileProgress;
 
   public removeFile = (removeFile: (file: File) => void) => {
     if (this.files) {
