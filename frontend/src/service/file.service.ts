@@ -67,24 +67,28 @@ export default class FileService {
 
   testUploadFiles = async () => {
     if (this.files) {
-      const chunkSize = 1024 * 1024 * 5; // for example, 5MB chunk sizes
+      const chunkSize = 1024 * 1024 * 100; // for example, 5MB chunk sizes
       let start = 0;
 
       while (start < this.files[0].size) {
         let end = Math.min(start + chunkSize, this.files[0].size);
         const chunk = this.files[0].slice(start, end); // Create a chunk
-        // Create a new FormData instance and append the chunk to it
         const formData = new FormData();
         formData.append('file', chunk, this.files[0].name);
+        formData.append('start', start.toString());
+        formData.append('end', end.toString());
+        formData.append('fileName', this.files[0].name);
 
-        // Use Axios to send the chunk
-        await axios.post('/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-
-        // Update the start position for the next chunk
+        try {
+          const res = await axios.postForm(
+            `${CLIENT_UPLOAD_ENDPOINT}-large`,
+            formData,
+            this.createConfig(),
+          );
+          console.log(res.data);
+        } catch (err) {
+          console.error(err);
+        }
         start = end;
       }
     }

@@ -31,12 +31,13 @@ media.post(API_UPLOAD_ENDPOINT, async (c) => {
   }
 });
 
+// TODO: Fix or combine routes for large file uploads
 media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
-  console.log("hitting large file endpoint");
-  console.log(await c.req.parseBody());
-  //
-
-  await mediaService.assembleStream(c.req);
+  try {
+    await mediaService.assembleStream(c);
+  } catch (error) {
+    return c.text("Error uploading large files");
+  }
 
   return c.text("testing large files");
 });

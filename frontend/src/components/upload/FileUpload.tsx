@@ -8,17 +8,20 @@ import { UploadProgressType } from '@/lib/types.ts';
 export const FileUpload = () => {
   const fileService = new FileService();
   const [uploadProgress, setUploadProgress] = useState<UploadProgressType>({});
-  const { hasSubmitted, setHasSubmit, uploadFileList, removeFile } =
-    useFileStore((state) => state);
+  const { hasSubmitted, setHasSubmit, uploadFileList } = useFileStore(
+    (state) => state,
+  );
 
   useEffect(() => {
     if (uploadFileList && hasSubmitted) {
       fileService.setFiles(uploadFileList);
       fileService
-        .uploadFiles(false)
+        .uploadFiles(true)
         .then(() => setUploadProgress(fileService.getFileProgress()))
-        .then(() => fileService.removeFile(removeFile))
         .finally(() => setHasSubmit(false));
+      //TODO: need to improve removeFile functionality
+      // to NOT remove if the call fails. Should still contain file
+      // .then(() => fileService.removeFile(removeFile))
     }
   }, [uploadFileList, hasSubmitted]);
 
