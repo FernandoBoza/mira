@@ -15,4 +15,5 @@ export type CustomFileType = {
   name: string;
   data: File | (string | (string | File)[]);
   type: string;
+  fileName?: string;
 };

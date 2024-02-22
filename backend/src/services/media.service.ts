@@ -3,8 +3,7 @@ import type { BodyData } from "hono/dist/types/utils/body";
 // @ts-ignore
 import type { BlankInput } from "hono/dist/types/types";
 import type { Context, Env } from "hono";
-// TODO:  Use node:fs/promises instead
-import { appendFile } from "node:fs";
+import { appendFile } from "node:fs/promises";
 import { type BunFile, Glob } from "bun";
 import { getFileFormat, getFileName } from "../../../utils";
 import {
@@ -66,14 +65,7 @@ export default class MediaService {
     for (const file of arr) {
       if (file.data instanceof File) {
         const byteArray = new Uint8Array(await file.data.arrayBuffer());
-        appendFile(
-          `${API_UPLOAD_PATH}/upload.${file.type}`,
-          byteArray,
-          (err) => {
-            if (err) throw err;
-            console.log("The file has been saved!");
-          },
-        );
+        await appendFile(`${API_UPLOAD_PATH}/${file.fileName}`, byteArray);
       }
     }
   };
@@ -87,6 +79,7 @@ export default class MediaService {
           name: fileName,
           data: file,
           type: getFileFormat(file.type),
+          fileName: file.name,
         };
       }
 

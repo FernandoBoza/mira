@@ -67,7 +67,7 @@ export default class FileService {
 
   testUploadFiles = async () => {
     if (this.files) {
-      const chunkSize = 1024 * 1024 * 100; // for example, 5MB chunk sizes
+      const chunkSize = 1024 * 1024 * 100;
       let start = 0;
 
       while (start < this.files[0].size) {
