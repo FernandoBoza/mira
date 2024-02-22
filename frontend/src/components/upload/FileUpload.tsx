@@ -19,9 +19,6 @@ export const FileUpload = () => {
         .uploadFiles()
         .then(() => setUploadProgress(fileService.getFileProgress()))
         .finally(() => setHasSubmit(false));
-      //TODO: need to improve removeFile functionality
-      // to NOT remove if the call fails. Should still contain file
-      // .then(() => fileService.removeFile(removeFile))
     }
   }, [uploadFileList, hasSubmitted]);
 

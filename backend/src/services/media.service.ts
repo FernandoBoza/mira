@@ -10,7 +10,7 @@ import {
   API_UPLOAD_PATH,
 } from "../../../utils/constants.ts";
 import type { CustomFileType, WriteFilesTypes } from "../types.ts";
-import { promises as fsPromises } from "fs";
+import { appendFile } from "fs/promises";
 
 export default class MediaService {
   constructor() {}
@@ -68,7 +68,7 @@ export default class MediaService {
         const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
 
         // Wait for each file to be processed before moving on to the next
-        await fsPromises.appendFile(filePath, byteArray);
+        await appendFile(filePath, byteArray);
       }
     }
   };

@@ -45,23 +45,18 @@ export default class FileService {
       );
 
       const smallFileUploadPromises = smallFiles.map((file) =>
-        this.uploadFile(file).then(() =>
-          this.removeFile((file) => console.log(`File ${file.name} removed`)),
-        ),
+        this.uploadFile(file),
       );
 
       const largeFileUploadPromises = largeFiles.map((file) =>
-        this.uploadLarge(file).then(() => {
-          this.removeFile((file) => console.log(`File ${file.name} removed`));
-        }),
+        this.uploadLargeFile(file),
       );
 
-      await Promise.all(smallFileUploadPromises);
-      await Promise.all(largeFileUploadPromises);
+      await Promise.all([smallFileUploadPromises, largeFileUploadPromises]);
     }
   };
 
-  uploadLarge = async (file: File) => {
+  private uploadLargeFile = async (file: File) => {
     if (file) {
       const chunkSize = 1024 * 1024 * 100;
       let start = 0;
@@ -79,7 +74,7 @@ export default class FileService {
           const res = await axios.postForm(
             `${CLIENT_UPLOAD_ENDPOINT}-large`,
             formData,
-            this.createConfig(),
+            this.createConfig(file.name),
           );
           console.log(res.data);
         } catch (err) {

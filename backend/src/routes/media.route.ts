@@ -25,18 +25,22 @@ media.get("/file/:fileName", async (c) => {
 media.post(API_UPLOAD_ENDPOINT, async (c) => {
   const files = await c.req.parseBody();
   try {
+    console.log("hitting small files endpoint");
     return await mediaService.writeFiles({ files, ctx: c });
   } catch (error) {
     return c.text("Error uploading files");
   }
 });
 
-// TODO: Fix or combine routes for large file uploads
 media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
   try {
+    console.log("hitting large files endpoint");
     await mediaService.assembleStream(c);
   } catch (error) {
-    return c.text("Error uploading large files");
+    const file = await c.req.parseBody();
+    console.log(file);
+    const prop = `Error uploading file ${file}`;
+    return c.json({ [prop]: error });
   }
 
   return c.text("testing large files");
