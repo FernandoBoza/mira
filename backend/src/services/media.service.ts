@@ -3,7 +3,6 @@ import type { BodyData } from "hono/dist/types/utils/body";
 // @ts-ignore
 import type { BlankInput } from "hono/dist/types/types";
 import type { Context, Env } from "hono";
-import { appendFile } from "node:fs/promises";
 import { type BunFile, Glob } from "bun";
 import { getFileFormat, getFileName } from "../../../utils";
 import {
@@ -11,6 +10,7 @@ import {
   API_UPLOAD_PATH,
 } from "../../../utils/constants.ts";
 import type { CustomFileType, WriteFilesTypes } from "../types.ts";
+import { promises as fsPromises } from "fs";
 
 export default class MediaService {
   constructor() {}
@@ -62,12 +62,13 @@ export default class MediaService {
   ) => {
     const arr = this.getFilesArray(await c.req.parseBody());
 
-    // Work on queue for large files
     for (const file of arr) {
       if (file.data instanceof File) {
         const byteArray = new Uint8Array(await file.data.arrayBuffer());
         const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
-        await appendFile(filePath, byteArray);
+
+        // Wait for each file to be processed before moving on to the next
+        await fsPromises.appendFile(filePath, byteArray);
       }
     }
   };

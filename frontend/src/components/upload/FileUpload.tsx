@@ -16,7 +16,7 @@ export const FileUpload = () => {
     if (uploadFileList && hasSubmitted) {
       fileService.setFiles(uploadFileList);
       fileService
-        .uploadFiles(true)
+        .uploadFiles()
         .then(() => setUploadProgress(fileService.getFileProgress()))
         .finally(() => setHasSubmit(false));
       //TODO: need to improve removeFile functionality

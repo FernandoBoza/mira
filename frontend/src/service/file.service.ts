@@ -35,49 +35,45 @@ export default class FileService {
     }
   };
 
-  public uploadFiles = async (test?: boolean) => {
-    if (test) {
-      await this.testUploadFiles();
-    } else {
-      if (this.files) {
-        const smallFiles = [...this.files].filter(
-          (file) => file.size <= this.MAX_UPLOAD_SIZE,
-        );
-        const largeFiles = [...this.files].filter(
-          (file) => file.size > this.MAX_UPLOAD_SIZE,
-        );
+  public uploadFiles = async () => {
+    if (this.files) {
+      const smallFiles = [...this.files].filter(
+        (file) => file.size <= this.MAX_UPLOAD_SIZE,
+      );
+      const largeFiles = [...this.files].filter(
+        (file) => file.size > this.MAX_UPLOAD_SIZE,
+      );
 
-        const smallFileUploadPromises = smallFiles.map((file) =>
-          this.uploadFile(file).then(() =>
-            this.removeFile((file) => console.log(`File ${file.name} removed`)),
-          ),
-        );
-        await Promise.all(smallFileUploadPromises);
+      const smallFileUploadPromises = smallFiles.map((file) =>
+        this.uploadFile(file).then(() =>
+          this.removeFile((file) => console.log(`File ${file.name} removed`)),
+        ),
+      );
 
-        for (const file of largeFiles) {
-          const chunkArray = this.splitLargeFileForUpload(file);
-          await chunkArray.reduce(async (promiseChain, chunk, index) => {
-            await promiseChain;
-            return await this.uploadFile(chunk, `${file.name}_${index}`);
-          }, Promise.resolve());
-        }
-      }
+      const largeFileUploadPromises = largeFiles.map((file) =>
+        this.uploadLarge(file).then(() => {
+          this.removeFile((file) => console.log(`File ${file.name} removed`));
+        }),
+      );
+
+      await Promise.all(smallFileUploadPromises);
+      await Promise.all(largeFileUploadPromises);
     }
   };
 
-  testUploadFiles = async () => {
-    if (this.files) {
+  uploadLarge = async (file: File) => {
+    if (file) {
       const chunkSize = 1024 * 1024 * 100;
       let start = 0;
 
-      while (start < this.files[0].size) {
-        let end = Math.min(start + chunkSize, this.files[0].size);
-        const chunk = this.files[0].slice(start, end); // Create a chunk
+      while (start < file.size) {
+        let end = Math.min(start + chunkSize, file.size);
+        const chunk = file.slice(start, end); // Create a chunk
         const formData = new FormData();
-        formData.append('file', chunk, this.files[0].name);
+        formData.append('file', chunk, file.name);
         formData.append('start', start.toString());
         formData.append('end', end.toString());
-        formData.append('fileName', this.files[0].name);
+        formData.append('fileName', file.name);
 
         try {
           const res = await axios.postForm(
@@ -108,31 +104,6 @@ export default class FileService {
     } catch (err) {
       console.error(err);
     }
-  };
-
-  private splitLargeFileForUpload = (file: File) => {
-    const BYTES_PER_CHUNK = this.MAX_UPLOAD_SIZE; //100MB chunk sizes.
-    const SIZE = file.size;
-    const NUM_CHUNKS = Math.max(SIZE / BYTES_PER_CHUNK, 1);
-    const chunkArray: File[] = [];
-    let start = 0;
-    let end = 0;
-
-    for (let index = 0; index < NUM_CHUNKS; index++) {
-      end = Math.min(SIZE, start + BYTES_PER_CHUNK);
-      const chunk = new File(
-        [file.slice(start, end)],
-        `${file.name}_${index}`,
-        {
-          type: file.type,
-          lastModified: file.lastModified,
-        },
-      );
-      chunkArray.push(chunk);
-      start = end;
-    }
-
-    return chunkArray;
   };
 
   private createConfig = (fileName?: string) => ({
