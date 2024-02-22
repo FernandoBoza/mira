@@ -27,6 +27,14 @@ export default class FileService {
     return this.fileProgress;
   };
 
+  public removeFile = (removeFile: (file: File) => void) => {
+    if (this.files) {
+      for (const file of this.files) {
+        removeFile(file);
+      }
+    }
+  };
+
   public uploadFiles = async (test?: boolean) => {
     if (test) {
       await this.testUploadFiles();
@@ -40,7 +48,9 @@ export default class FileService {
         );
 
         const smallFileUploadPromises = smallFiles.map((file) =>
-          this.uploadFile(file),
+          this.uploadFile(file).then(() =>
+            this.removeFile((file) => console.log(`File ${file.name} removed`)),
+          ),
         );
         await Promise.all(smallFileUploadPromises);
 

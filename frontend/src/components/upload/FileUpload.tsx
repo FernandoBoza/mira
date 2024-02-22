@@ -8,16 +8,16 @@ import { UploadProgressType } from '@/lib/types.ts';
 export const FileUpload = () => {
   const fileService = new FileService();
   const [uploadProgress, setUploadProgress] = useState<UploadProgressType>({});
-  const { hasSubmitted, setHasSubmit, uploadFileList } = useFileStore(
-    (state) => state,
-  );
+  const { hasSubmitted, setHasSubmit, uploadFileList, removeFile } =
+    useFileStore((state) => state);
 
   useEffect(() => {
     if (uploadFileList && hasSubmitted) {
       fileService.setFiles(uploadFileList);
       fileService
-        .uploadFiles(true)
+        .uploadFiles(false)
         .then(() => setUploadProgress(fileService.getFileProgress()))
+        .then(() => fileService.removeFile(removeFile))
         .finally(() => setHasSubmit(false));
     }
   }, [uploadFileList, hasSubmitted]);
