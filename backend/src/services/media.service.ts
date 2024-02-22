@@ -62,10 +62,12 @@ export default class MediaService {
   ) => {
     const arr = this.getFilesArray(await c.req.parseBody());
 
+    // Work on queue for large files
     for (const file of arr) {
       if (file.data instanceof File) {
         const byteArray = new Uint8Array(await file.data.arrayBuffer());
-        await appendFile(`${API_UPLOAD_PATH}/${file.fileName}`, byteArray);
+        const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
+        await appendFile(filePath, byteArray);
       }
     }
   };
