@@ -3,7 +3,7 @@ import MediaService from "../services/media.service";
 import { API_UPLOAD_ENDPOINT } from "../../../utils/constants.ts";
 
 const media = new Hono();
-const mediaService = new MediaService();
+const ms = new MediaService();
 
 media.get("/", (c) => c.json({ message: "Hello, Media!" }));
 
@@ -14,7 +14,7 @@ media.get("/id/:id", (c) => {
 
 media.get("/file/:fileName", async (c) => {
   try {
-    const file = await mediaService.getSingleFileFromUploads(c);
+    const file = await ms.getSingleFileFromUploads(c);
     return new Response(file);
   } catch (error) {
     console.error(error);
@@ -25,17 +25,17 @@ media.get("/file/:fileName", async (c) => {
 media.post(API_UPLOAD_ENDPOINT, async (c) => {
   const files = await c.req.parseBody();
   try {
-    return await mediaService.writeFiles({ files, c: c });
+    return await ms.writeFiles({ files, c: c });
   } catch (e) {
-    return c.json(mediaService.handleFileError(c, e));
+    return c.json(ms.handleFileError(c, e));
   }
 });
 
 media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
   try {
-    return await mediaService.writeLargeFiles(c);
+    return await ms.writeLargeFiles(c);
   } catch (e) {
-    return c.json(mediaService.handleFileError(c, e));
+    return c.json(ms.handleFileError(c, e));
   }
 });
 
