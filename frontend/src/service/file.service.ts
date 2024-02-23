@@ -10,7 +10,7 @@ export default class FileService {
   private files?: FileList | File[];
   private fileProgress: UploadProgressType = {};
   private readonly MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB
-  private uploadedBytes = 0;
+  private uploadedBytesPerFile: Map<string, number> = new Map();
 
   constructor(file?: FileList | File[]) {
     this.files = file;
@@ -109,23 +109,17 @@ export default class FileService {
 
   private handleProgress = (
     fileName: string,
-    uploadedBytes?: number,
     totalSize?: number,
   ): AxiosRequestConfig => ({
     onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-      let percentCompleted = 0;
       if (!progressEvent.total) return;
 
-      if (!totalSize) {
-        percentCompleted = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total,
-        );
-      } else {
-        percentCompleted = Math.round(
-          ((progressEvent.loaded + (uploadedBytes || 0)) * 100) / totalSize,
-        );
-      }
-      this.setFileProgress(fileName, percentCompleted);
+      const uploadedBytes = this.uploadedBytesPerFile.get(fileName) || 0;
+      const percentCompleted = totalSize
+        ? ((progressEvent.loaded + (uploadedBytes || 0)) * 100) / totalSize
+        : (progressEvent.loaded * 100) / progressEvent.total;
+
+      this.setFileProgress(fileName, Math.round(percentCompleted));
     },
   });
 
@@ -136,9 +130,8 @@ export default class FileService {
 
       while (start < file.size) {
         const end = Math.min(start + chunkSize, file.size);
-        const chunk = file.slice(start, end); // Create a chunk
         const formData = new FormData();
-        formData.append('file', chunk, file.name);
+        formData.append('file', file.slice(start, end), file.name);
         formData.append('start', start.toString());
         formData.append('end', end.toString());
         formData.append('fileName', file.name);
@@ -151,14 +144,15 @@ export default class FileService {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },
-              ...this.handleProgress(file.name, this.uploadedBytes, file.size),
+              ...this.handleProgress(file.name, file.size),
             },
           );
           console.log(res.data);
         } catch (err) {
           console.error(err);
         }
-        this.uploadedBytes += end - start;
+        const uploadedBytes = this.uploadedBytesPerFile.get(file.name) || 0;
+        this.uploadedBytesPerFile.set(file.name, uploadedBytes + end - start);
         start = end;
       }
     }
