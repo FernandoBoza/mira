@@ -5,22 +5,32 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import FileService from '@/service/file.service.ts';
 import { UploadProgressType } from '@/lib/types.ts';
 
+const fs = new FileService();
+
 export const FileUpload = () => {
-  const fileService = new FileService();
   const [uploadProgress, setUploadProgress] = useState<UploadProgressType>({});
   const { hasSubmitted, setHasSubmit, uploadFileList } = useFileStore(
     (state) => state,
   );
 
   useEffect(() => {
+    const handleProgress = (progress: UploadProgressType) => {
+      setUploadProgress(progress);
+    };
+
+    fs.onProgress(handleProgress);
+
     if (uploadFileList && hasSubmitted) {
-      fileService.setFiles(uploadFileList);
-      fileService
-        .uploadFiles()
-        .then(() => setUploadProgress(fileService.getFileProgress()))
-        .finally(() => setHasSubmit(false));
+      fs.setFiles(uploadFileList);
+      fs.startUploading().finally(() => setHasSubmit(false));
     }
-  }, [uploadFileList, hasSubmitted]);
+
+    return () => {
+      fs.eventEmitter.removeEventListener('progress', (event: Event) =>
+        handleProgress((event as CustomEvent).detail),
+      );
+    };
+  }, [uploadFileList, hasSubmitted, setHasSubmit]);
 
   return (
     <ScrollArea className="max-h-96 w-full flex flex-col gap-4 text-primary pr-5">

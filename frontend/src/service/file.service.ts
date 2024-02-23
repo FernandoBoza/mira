@@ -1,4 +1,4 @@
-import axios, { AxiosProgressEvent } from 'axios';
+import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import { CLIENT_UPLOAD_ENDPOINT } from '../../../utils/constants.ts';
 import { UploadProgressType } from '@/lib/types.ts';
 import { ChangeEvent } from 'react';
@@ -6,13 +6,14 @@ import { toast } from 'sonner';
 import { getFileFormat } from '../../../utils';
 
 export default class FileService {
+  eventEmitter: EventTarget;
   private files?: FileList | File[];
   private fileProgress: UploadProgressType = {};
-
   private readonly MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB
 
   constructor(file?: FileList | File[]) {
     this.files = file;
+    this.eventEmitter = new EventTarget();
   }
 
   public setFiles = (files: FileList | File[]) => (this.files = files);
@@ -22,6 +23,14 @@ export default class FileService {
       ...this.fileProgress,
       [fileName]: progress,
     };
+    const event = new CustomEvent('progress', { detail: this.fileProgress });
+    this.eventEmitter.dispatchEvent(event);
+  };
+
+  public onProgress = (listener: (progress: UploadProgressType) => void) => {
+    this.eventEmitter.addEventListener('progress', (event: Event) => {
+      return listener((event as CustomEvent).detail);
+    });
   };
 
   public getFileProgress = () => this.fileProgress;
@@ -34,7 +43,7 @@ export default class FileService {
     }
   };
 
-  public uploadFiles = async () => {
+  public startUploading = async () => {
     if (this.files) {
       const smallFiles = [...this.files].filter(
         (file) => file.size <= this.MAX_UPLOAD_SIZE,
@@ -52,6 +61,19 @@ export default class FileService {
       );
 
       await Promise.all([smallFileUploadPromises, largeFileUploadPromises]);
+    }
+  };
+
+  public simulateUpload = async () => {
+    let progress = 0;
+    if (!this.files) return;
+    while (progress <= 100) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      progress += 10;
+
+      for (const file of this.files) {
+        this.setFileProgress(file.name, progress);
+      }
     }
   };
 
@@ -80,13 +102,26 @@ export default class FileService {
     };
   };
 
+  private createConfig = (fileName?: string): AxiosRequestConfig => ({
+    onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+      if (!progressEvent.total || !fileName) return;
+      const percentCompleted = Math.round(
+        (progressEvent.loaded * 100) / progressEvent?.total,
+      );
+      this.setFileProgress(fileName, percentCompleted);
+    },
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
   private uploadLargeFile = async (file: File) => {
     if (file) {
       const chunkSize = 1024 * 1024 * 100;
       let start = 0;
 
       while (start < file.size) {
-        let end = Math.min(start + chunkSize, file.size);
+        const end = Math.min(start + chunkSize, file.size);
         const chunk = file.slice(start, end); // Create a chunk
         const formData = new FormData();
         formData.append('file', chunk, file.name);

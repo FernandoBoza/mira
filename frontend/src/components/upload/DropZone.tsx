@@ -1,4 +1,4 @@
-import { DragEvent, useCallback, useRef } from 'react';
+import { ChangeEvent, DragEvent, useCallback, useRef } from 'react';
 import { FileUpload } from '@/components/upload/FileUpload.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
@@ -9,9 +9,10 @@ import {
 } from '../../assets/icons.tsx';
 import FileService from '@/service/file.service.ts';
 
+const fs = new FileService();
+
 export const DropZone = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const fileService = new FileService();
   const { hasSubmitted, setHasSubmit, setUploadFileList, uploadFileList } =
     useFileStore((state) => state);
 
@@ -22,7 +23,9 @@ export const DropZone = () => {
    * @param files - The files to be added from either dropping files or selecting files from the file input
    * */
   const addFiles = useCallback(
-    fileService.addFiles(uploadFileList, setUploadFileList),
+    (files: FileList | ChangeEvent<HTMLInputElement>) => {
+      fs.addFiles(uploadFileList, setUploadFileList)(files);
+    },
     [uploadFileList, setUploadFileList],
   );
 
