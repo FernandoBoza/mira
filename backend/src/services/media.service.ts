@@ -4,13 +4,13 @@ import type { BodyData } from "hono/dist/types/utils/body";
 import type { BlankInput } from "hono/dist/types/types";
 import type { Context, Env } from "hono";
 import { type BunFile, Glob } from "bun";
+import { appendFile } from "fs/promises";
 import { getFileFormat, getFileName } from "../../../utils";
+import type { CustomFileType, FileError, WriteFilesTypes } from "../types.ts";
 import {
   API_UPLOAD_ENDPOINT,
   API_UPLOAD_PATH,
 } from "../../../utils/constants.ts";
-import type { CustomFileType, WriteFilesTypes } from "../types.ts";
-import { appendFile } from "fs/promises";
 
 export default class MediaService {
   constructor() {}
@@ -38,7 +38,10 @@ export default class MediaService {
     return file;
   };
 
-  public writeFiles = async ({ files, c }: WriteFilesTypes) => {
+  public writeFiles = async ({
+    files,
+    c,
+  }: WriteFilesTypes): Promise<Response> => {
     const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
     const filesArray = this.getFilesArray(files);
 
@@ -63,7 +66,7 @@ export default class MediaService {
 
   public writeLargeFiles = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
-  ) => {
+  ): Promise<Response> => {
     const arr = this.getFilesArray(await c.req.parseBody());
 
     for (const file of arr) {
@@ -71,7 +74,6 @@ export default class MediaService {
         const byteArray = new Uint8Array(await file.data.arrayBuffer());
         const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
 
-        // Wait for each file to be processed before moving on to the next
         await appendFile(filePath, byteArray);
       }
     }
@@ -81,11 +83,15 @@ export default class MediaService {
   public handleFileError = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     e: unknown,
-  ) => {
-    const fileName = await c.req.parseBody().then((res) => res.fileName);
-    const fileWithError = `Error uploading file ${fileName}`;
-    console.log(fileWithError, e);
-    return c.json({ [fileWithError]: e });
+  ): Promise<FileError> => {
+    const fileName = await c.req
+      .parseBody()
+      .then((res) => res.fileName as string);
+
+    const errorMessage = `Error uploading file ${fileName}`;
+
+    console.log(errorMessage, e);
+    return { fileName, errorMessage, errorDetails: e };
   };
 
   private getFilesArray = (files: BodyData): CustomFileType[] =>

@@ -17,3 +17,9 @@ export type CustomFileType = {
   type: string;
   fileName?: string;
 };
+
+export type FileError = {
+  fileName: string;
+  errorMessage: string;
+  errorDetails: unknown;
+};
