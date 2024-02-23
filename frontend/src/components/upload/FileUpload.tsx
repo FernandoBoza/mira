@@ -26,9 +26,7 @@ export const FileUpload = () => {
     }
 
     return () => {
-      fs.eventEmitter.removeEventListener('progress', (event: Event) =>
-        handleProgress((event as CustomEvent).detail),
-      );
+      fs.offProgress(handleProgress);
     };
   }, [uploadFileList, hasSubmitted, setHasSubmit]);
 

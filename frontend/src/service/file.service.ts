@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { getFileFormat } from '../../../utils';
 
 export default class FileService {
-  eventEmitter: EventTarget;
+  private eventEmitter: EventTarget;
   private files?: FileList | File[];
   private fileProgress: UploadProgressType = {};
   private readonly MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB
@@ -32,8 +32,6 @@ export default class FileService {
       return listener((event as CustomEvent).detail);
     });
   };
-
-  public getFileProgress = () => this.fileProgress;
 
   public removeFile = (removeFile: (file: File) => void) => {
     if (this.files) {
@@ -102,6 +100,12 @@ export default class FileService {
     };
   };
 
+  public offProgress = (listener: (progress: UploadProgressType) => void) => {
+    this.eventEmitter.removeEventListener('progress', (event: Event) =>
+      listener((event as CustomEvent).detail),
+    );
+  };
+
   private createConfig = (fileName?: string): AxiosRequestConfig => ({
     onUploadProgress: (progressEvent: AxiosProgressEvent) => {
       if (!progressEvent.total || !fileName) return;
@@ -159,17 +163,4 @@ export default class FileService {
       console.error(err);
     }
   };
-
-  private createConfig = (fileName?: string) => ({
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-      if (!progressEvent.total || !fileName) return;
-      const percentCompleted = Math.round(
-        (progressEvent.loaded * 100) / progressEvent?.total,
-      );
-      this.setFileProgress(fileName, percentCompleted);
-    },
-  });
 }
