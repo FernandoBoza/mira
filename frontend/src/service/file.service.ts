@@ -107,20 +107,25 @@ export default class FileService {
     );
   };
 
-  private createConfig = (
-    fileName?: string,
+  private handleProgress = (
+    fileName: string,
     uploadedBytes?: number,
     totalSize?: number,
   ): AxiosRequestConfig => ({
     onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-      if (!progressEvent.total || !fileName || !totalSize) return;
-      const percentCompleted = Math.round(
-        ((progressEvent.loaded + (uploadedBytes || 0)) * 100) / totalSize,
-      );
+      let percentCompleted = 0;
+      if (!progressEvent.total) return;
+
+      if (!totalSize) {
+        percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total,
+        );
+      } else {
+        percentCompleted = Math.round(
+          ((progressEvent.loaded + (uploadedBytes || 0)) * 100) / totalSize,
+        );
+      }
       this.setFileProgress(fileName, percentCompleted);
-    },
-    headers: {
-      'Content-Type': 'multipart/form-data',
     },
   });
 
@@ -142,7 +147,12 @@ export default class FileService {
           const res = await axios.postForm(
             `${CLIENT_UPLOAD_ENDPOINT}-large`,
             formData,
-            this.createConfig(file.name, this.uploadedBytes, file.size),
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+              ...this.handleProgress(file.name, this.uploadedBytes, file.size),
+            },
           );
           console.log(res.data);
         } catch (err) {
@@ -159,11 +169,12 @@ export default class FileService {
     formData.append(fileName, file);
 
     try {
-      const res = await axios.postForm(
-        CLIENT_UPLOAD_ENDPOINT,
-        formData,
-        this.createConfig(fileName),
-      );
+      const res = await axios.postForm(CLIENT_UPLOAD_ENDPOINT, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        ...this.handleProgress(fileName),
+      });
       console.log(res.data);
     } catch (err) {
       console.error(err);
