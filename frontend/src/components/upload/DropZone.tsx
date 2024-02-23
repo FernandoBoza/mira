@@ -60,7 +60,7 @@ export const DropZone = () => {
   return (
     <div
       id="dropZone"
-      className="p-4 border border-gray-300 rounded-lg flex flex-col items-center gap-4"
+      className="p-4 border border-gray-300 rounded-lg flex flex-col items-center gap-4 shadow-lg dark:shadow-white/10"
       onDragEnter={preventDefaults}
       onDragOver={preventDefaults}
       onDrop={handleDrop}

@@ -15,7 +15,10 @@ import { appendFile } from "fs/promises";
 export default class MediaService {
   constructor() {}
 
-  public getSingleFileFromUploads = async (fileName: string) => {
+  public getSingleFileFromUploads = async (
+    c: Context<Env, "/file/:fileName", BlankInput>,
+  ) => {
+    const fileName = c.req.param("fileName");
     const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
     const glob = new Glob("**/*");
     const arrayFromGlob = async (glob: Glob) => {
@@ -30,8 +33,9 @@ export default class MediaService {
       }
       return files;
     };
-
-    return await arrayFromGlob(glob);
+    const file = [...(await arrayFromGlob(glob))][0];
+    if (!file) throw new Error(`File ${fileName} not found`);
+    return file;
   };
 
   public writeFiles = async ({ files, c }: WriteFilesTypes) => {
@@ -57,7 +61,7 @@ export default class MediaService {
     );
   };
 
-  public assembleStream = async (
+  public writeLargeFiles = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
   ) => {
     const arr = this.getFilesArray(await c.req.parseBody());
@@ -74,12 +78,13 @@ export default class MediaService {
     return c.text("Uploaded large files");
   };
 
-  public createError = async (
+  public handleFileError = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     e: unknown,
   ) => {
     const fileName = await c.req.parseBody().then((res) => res.fileName);
     const fileWithError = `Error uploading file ${fileName}`;
+    console.log(fileWithError, e);
     return c.json({ [fileWithError]: e });
   };
 

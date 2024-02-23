@@ -13,12 +13,12 @@ media.get("/id/:id", (c) => {
 });
 
 media.get("/file/:fileName", async (c) => {
-  const fileName = c.req.param("fileName");
-  const files = await mediaService.getSingleFileFromUploads(fileName);
   try {
-    return new Response(files[0]);
+    const file = await mediaService.getSingleFileFromUploads(c);
+    return new Response(file);
   } catch (error) {
-    return c.text(`Looks like ${fileName} does not exist`);
+    console.error(error);
+    return c.text(`${error}`);
   }
 });
 
@@ -26,16 +26,16 @@ media.post(API_UPLOAD_ENDPOINT, async (c) => {
   const files = await c.req.parseBody();
   try {
     return await mediaService.writeFiles({ files, c: c });
-  } catch (error) {
-    return c.text("Error uploading files");
+  } catch (e) {
+    return c.json(mediaService.handleFileError(c, e));
   }
 });
 
 media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
   try {
-    return await mediaService.assembleStream(c);
+    return await mediaService.writeLargeFiles(c);
   } catch (e) {
-    return c.json(mediaService.createError(c, e));
+    return c.json(mediaService.handleFileError(c, e));
   }
 });
 
