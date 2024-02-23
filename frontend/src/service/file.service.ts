@@ -10,6 +10,7 @@ export default class FileService {
   private files?: FileList | File[];
   private fileProgress: UploadProgressType = {};
   private readonly MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB
+  private uploadedBytes = 0;
 
   constructor(file?: FileList | File[]) {
     this.files = file;
@@ -106,11 +107,15 @@ export default class FileService {
     );
   };
 
-  private createConfig = (fileName?: string): AxiosRequestConfig => ({
+  private createConfig = (
+    fileName?: string,
+    uploadedBytes?: number,
+    totalSize?: number,
+  ): AxiosRequestConfig => ({
     onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-      if (!progressEvent.total || !fileName) return;
+      if (!progressEvent.total || !fileName || !totalSize) return;
       const percentCompleted = Math.round(
-        (progressEvent.loaded * 100) / progressEvent?.total,
+        ((progressEvent.loaded + (uploadedBytes || 0)) * 100) / totalSize,
       );
       this.setFileProgress(fileName, percentCompleted);
     },
@@ -137,12 +142,13 @@ export default class FileService {
           const res = await axios.postForm(
             `${CLIENT_UPLOAD_ENDPOINT}-large`,
             formData,
-            this.createConfig(file.name),
+            this.createConfig(file.name, this.uploadedBytes, file.size),
           );
           console.log(res.data);
         } catch (err) {
           console.error(err);
         }
+        this.uploadedBytes += end - start;
         start = end;
       }
     }
