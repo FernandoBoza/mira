@@ -13,7 +13,7 @@ export const Gallery = ({ files, className = '' }: GalleryProps) => (
         key={`${file.name}`}
         className={'overflow-hidden flex flex-col justify-between'}
       >
-        <CardContent className="p-0 max-h-40 xl:h-60 overflow-hidden">
+        <CardContent className="h-full max-h-40 xl:h-60 overflow-hidden">
           <FilePreview file={file} />
         </CardContent>
         <CardFooter className={'p-3 flex flex-col items-start'}>
