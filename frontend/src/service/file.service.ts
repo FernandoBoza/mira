@@ -1,6 +1,9 @@
 import axios, { AxiosProgressEvent } from 'axios';
 import { CLIENT_UPLOAD_ENDPOINT } from '../../../utils/constants.ts';
 import { UploadProgressType } from '@/lib/types.ts';
+import { ChangeEvent } from 'react';
+import { toast } from 'sonner';
+import { getFileFormat } from '../../../utils';
 
 export default class FileService {
   private files?: FileList | File[];
@@ -50,6 +53,31 @@ export default class FileService {
 
       await Promise.all([smallFileUploadPromises, largeFileUploadPromises]);
     }
+  };
+
+  public addFiles = (
+    uploadFileList: FileList | File[],
+    setUploadFileList: (files: FileList | File[]) => void,
+  ) => {
+    return (files: FileList | ChangeEvent<HTMLInputElement>) => {
+      const newFiles = files instanceof FileList ? files : files?.target?.files;
+
+      if (newFiles) {
+        const filteredList = [...newFiles].filter((file) => {
+          if (!file.type.match(/image|video|pdf/)) {
+            toast('Supported file types are image, video and pdf', {
+              description: `${file.name} of type ${getFileFormat(file.type)} is not supported. `,
+            });
+          }
+          return (
+            ![...uploadFileList].some((f) => f.name === file.name) &&
+            file.type.match(/image|video|pdf/)
+          );
+        });
+
+        setUploadFileList([...uploadFileList, ...filteredList]);
+      }
+    };
   };
 
   private uploadLargeFile = async (file: File) => {

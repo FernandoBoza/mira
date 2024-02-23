@@ -1,46 +1,28 @@
-import { ChangeEvent, DragEvent, useCallback, useRef } from 'react';
-import { toast } from 'sonner';
+import { DragEvent, useCallback, useRef } from 'react';
 import { FileUpload } from '@/components/upload/FileUpload.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
-import { getFileFormat } from '../../../../utils';
 import {
   CloudUploadIcon,
   FileUploadIcon,
   SpinnerLoader,
 } from '../../assets/icons.tsx';
+import FileService from '@/service/file.service.ts';
 
 export const DropZone = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
+  const fileService = new FileService();
   const { hasSubmitted, setHasSubmit, setUploadFileList, uploadFileList } =
     useFileStore((state) => state);
 
-  /*
+  /**
    * @Description
-   * This function is used to set files to the state, while filtering out files that already exist in the fileList
-   * and file types that are not supported
+   * Sets files to the state, while filtering out files that already exist in
+   * the setUploadFileList and file types that are not supported
    * @param files - The files to be added from either dropping files or selecting files from the file input
    * */
   const addFiles = useCallback(
-    (files: FileList | ChangeEvent<HTMLInputElement>) => {
-      const newFiles = files instanceof FileList ? files : files?.target?.files;
-
-      if (newFiles) {
-        const filteredList = [...newFiles].filter((file) => {
-          if (!file.type.match(/image|video|pdf/)) {
-            toast('Supported file types are image, video and pdf', {
-              description: `${file.name} of type ${getFileFormat(file.type)} is not supported. `,
-            });
-          }
-          return (
-            ![...uploadFileList].some((f) => f.name === file.name) &&
-            file.type.match(/image|video|pdf/)
-          );
-        });
-
-        setUploadFileList([...uploadFileList, ...filteredList]);
-      }
-    },
+    fileService.addFiles(uploadFileList, setUploadFileList),
     [uploadFileList, setUploadFileList],
   );
 
