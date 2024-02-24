@@ -140,13 +140,10 @@ export default class FileService {
           const res = await axios.postForm(
             `${CLIENT_UPLOAD_ENDPOINT}-large`,
             formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-              ...this.handleProgress(file.name, file.size),
-            },
+            this.getConfig(file),
           );
+
+          if (await this.doesFileExist(res.data, file.name)) return;
           console.log(res.data);
         } catch (err) {
           console.error(err);
@@ -163,15 +160,38 @@ export default class FileService {
     formData.append(fileName, file);
 
     try {
-      const res = await axios.postForm(CLIENT_UPLOAD_ENDPOINT, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        ...this.handleProgress(fileName),
-      });
+      const res = await axios.postForm(
+        CLIENT_UPLOAD_ENDPOINT,
+        formData,
+        this.getConfig(file),
+      );
+
+      if (await this.doesFileExist(res.data, file.name)) return;
       console.log(res.data);
     } catch (err) {
       console.error(err);
     }
+  };
+
+  private getConfig = (file: File) => ({
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    ...this.handleProgress(file.name, file.size),
+  });
+
+  private doesFileExist = async (res: string, fileName: string) => {
+    const ac = new AbortController();
+    console.log(res?.includes('already exists'));
+
+    if (res?.includes('already exists')) {
+      toast('File already exists', {
+        description: `File ${fileName} already exists.`,
+      });
+      ac.abort();
+      return true;
+    }
+
+    return false;
   };
 }

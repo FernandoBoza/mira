@@ -73,7 +73,7 @@ export default class MediaService {
     }
   };
 
-  public handleFileError = async (
+  public handleUploadError = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     e: unknown,
   ): Promise<FileError> => {
