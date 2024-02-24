@@ -128,8 +128,21 @@ export default class FileService {
       const chunkSize = Math.max(
         1024 * 1024 * 100,
         Math.ceil(file.size / 1000),
-      ); // 100MB or 1/1000th of the file size, whichever is larger
+      );
       let start = 0;
+
+      try {
+        const ac = new AbortController();
+        const res = await axios.head(
+          `${CLIENT_UPLOAD_ENDPOINT}/file/${file.name}`,
+          {
+            signal: ac.signal,
+          },
+        );
+        if (await this.doesFileExist(res.status, file.name, ac)) return;
+      } catch (err) {
+        console.log('doesnt exist, proceed with upload');
+      }
 
       while (start < file.size) {
         const end = Math.min(start + chunkSize, file.size);
@@ -147,7 +160,6 @@ export default class FileService {
             this.getConfig(file, controller),
           );
 
-          if (await this.doesFileExist(res.data, file.name, controller)) return;
           console.log(res.data);
         } catch (err) {
           console.error(err);
@@ -187,11 +199,14 @@ export default class FileService {
   });
 
   private doesFileExist = async (
-    res: string,
+    res: string | number,
     fileName: string,
     controller: AbortController,
   ) => {
-    if (res?.includes('already exists')) {
+    if (
+      res === 200 ||
+      (typeof res === 'string' && res?.includes('already exists'))
+    ) {
       toast('File already exists', {
         description: `File ${fileName} already exists.`,
       });
