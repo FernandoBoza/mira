@@ -145,7 +145,9 @@ export default class FileService {
     }
   };
 
-  private uploadLargeFile = async (file: File) => {
+  private uploadLargeFile = async (file: File, retryCount = 0) => {
+    const MAX_RETRY_COUNT = 3; // Define your maximum retry count
+
     if (file) {
       const chunkSize = Math.max(
         1024 * 1024 * 100,
@@ -184,7 +186,12 @@ export default class FileService {
 
           console.log(res.data);
         } catch (err) {
-          console.error(err);
+          if (retryCount < MAX_RETRY_COUNT) {
+            console.log(`Retry count: ${retryCount + 1}. Retrying...`);
+            await this.uploadLargeFile(file, retryCount + 1);
+          } else {
+            throw err;
+          }
         }
         const uploadedBytes = this.uploadedBytesPerFile.get(file.name) || 0;
         this.uploadedBytesPerFile.set(file.name, uploadedBytes + end - start);
