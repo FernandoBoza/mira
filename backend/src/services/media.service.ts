@@ -38,6 +38,17 @@ export default class MediaService {
     return file;
   };
 
+  /**
+   * This method is used to write files to the server. It can handle both large and small files.
+   * It first checks if the file already exists on the server. If it does, it removes the file from the filesArray and returns a message indicating that the file already exists.
+   * If the file does not exist, it checks if the file is a large file. If it is, it converts the file data to a Uint8Array and writes it to the server.
+   * If the file is not a large file, it writes the file data directly to the server.
+   * After all files have been processed, it returns a message indicating that the files have been uploaded.
+   *
+   * @param {Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>} c - The context object which includes the request and response objects.
+   * @param {boolean} [isLargeFile] - A flag indicating whether the file is a large file.
+   * @returns {Promise<Response>} A promise that resolves to a response object. The response object includes a message indicating the result of the file upload operation.
+   */
   public writeFiles = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     isLargeFile?: boolean,
