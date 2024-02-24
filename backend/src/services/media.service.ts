@@ -1,6 +1,5 @@
 // @ts-ignore
-import type { BodyData } from "hono/dist/types/utils/body";
-// @ts-ignore
+import type { BodyData } from "hono/dist/types/utils/body"; // @ts-ignore
 import type { BlankInput } from "hono/dist/types/types";
 import type { Context, Env } from "hono";
 import { type BunFile, Glob } from "bun";
@@ -49,7 +48,7 @@ export default class MediaService {
 
     if (isLargeFile) {
       for await (const file of filesArray) {
-        const filePath = `${uploadPath}/${file.name}`;
+        const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
 
         if (await doesFileExist(filePath)) {
           filesArray.splice(filesArray.indexOf(file), 1);
@@ -58,7 +57,6 @@ export default class MediaService {
 
         if (file.data instanceof File) {
           const byteArray = new Uint8Array(await file.data.arrayBuffer());
-          const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
           await appendFile(filePath, byteArray);
         }
       }
@@ -73,7 +71,7 @@ export default class MediaService {
         }
         await Bun.write(filePath, file.data);
       }
-      return c.text("Uploaded large files");
+      return c.text("Uploaded file files");
     }
   };
 
