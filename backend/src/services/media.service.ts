@@ -41,7 +41,6 @@ export default class MediaService {
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     isLargeFile?: boolean,
   ): Promise<Response> => {
-    const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
     const filesArray = this.getFilesArray(await c.req.parseBody());
     const doesFileExist = async (filePath: string) =>
       await Bun.file(filePath).exists();
@@ -53,9 +52,7 @@ export default class MediaService {
         if (await doesFileExist(filePath)) {
           filesArray.splice(filesArray.indexOf(file), 1);
           return c.text(`${getFileName(file.name)} already exists`);
-        }
-
-        if (file.data instanceof File) {
+        } else if (file.data instanceof File) {
           const byteArray = new Uint8Array(await file.data.arrayBuffer());
           await appendFile(filePath, byteArray);
         }
@@ -63,13 +60,14 @@ export default class MediaService {
       return c.text("Uploaded large files");
     } else {
       for await (const file of filesArray) {
-        const filePath = `${uploadPath}/${file.name}`;
+        const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
 
         if (await doesFileExist(filePath)) {
           filesArray.splice(filesArray.indexOf(file), 1);
           return c.text(`${getFileName(file.name)} already exists`);
+        } else {
+          await Bun.write(filePath, file.data);
         }
-        await Bun.write(filePath, file.data);
       }
       return c.text("Uploaded file files");
     }
