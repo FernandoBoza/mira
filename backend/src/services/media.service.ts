@@ -3,7 +3,8 @@ import type { BodyData } from "hono/dist/types/utils/body"; // @ts-ignore
 import type { BlankInput } from "hono/dist/types/types";
 import type { Context, Env } from "hono";
 import { type BunFile, Glob } from "bun";
-import { appendFile } from "fs/promises";
+import path from "path";
+import { appendFile, mkdir } from "fs/promises";
 import { getFileFormat, getFileName } from "../../../utils";
 import type { CustomFileType, FileError } from "../types.ts";
 import {
@@ -14,7 +15,7 @@ import {
 export default class MediaService {
   constructor() {}
 
-  static getSingleFileFromUploads = async (
+  public getSingleFileFromUploads = async (
     c: Context<Env, "/file/:fileName", BlankInput>,
   ) => {
     const fileName = c.req.param("fileName");
@@ -37,7 +38,7 @@ export default class MediaService {
     return file;
   };
 
-  static writeFiles = async (
+  public writeFiles = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     isLargeFile?: boolean,
   ): Promise<Response> => {
@@ -54,6 +55,9 @@ export default class MediaService {
           return c.text(`${getFileName(file.name)} already exists`);
         } else if (file.data instanceof File) {
           const byteArray = new Uint8Array(await file.data.arrayBuffer());
+          const dir = path.dirname(filePath);
+
+          await mkdir(dir, { recursive: true });
           await appendFile(filePath, byteArray);
         }
       }
@@ -73,7 +77,7 @@ export default class MediaService {
     }
   };
 
-  static handleUploadError = async (
+  public handleUploadError = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     e: unknown,
   ): Promise<FileError> => {
@@ -87,7 +91,7 @@ export default class MediaService {
     return { fileName, errorMessage, errorDetails: e };
   };
 
-  static getFilesArray = (files: BodyData): CustomFileType[] =>
+  private getFilesArray = (files: BodyData): CustomFileType[] =>
     Object.keys(files).map((fileName) => {
       const file = files[fileName];
 
