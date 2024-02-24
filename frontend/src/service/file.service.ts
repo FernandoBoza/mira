@@ -137,13 +137,14 @@ export default class FileService {
         formData.append('fileName', file.name);
 
         try {
+          const controller = new AbortController();
           const res = await axios.postForm(
             `${CLIENT_UPLOAD_ENDPOINT}-large`,
             formData,
-            this.getConfig(file),
+            this.getConfig(file, controller),
           );
 
-          if (await this.doesFileExist(res.data, file.name)) return;
+          if (await this.doesFileExist(res.data, file.name, controller)) return;
           console.log(res.data);
         } catch (err) {
           console.error(err);
@@ -160,35 +161,38 @@ export default class FileService {
     formData.append(fileName, file);
 
     try {
+      const controller = new AbortController();
       const res = await axios.postForm(
         CLIENT_UPLOAD_ENDPOINT,
         formData,
-        this.getConfig(file),
+        this.getConfig(file, controller),
       );
 
-      if (await this.doesFileExist(res.data, file.name)) return;
+      if (await this.doesFileExist(res.data, file.name, controller)) return;
       console.log(res.data);
     } catch (err) {
       console.error(err);
     }
   };
 
-  private getConfig = (file: File) => ({
+  private getConfig = (file: File, controller: AbortController) => ({
     headers: {
       'Content-Type': 'multipart/form-data',
     },
     ...this.handleProgress(file.name, file.size),
+    signal: controller.signal,
   });
 
-  private doesFileExist = async (res: string, fileName: string) => {
-    const ac = new AbortController();
-    console.log(res?.includes('already exists'));
-
+  private doesFileExist = async (
+    res: string,
+    fileName: string,
+    controller: AbortController,
+  ) => {
     if (res?.includes('already exists')) {
       toast('File already exists', {
         description: `File ${fileName} already exists.`,
       });
-      ac.abort();
+      controller.abort();
       return true;
     }
 
