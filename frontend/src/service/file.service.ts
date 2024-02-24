@@ -44,25 +44,15 @@ export default class FileService {
 
   public startUploading = async () => {
     if (this.files) {
-      const smallFiles = [...this.files].filter(
-        (file) => file.size <= this.MAX_UPLOAD_SIZE,
-      );
-      const largeFiles = [...this.files].filter(
-        (file) => file.size > this.MAX_UPLOAD_SIZE,
-      );
-
-      const smallFileUploadPromises = smallFiles.map((file) =>
-        this.uploadFile(file),
+      const uploadPromises = [...this.files].map((file) =>
+        file.size <= this.MAX_UPLOAD_SIZE
+          ? this.uploadFile(file)
+          : this.uploadLargeFile(file),
       );
 
-      const largeFileUploadPromises = largeFiles.map((file) =>
-        this.uploadLargeFile(file),
-      );
-
-      await Promise.all([smallFileUploadPromises, largeFileUploadPromises]);
+      await Promise.all(uploadPromises);
     }
   };
-
   public simulateUpload = async () => {
     let progress = 0;
     if (!this.files) return;
@@ -123,6 +113,38 @@ export default class FileService {
     },
   });
 
+  private uploadFile = async (file: File, fileName: string = file.name) => {
+    const formData = new FormData();
+    formData.append(fileName, file);
+
+    try {
+      const ac = new AbortController();
+      const res = await axios.head(
+        `${CLIENT_UPLOAD_ENDPOINT}/file/${file.name}`,
+        {
+          signal: ac.signal,
+        },
+      );
+      if (await this.doesFileExist(res.status, file.name, ac)) return;
+    } catch (err) {
+      console.log('doesnt exist, proceed with upload');
+    }
+
+    try {
+      const controller = new AbortController();
+      const res = await axios.postForm(
+        CLIENT_UPLOAD_ENDPOINT,
+        formData,
+        this.getConfig(file, controller),
+      );
+
+      if (await this.doesFileExist(res.data, file.name, controller)) return;
+      console.log(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   private uploadLargeFile = async (file: File) => {
     if (file) {
       const chunkSize = Math.max(
@@ -168,25 +190,6 @@ export default class FileService {
         this.uploadedBytesPerFile.set(file.name, uploadedBytes + end - start);
         start = end;
       }
-    }
-  };
-
-  private uploadFile = async (file: File, fileName: string = file.name) => {
-    const formData = new FormData();
-    formData.append(fileName, file);
-
-    try {
-      const controller = new AbortController();
-      const res = await axios.postForm(
-        CLIENT_UPLOAD_ENDPOINT,
-        formData,
-        this.getConfig(file, controller),
-      );
-
-      if (await this.doesFileExist(res.data, file.name, controller)) return;
-      console.log(res.data);
-    } catch (err) {
-      console.error(err);
     }
   };
 

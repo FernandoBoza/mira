@@ -14,7 +14,6 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
   const fileName = name.length > 60 ? `${name.slice(0, 60)} ...` : name;
   const fileIcon = MediaIcon[getFileType(type)];
   const removeFile = useFileStore((state) => state.removeFile);
-  // TODO: make it personal per file
   const progressStatusStyle =
     value >= 100 ? 'opacity-50 pointer-events-none mb-5' : 'mb-5';
 
