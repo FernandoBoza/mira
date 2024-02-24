@@ -5,7 +5,7 @@ import { useFileStore } from '@/stores/file.store.ts';
 import { Toaster } from '@/components/ui/sonner';
 
 function App() {
-  const uploadFileList = useFileStore((state) => state.uploadFileList);
+  const uploadFileList = useFileStore((state) => state.uploadList);
 
   return (
     <>

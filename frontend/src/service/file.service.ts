@@ -1,6 +1,6 @@
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import { CLIENT_UPLOAD_ENDPOINT } from '../../../utils/constants.ts';
-import { UploadProgressType } from '@/lib/types.ts';
+import { AddFilesType, UploadProgressType } from '@/lib/types.ts';
 import { ChangeEvent } from 'react';
 import { toast } from 'sonner';
 import { getFileFormat } from '../../../utils';
@@ -60,10 +60,7 @@ export default class FileService {
     }
   };
 
-  public addFiles = (
-    fileList: FileList | File[],
-    setFileList: (files: FileList | File[]) => void,
-  ) => {
+  public addFiles = ({ uploadList, setUploadList }: AddFilesType) => {
     return (files: FileList | ChangeEvent<HTMLInputElement>) => {
       const newFiles = files instanceof FileList ? files : files?.target?.files;
 
@@ -75,12 +72,12 @@ export default class FileService {
             });
           }
           return (
-            ![...fileList].some((f) => f.name === file.name) &&
+            ![...uploadList].some((f) => f.name === file.name) &&
             file.type.match(/image|video|pdf/)
           );
         });
 
-        setFileList([...fileList, ...filteredList]);
+        setUploadList([...uploadList, ...filteredList]);
       }
     };
   };
@@ -239,9 +236,8 @@ export default class FileService {
     let progress = 0;
     if (!this.files) return;
     while (progress <= 100) {
-      await new Promise((resolve) => setTimeout(resolve, 10000));
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       progress += 10;
-
       for (const file of this.files) {
         this.setFileProgress(file.name, progress);
       }

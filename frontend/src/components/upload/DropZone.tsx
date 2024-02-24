@@ -13,20 +13,20 @@ const fs = new FileService();
 
 export const DropZone = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { hasSubmitted, setHasSubmit, setUploadFileList, uploadFileList } =
+  const { hasSubmitted, setHasSubmit, setUploadList, uploadList } =
     useFileStore((state) => state);
 
   /**
    * @Description
    * Sets files to the state, while filtering out files that already exist in
-   * the setUploadFileList and file types that are not supported
+   * the setUploadList and file types that are not supported
    * @param files - The files to be added from either dropping files or selecting files from the file input
    * */
   const addFiles = useCallback(
     (files: FileList | ChangeEvent<HTMLInputElement>) => {
-      fs.addFiles(uploadFileList, setUploadFileList)(files);
+      fs.addFiles({ uploadList, setUploadList })(files);
     },
-    [uploadFileList, setUploadFileList],
+    [uploadList, setUploadList],
   );
 
   const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {
@@ -54,7 +54,7 @@ export const DropZone = () => {
       <p className="font-semibold">Drag & Drop Here or</p>
       <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
 
-      {uploadFileList.length >= 1 && (
+      {uploadList.length >= 1 && (
         <>
           <FileUpload />
           <Button
