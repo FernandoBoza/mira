@@ -3,7 +3,7 @@ import { CLIENT_UPLOAD_ENDPOINT } from '../../../utils/constants.ts';
 import { UploadProgressType } from '@/lib/types.ts';
 import { ChangeEvent } from 'react';
 import { toast } from 'sonner';
-import { getFileFormat, getFileName } from '../../../utils';
+import { getFileFormat } from '../../../utils';
 
 export default class FileService {
   private eventEmitter: EventTarget;
@@ -42,15 +42,26 @@ export default class FileService {
     }
   };
 
-  public startUploading = async () =>
-    this.files &&
-    (await Promise.all(
-      [...this.files].map((file) =>
-        file.size <= this.MAX_UPLOAD_SIZE
-          ? this.uploadFile(file)
-          : this.uploadLargeFile(file),
-      ),
-    ).catch((err) => console.error(err)));
+  public startUploading = async () => {
+    if (this.files) {
+      const smallFiles = [...this.files].filter(
+        (file) => file.size <= this.MAX_UPLOAD_SIZE,
+      );
+      const largeFiles = [...this.files].filter(
+        (file) => file.size > this.MAX_UPLOAD_SIZE,
+      );
+
+      const smallFileUploadPromises = smallFiles.map((file) =>
+        this.uploadFile(file),
+      );
+
+      const largeFileUploadPromises = largeFiles.map((file) =>
+        this.uploadLargeFile(file),
+      );
+
+      await Promise.all([smallFileUploadPromises, largeFileUploadPromises]);
+    }
+  };
 
   public simulateUpload = async () => {
     let progress = 0;
@@ -73,20 +84,19 @@ export default class FileService {
       const newFiles = files instanceof FileList ? files : files?.target?.files;
 
       if (newFiles) {
-        setUploadFileList([
-          ...uploadFileList,
-          ...[...newFiles].filter((file) => {
-            if (!file.type.match(/image|video|pdf/)) {
-              toast('Supported file types are image, video and pdf', {
-                description: `${file.name} of type ${getFileFormat(file.type)} is not supported. `,
-              });
-            }
-            return (
-              ![...uploadFileList].some((f) => f.name === file.name) &&
-              file.type.match(/image|video|pdf/)
-            );
-          }),
-        ]);
+        const filteredList = [...newFiles].filter((file) => {
+          if (!file.type.match(/image|video|pdf/)) {
+            toast('Supported file types are image, video and pdf', {
+              description: `${file.name} of type ${getFileFormat(file.type)} is not supported. `,
+            });
+          }
+          return (
+            ![...uploadFileList].some((f) => f.name === file.name) &&
+            file.type.match(/image|video|pdf/)
+          );
+        });
+
+        setUploadFileList([...uploadFileList, ...filteredList]);
       }
     };
   };
@@ -105,23 +115,12 @@ export default class FileService {
       if (!progressEvent.total) return;
 
       const uploadedBytes = this.uploadedBytesPerFile.get(fileName) || 0;
+      const percentCompleted = totalSize
+        ? ((progressEvent.loaded + (uploadedBytes || 0)) * 100) / totalSize
+        : (progressEvent.loaded * 100) / progressEvent.total;
 
-      this.setFileProgress(
-        fileName,
-        Math.round(
-          totalSize
-            ? ((progressEvent.loaded + (uploadedBytes || 0)) * 100) / totalSize
-            : (progressEvent.loaded * 100) / progressEvent.total,
-        ),
-      );
+      this.setFileProgress(fileName, Math.round(percentCompleted));
     },
-  });
-
-  private getConfig = (file: File) => ({
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    ...this.handleProgress(file.name, file.size),
   });
 
   private uploadLargeFile = async (file: File) => {
@@ -141,14 +140,13 @@ export default class FileService {
           const res = await axios.postForm(
             `${CLIENT_UPLOAD_ENDPOINT}-large`,
             formData,
-            this.getConfig(file),
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+              ...this.handleProgress(file.name, file.size),
+            },
           );
-          if (res.data === 'file already exists') {
-            toast('File already exists', {
-              description: `File ${file.name} already exists.`,
-            });
-            return;
-          }
           console.log(res.data);
         } catch (err) {
           console.error(err);
@@ -165,17 +163,12 @@ export default class FileService {
     formData.append(fileName, file);
 
     try {
-      const res = await axios.postForm(
-        CLIENT_UPLOAD_ENDPOINT,
-        formData,
-        this.getConfig(file),
-      );
-      if (res.data === `${getFileName(file.name)} already exists`) {
-        toast('File already exists', {
-          description: `File ${file.name} already exists.`,
-        });
-        return;
-      }
+      const res = await axios.postForm(CLIENT_UPLOAD_ENDPOINT, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        ...this.handleProgress(fileName),
+      });
       console.log(res.data);
     } catch (err) {
       console.error(err);

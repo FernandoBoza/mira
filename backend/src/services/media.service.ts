@@ -74,12 +74,7 @@ export default class MediaService {
         const byteArray = new Uint8Array(await file.data.arrayBuffer());
         const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
 
-        if (await Bun.file(filePath).exists()) {
-          arr.splice(arr.indexOf(file), 1);
-          return c.text(`${getFileName(file.name)} already exists`);
-        } else {
-          await appendFile(filePath, byteArray);
-        }
+        await appendFile(filePath, byteArray);
       }
     }
     return c.text("Uploaded large files");
