@@ -22,7 +22,7 @@ export const FileUpload = () => {
 
     if (uploadFileList && hasSubmitted) {
       fs.setFiles(uploadFileList);
-      fs.startUploading().finally(() => setHasSubmit(false));
+      fs.simulateUpload().finally(() => setHasSubmit(false));
     }
 
     return () => {

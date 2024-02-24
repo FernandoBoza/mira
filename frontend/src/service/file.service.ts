@@ -11,6 +11,7 @@ export default class FileService {
   private fileProgress: UploadProgressType = {};
   private readonly MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB
   private uploadedBytesPerFile: Map<string, number> = new Map();
+  private controller = new AbortController();
 
   constructor(file?: FileList | File[]) {
     this.files = file;
@@ -53,11 +54,12 @@ export default class FileService {
       await Promise.all(uploadPromises);
     }
   };
+
   public simulateUpload = async () => {
     let progress = 0;
     if (!this.files) return;
     while (progress <= 100) {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 10000));
       progress += 10;
 
       for (const file of this.files) {
@@ -95,6 +97,15 @@ export default class FileService {
     this.eventEmitter.removeEventListener('progress', (event: Event) =>
       listener((event as CustomEvent).detail),
     );
+  };
+
+  public pauseUpload = () => {
+    this.controller.abort();
+  };
+
+  public resumeUpload = async (file: File, retryCount = 0) => {
+    this.controller = new AbortController();
+    await this.uploadLargeFile(file, retryCount, this.controller);
   };
 
   private handleProgress = (
@@ -145,7 +156,11 @@ export default class FileService {
     }
   };
 
-  private uploadLargeFile = async (file: File, retryCount = 0) => {
+  private uploadLargeFile = async (
+    file: File,
+    retryCount = 0,
+    controller = new AbortController(),
+  ) => {
     const MAX_RETRY_COUNT = 3; // Define your maximum retry count
 
     if (file) {
@@ -188,7 +203,7 @@ export default class FileService {
         } catch (err) {
           if (retryCount < MAX_RETRY_COUNT) {
             console.log(`Retry count: ${retryCount + 1}. Retrying...`);
-            await this.uploadLargeFile(file, retryCount + 1);
+            await this.uploadLargeFile(file, retryCount + 1, controller);
           } else {
             throw err;
           }
