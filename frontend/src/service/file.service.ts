@@ -125,7 +125,10 @@ export default class FileService {
 
   private uploadLargeFile = async (file: File) => {
     if (file) {
-      const chunkSize = 1024 * 1024 * 100;
+      const chunkSize = Math.max(
+        1024 * 1024 * 100,
+        Math.ceil(file.size / 1000),
+      ); // 100MB or 1/1000th of the file size, whichever is larger
       let start = 0;
 
       while (start < file.size) {

@@ -14,7 +14,7 @@ import {
 export default class MediaService {
   constructor() {}
 
-  public getSingleFileFromUploads = async (
+  static getSingleFileFromUploads = async (
     c: Context<Env, "/file/:fileName", BlankInput>,
   ) => {
     const fileName = c.req.param("fileName");
@@ -37,7 +37,7 @@ export default class MediaService {
     return file;
   };
 
-  public writeFiles = async (
+  static writeFiles = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     isLargeFile?: boolean,
   ): Promise<Response> => {
@@ -73,7 +73,7 @@ export default class MediaService {
     }
   };
 
-  public handleUploadError = async (
+  static handleUploadError = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
     e: unknown,
   ): Promise<FileError> => {
@@ -87,7 +87,7 @@ export default class MediaService {
     return { fileName, errorMessage, errorDetails: e };
   };
 
-  private getFilesArray = (files: BodyData): CustomFileType[] =>
+  static getFilesArray = (files: BodyData): CustomFileType[] =>
     Object.keys(files).map((fileName) => {
       const file = files[fileName];
 
