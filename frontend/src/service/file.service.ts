@@ -43,27 +43,19 @@ export default class FileService {
     }
   };
 
-  public startUploading = async () => {
+  public startUploading = async (mock = false) => {
     if (this.files) {
-      const uploadPromises = [...this.files].map((file) =>
-        file.size <= this.MAX_UPLOAD_SIZE
-          ? this.uploadFile(file)
-          : this.uploadLargeFile(file),
-      );
+      if (mock) {
+        await this.simulateUpload();
+        return;
+      } else {
+        const uploadPromises = [...this.files].map((file) =>
+          file.size <= this.MAX_UPLOAD_SIZE
+            ? this.uploadFile(file)
+            : this.uploadLargeFile(file),
+        );
 
-      await Promise.all(uploadPromises);
-    }
-  };
-
-  public simulateUpload = async () => {
-    let progress = 0;
-    if (!this.files) return;
-    while (progress <= 100) {
-      await new Promise((resolve) => setTimeout(resolve, 10000));
-      progress += 10;
-
-      for (const file of this.files) {
-        this.setFileProgress(file.name, progress);
+        await Promise.all(uploadPromises);
       }
     }
   };
@@ -106,6 +98,19 @@ export default class FileService {
   public resumeUpload = async (file: File, retryCount = 0) => {
     this.controller = new AbortController();
     await this.uploadLargeFile(file, retryCount, this.controller);
+  };
+
+  private simulateUpload = async () => {
+    let progress = 0;
+    if (!this.files) return;
+    while (progress <= 100) {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      progress += 10;
+
+      for (const file of this.files) {
+        this.setFileProgress(file.name, progress);
+      }
+    }
   };
 
   private handleProgress = (
@@ -165,9 +170,10 @@ export default class FileService {
 
     if (file) {
       const chunkSize = Math.max(
-        1024 * 1024 * 100,
+        this.MAX_UPLOAD_SIZE,
         Math.ceil(file.size / 1000),
       );
+
       let start = 0;
 
       try {
