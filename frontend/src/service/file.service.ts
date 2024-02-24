@@ -117,18 +117,7 @@ export default class FileService {
     const formData = new FormData();
     formData.append(fileName, file);
 
-    try {
-      const ac = new AbortController();
-      const res = await axios.head(
-        `${CLIENT_UPLOAD_ENDPOINT}/file/${file.name}`,
-        {
-          signal: ac.signal,
-        },
-      );
-      if (await this.doesFileExist(res.status, file.name, ac)) return;
-    } catch (err) {
-      console.log('doesnt exist, proceed with upload');
-    }
+    if (await this.doesFileExist(file.name)) return;
 
     try {
       const controller = new AbortController();
@@ -138,7 +127,6 @@ export default class FileService {
         this.getConfig(file, controller),
       );
 
-      if (await this.doesFileExist(res.data, file.name, controller)) return;
       console.log(res.data);
     } catch (err) {
       console.error(err);
@@ -160,18 +148,7 @@ export default class FileService {
 
       let start = 0;
 
-      try {
-        const ac = new AbortController();
-        const res = await axios.head(
-          `${CLIENT_UPLOAD_ENDPOINT}/file/${file.name}`,
-          {
-            signal: ac.signal,
-          },
-        );
-        if (await this.doesFileExist(res.status, file.name, ac)) return;
-      } catch (err) {
-        console.log('doesnt exist, proceed with upload');
-      }
+      if (await this.doesFileExist(file.name)) return;
 
       while (start < file.size) {
         const end = Math.min(start + chunkSize, file.size);
@@ -213,23 +190,27 @@ export default class FileService {
     signal: controller.signal,
   });
 
-  private doesFileExist = async (
-    res: string | number,
-    fileName: string,
-    controller: AbortController,
-  ) => {
-    if (
-      res === 200 ||
-      (typeof res === 'string' && res?.includes('already exists'))
-    ) {
-      toast('File already exists', {
-        description: `File ${fileName} already exists.`,
-      });
-      controller.abort();
-      return true;
-    }
+  private doesFileExist = async (fileName: string) => {
+    try {
+      const controller = new AbortController();
+      const res = await axios.head(
+        `${CLIENT_UPLOAD_ENDPOINT}/file/${fileName}`,
+        {
+          signal: controller.signal,
+        },
+      );
 
-    return false;
+      if (res.status === 200 || res.data?.includes('already exists')) {
+        toast('File already exists', {
+          description: `File ${fileName} already exists.`,
+        });
+        controller.abort();
+        return true;
+      }
+    } catch (err) {
+      console.log('doesnt exist, proceed with upload');
+      return false;
+    }
   };
 
   private simulateUpload = async () => {
