@@ -6,7 +6,7 @@ import type { Context, Env } from "hono";
 import { type BunFile, Glob } from "bun";
 import { appendFile } from "fs/promises";
 import { getFileFormat, getFileName } from "../../../utils";
-import type { CustomFileType, FileError, WriteFilesTypes } from "../types.ts";
+import type { CustomFileType, FileError } from "../types.ts";
 import {
   API_UPLOAD_ENDPOINT,
   API_UPLOAD_PATH,
@@ -38,46 +38,43 @@ export default class MediaService {
     return file;
   };
 
-  public writeFiles = async ({
-    files,
-    c,
-  }: WriteFilesTypes): Promise<Response> => {
-    const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
-    const filesArray = this.getFilesArray(files);
-
-    for await (const file of filesArray) {
-      const filePath = `${uploadPath}/${file.name}`;
-
-      if (await Bun.file(filePath).exists()) {
-        filesArray.splice(filesArray.indexOf(file), 1);
-        return c.text(`${getFileName(file.name)} already exists`);
-      }
-
-      await Bun.write(filePath, file.data);
-    }
-
-    return c.json(
-      filesArray.map((file) => ({
-        name: file.name,
-        type: file.type,
-      })),
-    );
-  };
-
-  public writeLargeFiles = async (
+  public writeFiles = async (
     c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
+    isLargeFile?: boolean,
   ): Promise<Response> => {
-    const arr = this.getFilesArray(await c.req.parseBody());
+    const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
+    const filesArray = this.getFilesArray(await c.req.parseBody());
+    const doesFileExist = async (filePath: string) =>
+      await Bun.file(filePath).exists();
 
-    for (const file of arr) {
-      if (file.data instanceof File) {
-        const byteArray = new Uint8Array(await file.data.arrayBuffer());
-        const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
+    if (isLargeFile) {
+      for await (const file of filesArray) {
+        const filePath = `${uploadPath}/${file.name}`;
 
-        await appendFile(filePath, byteArray);
+        if (await doesFileExist(filePath)) {
+          filesArray.splice(filesArray.indexOf(file), 1);
+          return c.text(`${getFileName(file.name)} already exists`);
+        }
+
+        if (file.data instanceof File) {
+          const byteArray = new Uint8Array(await file.data.arrayBuffer());
+          const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
+          await appendFile(filePath, byteArray);
+        }
       }
+      return c.text("Uploaded large files");
+    } else {
+      for await (const file of filesArray) {
+        const filePath = `${uploadPath}/${file.name}`;
+
+        if (await doesFileExist(filePath)) {
+          filesArray.splice(filesArray.indexOf(file), 1);
+          return c.text(`${getFileName(file.name)} already exists`);
+        }
+        await Bun.write(filePath, file.data);
+      }
+      return c.text("Uploaded large files");
     }
-    return c.text("Uploaded large files");
   };
 
   public handleFileError = async (
