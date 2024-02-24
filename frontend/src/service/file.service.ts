@@ -61,8 +61,8 @@ export default class FileService {
   };
 
   public addFiles = (
-    uploadFileList: FileList | File[],
-    setUploadFileList: (files: FileList | File[]) => void,
+    fileList: FileList | File[],
+    setFileList: (files: FileList | File[]) => void,
   ) => {
     return (files: FileList | ChangeEvent<HTMLInputElement>) => {
       const newFiles = files instanceof FileList ? files : files?.target?.files;
@@ -75,12 +75,12 @@ export default class FileService {
             });
           }
           return (
-            ![...uploadFileList].some((f) => f.name === file.name) &&
+            ![...fileList].some((f) => f.name === file.name) &&
             file.type.match(/image|video|pdf/)
           );
         });
 
-        setUploadFileList([...uploadFileList, ...filteredList]);
+        setFileList([...fileList, ...filteredList]);
       }
     };
   };
@@ -98,19 +98,6 @@ export default class FileService {
   public resumeUpload = async (file: File, retryCount = 0) => {
     this.controller = new AbortController();
     await this.uploadLargeFile(file, retryCount, this.controller);
-  };
-
-  private simulateUpload = async () => {
-    let progress = 0;
-    if (!this.files) return;
-    while (progress <= 100) {
-      await new Promise((resolve) => setTimeout(resolve, 10000));
-      progress += 10;
-
-      for (const file of this.files) {
-        this.setFileProgress(file.name, progress);
-      }
-    }
   };
 
   private handleProgress = (
@@ -246,5 +233,18 @@ export default class FileService {
     }
 
     return false;
+  };
+
+  private simulateUpload = async () => {
+    let progress = 0;
+    if (!this.files) return;
+    while (progress <= 100) {
+      await new Promise((resolve) => setTimeout(resolve, 10000));
+      progress += 10;
+
+      for (const file of this.files) {
+        this.setFileProgress(file.name, progress);
+      }
+    }
   };
 }
