@@ -199,8 +199,7 @@ export default class FileService {
           signal: controller.signal,
         },
       );
-
-      if (res.status === 200 || res.data?.includes('already exists')) {
+      if (res.status === 200 || res.statusText === 'OK') {
         toast('File already exists', {
           description: `File ${fileName} already exists.`,
         });

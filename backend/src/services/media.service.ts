@@ -4,8 +4,8 @@ import type { BlankInput } from "hono/dist/types/types";
 import type { Context, Env } from "hono";
 import { type BunFile, Glob } from "bun";
 import path from "path";
-import { appendFile, mkdir } from "fs/promises";
-import { getFileFormat, getFileName } from "../../../utils";
+import { mkdir } from "fs/promises";
+import { getFileFormat } from "../../../utils";
 import type { CustomFileType, FileError } from "../types.ts";
 import {
   API_UPLOAD_ENDPOINT,
@@ -33,9 +33,7 @@ export default class MediaService {
       }
       return files;
     };
-    const file = [...(await arrayFromGlob(glob))][0];
-    if (!file) throw new Error(`File ${fileName} not found`);
-    return file;
+    return [...(await arrayFromGlob(glob))][0];
   };
 
   /**
@@ -63,7 +61,7 @@ export default class MediaService {
 
         if (await doesFileExist(filePath)) {
           filesArray.splice(filesArray.indexOf(file), 1);
-          return c.text(`${getFileName(file.name)} already exists`);
+          break;
         } else if (file.data instanceof File) {
           const byteArray = new Uint8Array(await file.data.arrayBuffer());
           const dir = path.dirname(filePath);
@@ -79,12 +77,12 @@ export default class MediaService {
 
         if (await doesFileExist(filePath)) {
           filesArray.splice(filesArray.indexOf(file), 1);
-          return c.text(`${getFileName(file.name)} already exists`);
+          break;
         } else {
           await Bun.write(filePath, file.data);
         }
       }
-      return c.text("Uploaded file files");
+      return c.text("Uploaded files");
     }
   };
 

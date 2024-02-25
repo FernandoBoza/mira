@@ -8,15 +8,12 @@ const ms = new MediaService();
 
 media.get("/", (c) => c.json({ message: "Hello, Media!" }));
 
-media.get("/id/:id", (c) => {
-  const id = c.req.param("id");
-  return c.text(`You requested media with id: ${id}`);
-});
-
 media.get("/upload/file/:fileName", async (c) => {
   try {
     const file = await ms.getSingleFileFromUploads(c);
-    return new Response(file);
+    return file
+      ? new Response(file)
+      : c.text("File not found", { status: 404 });
   } catch (error) {
     console.error(error);
     throw new HTTPException(401, { message: error as string });

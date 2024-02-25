@@ -12,11 +12,9 @@ function App() {
   });
 
   useEffect(() => {
-    worker.onmessage = (event) => {
-      console.log('Worker said:', event.data);
-    };
-
+    worker.onmessage = (event) => console.log('Worker said:', event.data);
     worker.postMessage('Hello World');
+    return () => worker.terminate();
   }, [worker.onmessage]);
 
   return (
