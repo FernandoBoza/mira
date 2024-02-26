@@ -22,7 +22,7 @@ media.get("/upload/file/:fileName", async (c) => {
 
 media.post(API_UPLOAD_ENDPOINT, async (c) => {
   try {
-    return await ms.writeFiles(c);
+    return await ms.writeFiles<"/upload">(c);
   } catch (e) {
     return c.json(ms.handleUploadError(c, e));
   }
@@ -30,7 +30,7 @@ media.post(API_UPLOAD_ENDPOINT, async (c) => {
 
 media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
   try {
-    return await ms.writeFiles(c, true);
+    return await ms.writeFiles<"/upload-large">(c, true);
   } catch (e) {
     return c.json(ms.handleUploadError(c, e));
   }

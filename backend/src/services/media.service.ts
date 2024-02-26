@@ -5,7 +5,7 @@ import type { Context, Env } from "hono";
 import path from "path";
 import { appendFile, mkdir } from "fs/promises";
 import { getFileFormat } from "../../../utils";
-import type { CustomFileType, FileError } from "../types.ts";
+import type { CustomContext, CustomFileType, FileError } from "../types.ts";
 import {
   API_UPLOAD_ENDPOINT,
   API_UPLOAD_PATH,
@@ -34,8 +34,8 @@ export default class MediaService {
    * @param {boolean} [isLargeFile] - A flag indicating whether the file is a large file.
    * @returns {Promise<Response>} A promise that resolves to a response object. The response object includes a message indicating the result of the file upload operation.
    */
-  public writeFiles = async (
-    c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
+  public writeFiles = async <P extends string>(
+    c: CustomContext<P>,
     isLargeFile?: boolean,
   ): Promise<Response> => {
     const filesArray = this.getFilesArray(await c.req.parseBody());

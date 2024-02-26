@@ -23,3 +23,5 @@ export type FileError = {
   errorMessage: string;
   errorDetails: unknown;
 };
+
+export type CustomContext<P extends string> = Context<Env, P, BlankInput>;
