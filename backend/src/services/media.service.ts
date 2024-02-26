@@ -2,9 +2,8 @@
 import type { BodyData } from "hono/dist/types/utils/body"; // @ts-ignore
 import type { BlankInput } from "hono/dist/types/types";
 import type { Context, Env } from "hono";
-import { type BunFile, Glob } from "bun";
 import path from "path";
-import { mkdir } from "fs/promises";
+import { appendFile, mkdir } from "fs/promises";
 import { getFileFormat } from "../../../utils";
 import type { CustomFileType, FileError } from "../types.ts";
 import {
@@ -20,20 +19,8 @@ export default class MediaService {
   ) => {
     const fileName = c.req.param("fileName");
     const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
-    const glob = new Glob("**/*");
-    const arrayFromGlob = async (glob: Glob) => {
-      const files: BunFile[] = [];
-      for await (const file of glob.scan({
-        cwd: uploadPath,
-        onlyFiles: true,
-      })) {
-        if (file === fileName) {
-          files.push(Bun.file(`${uploadPath}/${file}`));
-        }
-      }
-      return files;
-    };
-    return [...(await arrayFromGlob(glob))][0];
+    const file = Bun.file(`${uploadPath}/${fileName}`);
+    return (await file.exists()) ? file : false;
   };
 
   /**
@@ -64,9 +51,13 @@ export default class MediaService {
           break;
         } else if (file.data instanceof File) {
           const byteArray = new Uint8Array(await file.data.arrayBuffer());
-          const dir = path.dirname(filePath);
+          const dirExist = (path: string) =>
+            !!Array.from(new Bun.Glob(path).scanSync({ onlyFiles: false }))[0];
 
-          await mkdir(dir, { recursive: true });
+          if (!dirExist(filePath)) {
+            const dir = path.dirname(filePath);
+            await mkdir(dir, { recursive: true });
+          }
           await appendFile(filePath, byteArray);
         }
       }
