@@ -26,7 +26,7 @@ export default class MediaService {
    * If the file is not a large file, it writes the file data directly to the server.
    * After all files have been processed, it returns a message indicating that the files have been uploaded.
    *
-   * @param {CustomContext<P>} c - The context object which includes the request and response objects.
+   * @param {CustomContext<P extends string>} c - The context object which includes the request and response objects.
    * @param {boolean} [isLargeFile] - A flag indicating whether the file is a large file.
    * @returns {Promise<Response>} A promise that resolves to a response object. The response object includes a message indicating the result of the file upload operation.
    */
