@@ -14,9 +14,10 @@ import {
 export default class MediaService {
   constructor() {}
 
-  public getSingleFileFromUploads = async (
-    c: Context<Env, "/file/:fileName", BlankInput>,
+  public getSingleFileFromUploads = async <P extends string>(
+    c: CustomContext<P>,
   ) => {
+    // @ts-ignore
     const fileName = c.req.param("fileName");
     const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
     const file = Bun.file(`${uploadPath}/${fileName}`);
@@ -85,8 +86,8 @@ export default class MediaService {
     }
   };
 
-  public handleUploadError = async (
-    c: Context<Env, typeof API_UPLOAD_ENDPOINT, BlankInput>,
+  public handleUploadError = async <P extends string>(
+    c: CustomContext<P>,
     e: unknown,
   ): Promise<FileError> => {
     const fileName = await c.req
