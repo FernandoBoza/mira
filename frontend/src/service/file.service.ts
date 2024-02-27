@@ -37,14 +37,13 @@ export default class FileService {
         await this.simulateUpload(files);
         return;
       } else {
-        for (const file of [...files]) {
-          if (this.uploadedBytesPerFile.has(file.name)) continue;
-          if (file.size <= this.MAX_UPLOAD_SIZE) {
-            return await this.uploadFile(file);
-          } else {
-            return await this.uploadLargeFile(file);
-          }
-        }
+        return await Promise.all(
+          [...files].map((file) =>
+            file.size <= this.MAX_UPLOAD_SIZE
+              ? this.uploadFile(file)
+              : this.uploadLargeFile(file),
+          ),
+        );
       }
     }
   };

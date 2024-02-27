@@ -46,7 +46,7 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
     <div className={progressStatusStyle}>
       <div className="flex items-center gap-3 mb-1">
         <i>{fileIcon}</i>
-        {value <= 100 && (
+        {value < 100 && (
           <Button
             variant={'ghost'}
             className={'h-auto p-0 hover:bg-red-700 hover:text-white'}

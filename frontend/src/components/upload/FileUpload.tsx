@@ -41,7 +41,14 @@ export const FileUpload = () => {
     return () => {
       fs.offProgress(handleProgress);
     };
-  }, [uploadList, hasSubmitted, setHasSubmit]);
+  }, [
+    uploadList,
+    hasSubmitted,
+    setHasSubmit,
+    alreadyUploaded,
+    removeFile,
+    setAlreadyUploadList,
+  ]);
 
   return (
     <ScrollArea className="max-h-96 w-full flex flex-col gap-4 text-primary pr-5">
