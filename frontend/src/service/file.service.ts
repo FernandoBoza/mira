@@ -157,6 +157,10 @@ export default class FileService {
         formData.append('start', start.toString());
         formData.append('end', end.toString());
         formData.append('fileName', file.name);
+        formData.append(
+          'fileIsLastChunk',
+          end === file.size ? 'true' : 'false',
+        );
 
         try {
           const controller = new AbortController();
@@ -166,7 +170,9 @@ export default class FileService {
             this.getConfig(file, controller),
           );
 
-          console.log(res.data);
+          if (res.data === 'Uploaded large files') {
+            console.log(res.data);
+          }
         } catch (err) {
           if (retryCount < MAX_RETRY_COUNT) {
             console.log(`Retry count: ${retryCount + 1}. Retrying...`);

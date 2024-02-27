@@ -61,7 +61,15 @@ export default class MediaService {
           await appendFile(filePath, byteArray);
         }
       }
-      return c.text("Uploaded large files");
+      const lastChunk = filesArray.filter(
+        (file) => file.name === "fileIsLastChunk" && file?.data === "true",
+      )[0];
+
+      if (lastChunk?.data === "true") {
+        return c.text("Uploaded large files");
+      } else {
+        return c.text("Uploading ...");
+      }
     } else {
       for await (const file of filesArray) {
         const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
