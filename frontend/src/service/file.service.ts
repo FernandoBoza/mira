@@ -3,9 +3,7 @@ import { CLIENT_UPLOAD_ENDPOINT } from '../../../utils/constants.ts';
 import { UploadProgressType } from '@/lib/types.ts';
 import { toast } from 'sonner';
 import { getFileFormat } from '../../../utils';
-import { useFileStore } from '@/stores/file.store.ts';
-
-const setFileStore = useFileStore.getState();
+import { ChangeEvent } from 'react';
 
 export default class FileService {
   private eventEmitter: EventTarget;
@@ -42,34 +40,36 @@ export default class FileService {
         for (const file of [...files]) {
           if (this.uploadedBytesPerFile.has(file.name)) continue;
           if (file.size <= this.MAX_UPLOAD_SIZE) {
-            await this.uploadFile(file);
+            return await this.uploadFile(file);
           } else {
-            await this.uploadLargeFile(file);
+            return await this.uploadLargeFile(file);
           }
         }
       }
     }
   };
 
-  public addFiles = (files: FileList | null) => {
-    if (files) {
-      setFileStore.setUploadList(
-        [...files].filter((file) => {
-          if (!file.type.match(/image|video|pdf/)) {
-            toast('Supported file types are image, video and pdf', {
-              description: `${file.name} of type ${getFileFormat(file.type)} is not supported. `,
-            });
-          }
-          return (
-            ![
-              ...useFileStore.getState().uploadList,
-              ...useFileStore.getState().alreadyUploaded,
-            ].some((f) => f.name === file.name) &&
-            file.type.match(/image|video|pdf/)
-          );
-        }),
-      );
+  public filterFiles = (
+    files: FileList | ChangeEvent<HTMLInputElement>,
+    uploadList: FileList | File[],
+    alreadyUploaded: FileList | File[],
+  ): FileList | File[] => {
+    const newFiles = files instanceof FileList ? files : files?.target?.files;
+    if (newFiles) {
+      return [...newFiles].filter((file) => {
+        if (!file.type.match(/image|video|pdf/)) {
+          toast('Supported file types are image, video and pdf', {
+            description: `${file.name} of type ${getFileFormat(file.type)} is not supported. `,
+          });
+        }
+        return (
+          ![...uploadList, ...alreadyUploaded].some(
+            (f) => f.name === file.name,
+          ) && file.type.match(/image|video|pdf/)
+        );
+      });
     }
+    return [];
   };
 
   public offProgress = (listener: (progress: UploadProgressType) => void) => {
@@ -116,16 +116,8 @@ export default class FileService {
         formData,
         this.getConfig(file, controller),
       );
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      if (
-        ![...useFileStore.getState().alreadyUploaded].some(
-          (f) => f.name === file.name,
-        )
-      ) {
-        setFileStore.setAlreadyUploadList(file);
-      }
-      setFileStore.removeFile(file);
       console.log(res.data);
+      return file;
     } catch (err) {
       console.error(err);
     }
@@ -169,16 +161,8 @@ export default class FileService {
           );
 
           if (res.data === 'Uploaded large files') {
-            if (
-              ![...useFileStore.getState().alreadyUploaded].some(
-                (f) => f.name === file.name,
-              )
-            ) {
-              setFileStore.setAlreadyUploadList(file);
-            }
-            setFileStore.removeFile(file);
             console.log(res.data);
-            break;
+            return file;
           }
         } catch (err) {
           if (retryCount < MAX_RETRY_COUNT) {

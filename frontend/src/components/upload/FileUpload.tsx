@@ -9,8 +9,14 @@ const fs = new FileService();
 
 export const FileUpload = () => {
   const [uploadProgress, setUploadProgress] = useState<UploadProgressType>({});
-  const { hasSubmitted, setHasSubmit, uploadList, alreadyUploaded } =
-    useFileStore();
+  const {
+    hasSubmitted,
+    setHasSubmit,
+    uploadList,
+    alreadyUploaded,
+    setAlreadyUploadList,
+    removeFile,
+  } = useFileStore();
 
   useEffect(() => {
     const handleProgress = (progress: UploadProgressType) => {
@@ -20,7 +26,16 @@ export const FileUpload = () => {
     fs.onProgress(handleProgress);
 
     if (uploadList && hasSubmitted) {
-      fs.startUploading(uploadList).finally(() => setHasSubmit(false));
+      fs.startUploading(uploadList)
+        .then((file) => {
+          if (file instanceof File) {
+            if (![...alreadyUploaded].some((f) => f.name === file.name)) {
+              setAlreadyUploadList(file);
+            }
+            removeFile(file);
+          }
+        })
+        .finally(() => setHasSubmit(false));
     }
 
     return () => {
