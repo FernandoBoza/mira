@@ -30,7 +30,9 @@ export const FileUpload = () => {
 
   return (
     <ScrollArea className="max-h-96 w-full flex flex-col gap-4 text-primary pr-5">
-      <h1 className="text-lg font-semibold">Uploading</h1>
+      {uploadList.length >= 1 && (
+        <h1 className="text-lg font-semibold">Uploading</h1>
+      )}
       {[...uploadList].map((file) => (
         <FileProgress
           file={file}
@@ -38,7 +40,9 @@ export const FileUpload = () => {
           key={`${file.name}_${file.lastModified}`}
         />
       ))}
-      <h1 className="text-lg font-semibold">Uploaded</h1>
+      {alreadyUploaded.length >= 1 && (
+        <h1 className="text-lg font-semibold">Uploaded</h1>
+      )}
       {[...alreadyUploaded].map((file) => (
         <FileProgress
           file={file}

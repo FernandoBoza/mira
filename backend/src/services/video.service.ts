@@ -47,5 +47,3 @@ export default class VideoService {
       .run();
   }
 }
-
-// convertVideo('2020NYE.mp4', '2020NYE', 'avi')

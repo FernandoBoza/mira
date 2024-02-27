@@ -39,13 +39,14 @@ export default class FileService {
         await this.simulateUpload(files);
         return;
       } else {
-        const uploadPromises = [...files].map((file) =>
-          file.size <= this.MAX_UPLOAD_SIZE
-            ? this.uploadFile(file)
-            : this.uploadLargeFile(file),
-        );
-
-        await Promise.all(uploadPromises);
+        for (const file of [...files]) {
+          if (this.uploadedBytesPerFile.has(file.name)) continue;
+          if (file.size <= this.MAX_UPLOAD_SIZE) {
+            await this.uploadFile(file);
+          } else {
+            await this.uploadLargeFile(file);
+          }
+        }
       }
     }
   };
@@ -115,7 +116,14 @@ export default class FileService {
         formData,
         this.getConfig(file, controller),
       );
-      setFileStore.setAlreadyUploadList(file);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (
+        ![...useFileStore.getState().alreadyUploaded].some(
+          (f) => f.name === file.name,
+        )
+      ) {
+        setFileStore.setAlreadyUploadList(file);
+      }
       setFileStore.removeFile(file);
       console.log(res.data);
     } catch (err) {
@@ -161,7 +169,16 @@ export default class FileService {
           );
 
           if (res.data === 'Uploaded large files') {
+            if (
+              ![...useFileStore.getState().alreadyUploaded].some(
+                (f) => f.name === file.name,
+              )
+            ) {
+              setFileStore.setAlreadyUploadList(file);
+            }
+            setFileStore.removeFile(file);
             console.log(res.data);
+            break;
           }
         } catch (err) {
           if (retryCount < MAX_RETRY_COUNT) {
