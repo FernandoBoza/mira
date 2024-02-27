@@ -60,9 +60,11 @@ export default class FileService {
             });
           }
           return (
-            ![...useFileStore.getState().uploadList].some(
-              (f) => f.name === file.name,
-            ) && file.type.match(/image|video|pdf/)
+            ![
+              ...useFileStore.getState().uploadList,
+              ...useFileStore.getState().alreadyUploaded,
+            ].some((f) => f.name === file.name) &&
+            file.type.match(/image|video|pdf/)
           );
         }),
       );
@@ -113,7 +115,8 @@ export default class FileService {
         formData,
         this.getConfig(file, controller),
       );
-
+      setFileStore.setAlreadyUploadList(file);
+      setFileStore.removeFile(file);
       console.log(res.data);
     } catch (err) {
       console.error(err);

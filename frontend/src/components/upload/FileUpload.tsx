@@ -9,7 +9,8 @@ const fs = new FileService();
 
 export const FileUpload = () => {
   const [uploadProgress, setUploadProgress] = useState<UploadProgressType>({});
-  const { hasSubmitted, setHasSubmit, uploadList } = useFileStore();
+  const { hasSubmitted, setHasSubmit, uploadList, alreadyUploaded } =
+    useFileStore();
 
   useEffect(() => {
     const handleProgress = (progress: UploadProgressType) => {
@@ -29,10 +30,19 @@ export const FileUpload = () => {
 
   return (
     <ScrollArea className="max-h-96 w-full flex flex-col gap-4 text-primary pr-5">
+      <h1 className="text-lg font-semibold">Uploading</h1>
       {[...uploadList].map((file) => (
         <FileProgress
           file={file}
           value={uploadProgress[file.name] || 0}
+          key={`${file.name}_${file.lastModified}`}
+        />
+      ))}
+      <h1 className="text-lg font-semibold">Uploaded</h1>
+      {[...alreadyUploaded].map((file) => (
+        <FileProgress
+          file={file}
+          value={100}
           key={`${file.name}_${file.lastModified}`}
         />
       ))}

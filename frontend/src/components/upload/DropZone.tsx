@@ -13,7 +13,8 @@ const fs = new FileService();
 
 export const DropZone = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { hasSubmitted, setHasSubmit, uploadList } = useFileStore();
+  const { hasSubmitted, setHasSubmit, uploadList, alreadyUploaded } =
+    useFileStore();
 
   /**
    * @Description
@@ -53,11 +54,11 @@ export const DropZone = () => {
       <p className="font-semibold">Drag & Drop Here or</p>
       <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
 
-      {uploadList.length >= 1 && (
+      {[...uploadList, ...alreadyUploaded].length >= 1 && (
         <>
           <FileUpload />
           <Button
-            disabled={hasSubmitted}
+            disabled={hasSubmitted || !uploadList.length}
             className="self-start"
             onClick={() => setHasSubmit(true)}
           >
