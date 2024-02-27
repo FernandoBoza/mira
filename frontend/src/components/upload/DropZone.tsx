@@ -13,8 +13,7 @@ const fs = new FileService();
 
 export const DropZone = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
-  const { hasSubmitted, setHasSubmit, setUploadList, uploadList } =
-    useFileStore((state) => state);
+  const { hasSubmitted, setHasSubmit, uploadList } = useFileStore();
 
   /**
    * @Description
@@ -24,9 +23,9 @@ export const DropZone = () => {
    * */
   const addFiles = useCallback(
     (files: FileList | ChangeEvent<HTMLInputElement>) => {
-      fs.addFiles({ uploadList, setUploadList })(files);
+      fs.addFiles(files instanceof FileList ? files : files?.target?.files);
     },
-    [uploadList, setUploadList],
+    [],
   );
 
   const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {

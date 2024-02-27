@@ -12,15 +12,14 @@ export const useFileStore = create<FileStoreType>((set) => ({
   uploadList: [],
   hasSubmitted: false,
   setUploadList: (files: FileList | File[]) => {
-    set({ uploadList: files });
-  },
-  removeFile: (file: File) => {
-    const fileList = useFileStore.getState().uploadList;
-    set({
-      uploadList: [...fileList].filter((f) => f.name !== file.name),
-    });
+    set((state) => ({ uploadList: [...state.uploadList, ...files] }));
   },
   setHasSubmit: (hasSubmitted: boolean) => {
     set({ hasSubmitted });
+  },
+  removeFile: (file: File) => {
+    set((state) => ({
+      uploadList: [...state.uploadList].filter((f) => f.name !== file.name),
+    }));
   },
 }));

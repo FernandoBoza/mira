@@ -1,24 +1,22 @@
 import axios, { AxiosProgressEvent, AxiosRequestConfig } from 'axios';
 import { CLIENT_UPLOAD_ENDPOINT } from '../../../utils/constants.ts';
-import { AddFilesType, UploadProgressType } from '@/lib/types.ts';
-import { ChangeEvent } from 'react';
+import { UploadProgressType } from '@/lib/types.ts';
 import { toast } from 'sonner';
 import { getFileFormat } from '../../../utils';
+import { useFileStore } from '@/stores/file.store.ts';
+
+const setFileStore = useFileStore.getState();
 
 export default class FileService {
   private eventEmitter: EventTarget;
-  private files?: FileList | File[];
   private fileProgress: UploadProgressType = {};
   private readonly MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB
   private uploadedBytesPerFile: Map<string, number> = new Map();
   private controller = new AbortController();
 
-  constructor(file?: FileList | File[]) {
-    this.files = file;
+  constructor() {
     this.eventEmitter = new EventTarget();
   }
-
-  public setFiles = (files: FileList | File[]) => (this.files = files);
 
   public setFileProgress = (fileName: string, progress: number) => {
     this.fileProgress = {
@@ -35,21 +33,13 @@ export default class FileService {
     });
   };
 
-  public removeFile = (removeFile: (file: File) => void) => {
-    if (this.files) {
-      for (const file of this.files) {
-        removeFile(file);
-      }
-    }
-  };
-
-  public startUploading = async (mock = false) => {
-    if (this.files) {
+  public startUploading = async (files: FileList | File[], mock = false) => {
+    if (files) {
       if (mock) {
-        await this.simulateUpload();
+        await this.simulateUpload(files);
         return;
       } else {
-        const uploadPromises = [...this.files].map((file) =>
+        const uploadPromises = [...files].map((file) =>
           file.size <= this.MAX_UPLOAD_SIZE
             ? this.uploadFile(file)
             : this.uploadLargeFile(file),
@@ -60,26 +50,23 @@ export default class FileService {
     }
   };
 
-  public addFiles = ({ uploadList, setUploadList }: AddFilesType) => {
-    return (files: FileList | ChangeEvent<HTMLInputElement>) => {
-      const newFiles = files instanceof FileList ? files : files?.target?.files;
-
-      if (newFiles) {
-        const filteredList = [...newFiles].filter((file) => {
+  public addFiles = (files: FileList | null) => {
+    if (files) {
+      setFileStore.setUploadList(
+        [...files].filter((file) => {
           if (!file.type.match(/image|video|pdf/)) {
             toast('Supported file types are image, video and pdf', {
               description: `${file.name} of type ${getFileFormat(file.type)} is not supported. `,
             });
           }
           return (
-            ![...uploadList].some((f) => f.name === file.name) &&
-            file.type.match(/image|video|pdf/)
+            ![...useFileStore.getState().uploadList].some(
+              (f) => f.name === file.name,
+            ) && file.type.match(/image|video|pdf/)
           );
-        });
-
-        setUploadList([...uploadList, ...filteredList]);
-      }
-    };
+        }),
+      );
+    }
   };
 
   public offProgress = (listener: (progress: UploadProgressType) => void) => {
@@ -218,13 +205,13 @@ export default class FileService {
     }
   };
 
-  private simulateUpload = async () => {
+  private simulateUpload = async (files: FileList | File[]) => {
     let progress = 0;
-    if (!this.files) return;
+    if (!files) return;
     while (progress <= 100) {
       await new Promise((resolve) => setTimeout(resolve, 5000));
       progress += 10;
-      for (const file of this.files) {
+      for (const file of files) {
         this.setFileProgress(file.name, progress);
       }
     }
