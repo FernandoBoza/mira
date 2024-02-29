@@ -19,32 +19,23 @@ export const FileUpload = () => {
   } = useFileStore();
 
   useEffect(() => {
-    const removeAsUploaded = (
-      files: Promise<File | undefined>[] | undefined,
-    ) => {
-      files?.map((file) => {
-        file.then((fileUnWrapped) => {
-          if (fileUnWrapped instanceof File) {
-            setAlreadyUploadList(fileUnWrapped);
-            removeFile(fileUnWrapped);
-          }
-        });
-      });
-    };
-    const handleProgress = (progress: UploadProgressType) => {
-      setUploadProgress(progress);
-    };
-
-    fs.onProgress(handleProgress);
+    fs.onProgress((progress) => setUploadProgress(progress));
 
     if (uploadList && hasSubmitted) {
-      fs.startUploading(uploadList)
-        .then(removeAsUploaded)
-        .finally(() => setHasSubmit(false));
+      fs.startUploading(uploadList).then((files) => {
+        files?.forEach(async (filePromise) => {
+          const file = await filePromise;
+          if (file instanceof File) {
+            setAlreadyUploadList(file);
+            removeFile(file);
+          }
+        });
+        setHasSubmit(false);
+      });
     }
 
     return () => {
-      fs.offProgress(handleProgress);
+      fs.offProgress((progress) => setUploadProgress(progress));
     };
   }, [
     uploadList,

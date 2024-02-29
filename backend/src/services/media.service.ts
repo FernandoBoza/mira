@@ -54,7 +54,7 @@ export default class MediaService {
             const dir = path.dirname(filePath);
             await mkdir(dir, { recursive: true });
           }
-          // await appendFile(filePath, byteArray);
+          await appendFile(filePath, byteArray);
         }
       }
       const lastChunk = filesArray.filter(
@@ -74,7 +74,7 @@ export default class MediaService {
           filesArray.splice(filesArray.indexOf(file), 1);
           break;
         } else {
-          // await Bun.write(filePath, file.data);
+          await Bun.write(filePath, file.data);
         }
       }
       return c.text("Uploaded files");

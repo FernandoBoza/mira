@@ -24,12 +24,6 @@ export default class FileService {
     this.eventEmitter.dispatchEvent(event);
   };
 
-  public onProgress = (listener: (progress: UploadProgressType) => void) => {
-    this.eventEmitter.addEventListener('progress', (event: Event) => {
-      return listener((event as CustomEvent).detail);
-    });
-  };
-
   public filterFiles = (
     files: FileList | ChangeEvent<HTMLInputElement>,
     uploadList: FileList | File[],
@@ -51,6 +45,12 @@ export default class FileService {
       });
     }
     return [];
+  };
+
+  public onProgress = (listener: (progress: UploadProgressType) => void) => {
+    this.eventEmitter.addEventListener('progress', (event: Event) => {
+      return listener((event as CustomEvent).detail);
+    });
   };
 
   public offProgress = (listener: (progress: UploadProgressType) => void) => {
@@ -81,10 +81,10 @@ export default class FileService {
         await this.simulateUpload(files);
         return;
       } else {
-        return [...files].map(async (file) =>
+        return [...files].map((file) =>
           file.size <= this.MAX_UPLOAD_SIZE
-            ? await this.uploadFile(file)
-            : await this.uploadLargeFile(file),
+            ? this.uploadFile(file)
+            : this.uploadLargeFile(file),
         );
       }
     }
