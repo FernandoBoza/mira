@@ -75,16 +75,16 @@ export default class FileService {
     },
   });
 
-  public startUploading = (files: FileList | File[], mock = false) => {
+  public startUploading = async (files: FileList | File[], mock = false) => {
     if (files) {
       if (mock) {
-        this.simulateUpload(files).then();
+        await this.simulateUpload(files);
         return;
       } else {
         return [...files].map(async (file) =>
           file.size <= this.MAX_UPLOAD_SIZE
-            ? this.uploadFile(file)
-            : this.uploadLargeFile(file),
+            ? await this.uploadFile(file)
+            : await this.uploadLargeFile(file),
         );
       }
     }
