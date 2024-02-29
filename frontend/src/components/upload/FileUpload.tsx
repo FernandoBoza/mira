@@ -26,16 +26,15 @@ export const FileUpload = () => {
     fs.onProgress(handleProgress);
 
     if (uploadList && hasSubmitted) {
-      fs.startUploading(uploadList)
-        .then((file) => {
-          if (file instanceof File) {
-            if (![...alreadyUploaded].some((f) => f.name === file.name)) {
-              setAlreadyUploadList(file);
-            }
-            removeFile(file);
+      fs.startUploading(uploadList)?.map((file) => {
+        file.then((fileUnWrapped) => {
+          if (fileUnWrapped instanceof File) {
+            setAlreadyUploadList(fileUnWrapped);
+            removeFile(fileUnWrapped);
           }
-        })
-        .finally(() => setHasSubmit(false));
+        });
+      });
+      setHasSubmit(false);
     }
 
     return () => {

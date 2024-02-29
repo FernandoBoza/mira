@@ -10,7 +10,6 @@ export default class FileService {
   private fileProgress: UploadProgressType = {};
   private readonly MAX_UPLOAD_SIZE = 100 * 1024 * 1024; // 100MB
   private uploadedBytesPerFile: Map<string, number> = new Map();
-  private controller = new AbortController();
 
   constructor() {
     this.eventEmitter = new EventTarget();
@@ -29,23 +28,6 @@ export default class FileService {
     this.eventEmitter.addEventListener('progress', (event: Event) => {
       return listener((event as CustomEvent).detail);
     });
-  };
-
-  public startUploading = async (files: FileList | File[], mock = false) => {
-    if (files) {
-      if (mock) {
-        await this.simulateUpload(files);
-        return;
-      } else {
-        return await Promise.all(
-          [...files].map((file) =>
-            file.size <= this.MAX_UPLOAD_SIZE
-              ? this.uploadFile(file)
-              : this.uploadLargeFile(file),
-          ),
-        );
-      }
-    }
   };
 
   public filterFiles = (
@@ -77,15 +59,6 @@ export default class FileService {
     );
   };
 
-  public pauseUpload = () => {
-    this.controller.abort();
-  };
-
-  public resumeUpload = async (file: File, retryCount = 0) => {
-    this.controller = new AbortController();
-    await this.uploadLargeFile(file, retryCount, this.controller);
-  };
-
   private handleProgress = (
     fileName: string,
     totalSize?: number,
@@ -102,11 +75,25 @@ export default class FileService {
     },
   });
 
+  public startUploading = (files: FileList | File[], mock = false) => {
+    if (files) {
+      if (mock) {
+        this.simulateUpload(files).then();
+        return;
+      } else {
+        return [...files].map(async (file) =>
+          file.size <= this.MAX_UPLOAD_SIZE
+            ? this.uploadFile(file)
+            : this.uploadLargeFile(file),
+        );
+      }
+    }
+  };
+
   private uploadFile = async (file: File, fileName: string = file.name) => {
+    if (await this.doesFileExist(file.name)) return;
     const formData = new FormData();
     formData.append(fileName, file);
-
-    if (await this.doesFileExist(file.name)) return;
 
     try {
       const controller = new AbortController();
@@ -130,14 +117,13 @@ export default class FileService {
     const MAX_RETRY_COUNT = 3; // Define your maximum retry count
 
     if (file) {
+      if (await this.doesFileExist(file.name)) return;
       const chunkSize = Math.max(
         this.MAX_UPLOAD_SIZE,
         Math.ceil(file.size / 1000),
       );
 
       let start = 0;
-
-      if (await this.doesFileExist(file.name)) return;
 
       while (start < file.size) {
         const end = Math.min(start + chunkSize, file.size);
