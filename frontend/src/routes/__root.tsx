@@ -1,5 +1,6 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import React, { Suspense } from 'react';
+import { ThemeToggle } from '@/components/layout/theme-toggle.tsx';
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'
@@ -15,13 +16,14 @@ const TanStackRouterDevtools =
 export const Route = createRootRoute({
   component: () => (
     <>
-      <div className="p-2 flex gap-2">
-        <Link to={'/'} className="[&.active]:font-bold">
+      <div className="p-4 flex gap-2 items-center">
+        <Link to={'/'} className="[&.active]:font-bold text-2xl">
           Home
         </Link>
-        <Link to={'/upload'} className="[&.active]:font-bold">
+        <Link to={'/upload'} className="[&.active]:font-bold text-2xl">
           Upload
         </Link>
+        <ThemeToggle className="ml-auto" />
       </div>
 
       <Outlet />

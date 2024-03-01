@@ -7,39 +7,42 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Theme, useThemeStore } from '@/stores/theme.store.ts';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
-export const ModeToggle = () => {
+export const ThemeToggle = ({ className }: { className?: string }) => {
   const { theme, setTheme } = useThemeStore();
-  let sysTheme = window.matchMedia('(prefers-color-scheme: dark)');
+  const sysTheme = useRef(window.matchMedia('(prefers-color-scheme: dark)'));
+
   useEffect(() => {
     const localTheme = localStorage.getItem('theme') as Theme;
-    sysTheme = window.matchMedia('(prefers-color-scheme: dark)');
+    sysTheme.current = window.matchMedia('(prefers-color-scheme: dark)');
 
     if (!localTheme && theme === 'system') {
-      document.documentElement.className = sysTheme.matches ? 'dark' : 'light';
+      document.documentElement.className = sysTheme.current.matches
+        ? 'dark'
+        : 'light';
     } else if (!localTheme) {
       document.documentElement.className = theme;
     }
     const changeColorScheme = () => {
-      const newSysTheme = sysTheme.matches ? 'dark' : 'light';
+      const newSysTheme = sysTheme.current.matches ? 'dark' : 'light';
       if (theme === 'system') {
         document.documentElement.className = newSysTheme;
       }
       setTheme(newSysTheme);
     };
 
-    sysTheme.addEventListener('change', changeColorScheme);
+    sysTheme.current.addEventListener('change', changeColorScheme);
 
     return () => {
-      sysTheme.removeEventListener('change', changeColorScheme);
+      sysTheme.current.removeEventListener('change', changeColorScheme);
     };
-  }, [theme]);
+  }, [setTheme, theme]);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button className={className} variant="outline" size="icon">
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
@@ -53,7 +56,7 @@ export const ModeToggle = () => {
           Dark
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={() => setTheme(sysTheme.matches ? 'dark' : 'light')}
+          onClick={() => setTheme(sysTheme.current.matches ? 'dark' : 'light')}
         >
           System
         </DropdownMenuItem>
