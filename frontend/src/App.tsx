@@ -1,6 +1,5 @@
-import { Toaster } from '@/components/ui/sonner';
 import { useEffect, useMemo } from 'react';
-import { Images, FolderOpenDot, PencilRuler } from 'lucide-react';
+import { FolderOpenDot, Images, PencilRuler } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card.tsx';
 import { Link } from '@tanstack/react-router';
 
@@ -19,7 +18,7 @@ export default function App() {
     return () => worker.terminate();
   }, [worker]);
 
-  const iconSize = ['h-10 w-10', 'text-3xl scale-125'];
+  const iconSize = ['stroke-1 h-10 w-10', 'text-3xl scale-125'];
 
   const categories = [
     {
@@ -45,24 +44,17 @@ export default function App() {
   ];
 
   return (
-    <>
-      <main className="px-4">
-        <Toaster />
-        <div className="flex w-full gap-2">
-          {categories.map((category) => (
-            <Link className="grow w-1/5" to={category.url} key={category.name}>
-              <Card className="h-40 text-center">
-                <CardHeader className="items-center">
-                  {category.icon}
-                </CardHeader>
-                <CardContent>
-                  <h1 className="font-semibold text-2xl">{category.name}</h1>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </main>
-    </>
+    <div className="flex w-full gap-2">
+      {categories.map((category) => (
+        <Link className="grow w-1/5" to={category.url} key={category.name}>
+          <Card className="h-40 text-center">
+            <CardHeader className="items-center">{category.icon}</CardHeader>
+            <CardContent>
+              <h1 className="font-semibold text-2xl">{category.name}</h1>
+            </CardContent>
+          </Card>
+        </Link>
+      ))}
+    </div>
   );
 }

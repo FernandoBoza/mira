@@ -1,3 +1,10 @@
+import { Toaster } from '@/components/ui/sonner.tsx';
+
 export default function Page({ children, className }) {
-  return <div className={`px-4 ${className}`}>{children}</div>;
+  return (
+    <>
+      <Toaster />
+      <main className={`px-4 ${className}`}>{children}</main>
+    </>
+  );
 }
