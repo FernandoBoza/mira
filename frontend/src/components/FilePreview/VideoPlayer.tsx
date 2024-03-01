@@ -154,7 +154,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
         }
         setCurrentTime(time);
       }, debounceTime),
-    [debounceTime, currentTime],
+    [debounceTime],
   );
 
   return (
