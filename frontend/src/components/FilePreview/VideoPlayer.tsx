@@ -1,13 +1,13 @@
-import { useState, useRef, useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
 import {
-  PlayIcon,
+  Expand,
+  FastForward,
   PauseIcon,
+  PlayIcon,
+  Rewind,
   Volume2,
   VolumeX,
-  Expand,
-  Rewind,
-  FastForward,
 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider.tsx';
 

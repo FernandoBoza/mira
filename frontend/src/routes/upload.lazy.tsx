@@ -2,6 +2,7 @@ import { createLazyFileRoute } from '@tanstack/react-router';
 import { DropZone } from '../components/upload/DropZone.tsx';
 import { Gallery } from '@/components/Gallery.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
+import Page from '@/Pages';
 
 export const Route = createLazyFileRoute('/upload')({
   errorComponent: () => <div>Error</div>,
@@ -12,9 +13,9 @@ function Upload() {
   const uploadFileList = useFileStore((state) => state.uploadList);
 
   return (
-    <div className="p-8 flex flex-col gap-8">
+    <Page className="flex flex-col gap-8">
       <DropZone />
       <Gallery files={uploadFileList} />
-    </div>
+    </Page>
   );
 }
