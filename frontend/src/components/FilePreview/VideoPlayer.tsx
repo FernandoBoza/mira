@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import {
   PlayIcon,
   PauseIcon,
@@ -27,7 +27,7 @@ type VolumeBtnType = {
 function FastForwardBtn({ onClick }: VideoBtnType) {
   return (
     <button onClick={onClick} className="text-white mr-4">
-      <FastForward className="w-6 h-6" />
+      <FastForward className="w-6 h-6 fill-current" />
     </button>
   );
 }
@@ -35,7 +35,7 @@ function FastForwardBtn({ onClick }: VideoBtnType) {
 function RewindBtn({ onClick }: VideoBtnType) {
   return (
     <button onClick={onClick} className="text-white mr-4">
-      <Rewind className="w-6 h-6" />
+      <Rewind className="w-6 h-6 fill-current" />
     </button>
   );
 }
@@ -44,9 +44,9 @@ function PlayPauseBtn({ isPlaying, onClick }: PlayPauseBtnType) {
   return (
     <button onClick={onClick} className="text-white mr-4">
       {isPlaying ? (
-        <PauseIcon className="w-6 h-6" />
+        <PauseIcon className="w-6 h-6 fill-current" />
       ) : (
-        <PlayIcon className="w-6 h-6" />
+        <PlayIcon className="w-6 h-6 fill-current" />
       )}
     </button>
   );
@@ -64,7 +64,7 @@ function VolumeBtn({ isMuted, onClick }: VolumeBtnType) {
   return (
     <button onClick={onClick} className="text-white mr-4">
       {isMuted ? (
-        <VolumeX className="w-6 h-6" />
+        <VolumeX className="w-6 h-6 fill-current" />
       ) : (
         <Volume2 className="w-6 h-6" />
       )}
@@ -72,13 +72,29 @@ function VolumeBtn({ isMuted, onClick }: VolumeBtnType) {
   );
 }
 
+function debounce(
+  func: { (value: number[]): void; apply?: any },
+  delay: number | undefined,
+) {
+  let timeoutId: string | number | NodeJS.Timeout | undefined;
+  return (...args: any) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      func.apply(null, args);
+    }, delay);
+  };
+}
+
 export const VideoPlayer = ({ src }: { src: string }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  const togglePlayPause = async () => {
+  const togglePlayPause = useCallback(async () => {
     const video = videoRef?.current;
     if (!video) return;
     if (video.paused) {
@@ -88,16 +104,16 @@ export const VideoPlayer = ({ src }: { src: string }) => {
       video.pause();
       setIsPlaying(false);
     }
-  };
+  }, [isPlaying]);
 
-  const toggleMute = () => {
+  const toggleMute = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     video.muted = !video.muted;
     setIsMuted(video.muted);
-  };
+  }, [isMuted]);
 
-  const toggleFullScreen = async () => {
+  const toggleFullScreen = useCallback(async () => {
     const video = videoRef.current;
     if (!video) return;
     if (!document.fullscreenElement) {
@@ -121,21 +137,21 @@ export const VideoPlayer = ({ src }: { src: string }) => {
         }
       }
     }
-  };
+  }, [videoRef.current]);
 
-  const handleRewind = () => {
+  const handleRewind = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     video.currentTime -= 10; // Rewind 10 seconds
     setCurrentTime(video.currentTime);
-  };
+  }, [currentTime]);
 
-  const handleFastForward = () => {
+  const handleFastForward = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     video.currentTime += 10;
     setCurrentTime(video.currentTime);
-  };
+  }, [currentTime]);
 
   const handleTimeUpdate = () => {
     const video = videoRef.current;
@@ -143,8 +159,26 @@ export const VideoPlayer = ({ src }: { src: string }) => {
     setCurrentTime(video.currentTime);
   };
 
+  const handleScrub = useMemo(
+    () =>
+      debounce((value: number[]) => {
+        const time = parseFloat(`${value[0]}`);
+        if (videoRef.current) {
+          videoRef.current.currentTime = time;
+        }
+        setCurrentTime(time);
+      }, 100),
+    [videoRef.current, currentTime],
+  );
+
+  const showMediaControls = `absolute bottom-0 left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 transition-all duration-500 ${isHovered ? 'bottom-0' : '-bottom-full'}`;
+
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <video
         ref={videoRef}
         src={src}
@@ -152,7 +186,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
         onClick={togglePlayPause}
         onTimeUpdate={handleTimeUpdate}
       />
-      <div className="absolute bottom-0 left-0 right-0 flex justify-between p-4 bg-gray-900 bg-opacity-50">
+      <div className={showMediaControls}>
         <RewindBtn onClick={handleRewind} />
         <PlayPauseBtn isPlaying={isPlaying} onClick={togglePlayPause} />
         <FastForwardBtn onClick={handleFastForward} />
@@ -164,13 +198,8 @@ export const VideoPlayer = ({ src }: { src: string }) => {
           max={videoRef.current?.duration || 0}
           step={1}
           value={[currentTime]}
-          onValueChange={(e) => {
-            const time = parseFloat(`${e[0]}`);
-            if (videoRef.current) {
-              videoRef.current.currentTime = time;
-            }
-            setCurrentTime(time);
-          }}
+          onValueChange={handleScrub}
+          className={'cursor-pointer'}
         />
       </div>
     </div>
