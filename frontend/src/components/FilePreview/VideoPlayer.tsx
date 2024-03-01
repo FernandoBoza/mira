@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useMemo } from 'react';
+import debounce from 'lodash.debounce';
 import {
   PlayIcon,
   PauseIcon,
@@ -72,26 +73,10 @@ function VolumeBtn({ isMuted, onClick }: VolumeBtnType) {
   );
 }
 
-function debounce(
-  func: { (value: number[]): void; apply?: any },
-  delay: number | undefined,
-) {
-  let timeoutId: string | number | NodeJS.Timeout | undefined;
-  return (...args: any) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
-      func.apply(null, args);
-    }, delay);
-  };
-}
-
 export const VideoPlayer = ({ src }: { src: string }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const togglePlayPause = useCallback(async () => {
@@ -171,14 +156,8 @@ export const VideoPlayer = ({ src }: { src: string }) => {
     [videoRef.current, currentTime],
   );
 
-  const showMediaControls = `absolute bottom-0 left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 transition-all duration-500 ${isHovered ? 'bottom-0' : '-bottom-full'}`;
-
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="relative group">
       <video
         ref={videoRef}
         src={src}
@@ -186,7 +165,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
         onClick={togglePlayPause}
         onTimeUpdate={handleTimeUpdate}
       />
-      <div className={showMediaControls}>
+      <div className="absolute left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 transition-all duration-1000 ease-in-out -bottom-full opacity-0 group-hover:bottom-0 group-hover:opacity-100">
         <RewindBtn onClick={handleRewind} />
         <PlayPauseBtn isPlaying={isPlaying} onClick={togglePlayPause} />
         <FastForwardBtn onClick={handleFastForward} />

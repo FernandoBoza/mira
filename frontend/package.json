@@ -21,6 +21,7 @@
     "axios": "^1.6.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.331.0",
     "react": "latest",
     "react-dom": "latest",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@tanstack/router-vite-plugin": "^1.16.5",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
