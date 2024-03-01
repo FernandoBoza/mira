@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PDFViewer } from '@/components/FilePreview/PDFViewer.tsx';
 import { getFileType } from '../../../../utils';
+import VideoPlayer from '@/components/FilePreview/VideoPlayer.tsx';
 
 export const FilePreview = ({ file }: { file: File }) => {
   const [fileUrl, setFileUrl] = useState('');
@@ -36,11 +37,7 @@ export const FilePreview = ({ file }: { file: File }) => {
         </div>
       );
     }
-    return (
-      <video className="h-auto w-auto" controls>
-        <source src={fileUrl} type={file.type} />
-      </video>
-    );
+    return <VideoPlayer src={fileUrl} />;
   }
 
   if (fileType === 'audio') {
