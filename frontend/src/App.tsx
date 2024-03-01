@@ -19,23 +19,27 @@ export default function App() {
     return () => worker.terminate();
   }, [worker]);
 
-  const iconSize = 'h-10 w-10';
+  const iconSize = ['h-10 w-10', 'text-3xl scale-125'];
 
   const categories = [
-    { name: 'Gallery', icon: <Images className={iconSize} />, url: '/gallery' },
+    {
+      name: 'Gallery',
+      icon: <Images className={iconSize[0]} />,
+      url: '/gallery',
+    },
     {
       name: 'Editor',
-      icon: <PencilRuler className={iconSize} />,
+      icon: <PencilRuler className={iconSize[0]} />,
       url: '/editor',
     },
     {
       name: 'Projects',
-      icon: <FolderOpenDot className={iconSize} />,
+      icon: <FolderOpenDot className={iconSize[0]} />,
       url: '/projects',
     },
     {
       name: 'Help',
-      icon: <span className="text-3xl scale-125">🤷</span>,
+      icon: <span className={iconSize[1]}>🤷</span>,
       url: '/help',
     },
   ];
