@@ -144,6 +144,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
     setCurrentTime(video.currentTime);
   };
 
+  const debounceTime = isPlaying ? 200 : 0;
   const handleScrub = useMemo(
     () =>
       debounce((value: number[]) => {
@@ -152,8 +153,8 @@ export const VideoPlayer = ({ src }: { src: string }) => {
           videoRef.current.currentTime = time;
         }
         setCurrentTime(time);
-      }, 100),
-    [videoRef.current, currentTime],
+      }, debounceTime),
+    [debounceTime, currentTime],
   );
 
   return (
@@ -179,6 +180,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
           value={[currentTime]}
           onValueChange={handleScrub}
           className={'cursor-pointer'}
+          trackClassName={'rounded-none'}
         />
       </div>
     </div>
