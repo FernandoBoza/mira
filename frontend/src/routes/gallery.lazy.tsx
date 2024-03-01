@@ -1,5 +1,5 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
-import Page from '@/Pages';
+import Page from '@/pages';
 import { Gallery } from '@/components/Gallery.tsx';
 
 export const Route = createLazyFileRoute('/gallery')({
