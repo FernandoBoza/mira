@@ -89,14 +89,14 @@ export const VideoPlayer = ({ src }: { src: string }) => {
       video.pause();
       setIsPlaying(false);
     }
-  }, [isPlaying]);
+  }, []);
 
   const toggleMute = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     video.muted = !video.muted;
     setIsMuted(video.muted);
-  }, [isMuted]);
+  }, []);
 
   const toggleFullScreen = useCallback(async () => {
     const video = videoRef.current;
@@ -122,21 +122,21 @@ export const VideoPlayer = ({ src }: { src: string }) => {
         }
       }
     }
-  }, [videoRef.current]);
+  }, []);
 
   const handleRewind = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     video.currentTime -= 10; // Rewind 10 seconds
     setCurrentTime(video.currentTime);
-  }, [currentTime]);
+  }, []);
 
   const handleFastForward = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
     video.currentTime += 10;
     setCurrentTime(video.currentTime);
-  }, [currentTime]);
+  }, []);
 
   const handleTimeUpdate = () => {
     const video = videoRef.current;
