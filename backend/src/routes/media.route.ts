@@ -38,7 +38,19 @@ media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
 
 media.get("/upload/files", async (c) => {
   try {
-    return c.json(await ms.getAllFilesFromUploads());
+    const files = await ms.getAllFilesFromUploads();
+
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        for (const file of files) {
+          const arrayBuffer = await file.arrayBuffer();
+          controller.enqueue(arrayBuffer);
+        }
+        controller.close();
+      },
+    });
+
+    return new Response(readableStream);
   } catch (e) {
     return c.json(ms.handleUploadError(c, e));
   }

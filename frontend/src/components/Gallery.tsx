@@ -8,26 +8,28 @@ type GalleryProps = {
 };
 export const Gallery = ({ files, className = '' }: GalleryProps) => (
   <div className={`gap-2 grid grid-cols-4 xl:grid-cols-5 gap-4 ${className}`}>
-    {[...files].map((file) => (
-      <Card
-        key={`${file.name}`}
-        className={'overflow-hidden flex flex-col justify-between'}
-      >
-        <CardContent className="h-full max-h-48 xl:h-60 overflow-hidden px-0">
-          <FilePreview file={file} />
-        </CardContent>
-        <CardFooter className={'p-3 flex flex-col items-start'}>
-          <b className="text-ellipsis overflow-hidden text-nowrap w-full">
-            {getFileName(file.name)}
-          </b>
-          <p className="flex justify-between w-full">
-            {formatBytes(file.size)}
-            <span className="text-muted-foreground">
-              {getFileFormat(file.type)}
-            </span>
-          </p>
-        </CardFooter>
-      </Card>
-    ))}
+    {[...files].map((file) => {
+      return (
+        <Card
+          key={`${file.name}`}
+          className={'overflow-hidden flex flex-col justify-between'}
+        >
+          <CardContent className="h-full max-h-48 xl:h-60 overflow-hidden px-0">
+            <FilePreview file={file} />
+          </CardContent>
+          <CardFooter className={'p-3 flex flex-col items-start'}>
+            <b className="text-ellipsis overflow-hidden text-nowrap w-full">
+              {getFileName(file.name)}
+            </b>
+            <p className="flex justify-between w-full">
+              {formatBytes(file.size)}
+              <span className="text-muted-foreground">
+                {getFileFormat(file.type)}
+              </span>
+            </p>
+          </CardFooter>
+        </Card>
+      );
+    })}
   </div>
 );

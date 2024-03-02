@@ -172,10 +172,29 @@ export default class FileService {
     signal: controller.signal,
   });
 
-  public getFiles = async () => {
+  public getAllFiles = async () => {
     try {
-      const res = await axios.get(`${CLIENT_UPLOAD_ENDPOINT}/files`);
-      return res.data;
+      // const res = await axios.get(`${CLIENT_UPLOAD_ENDPOINT}/files`);
+      // return res.data.arrayBuffer();
+
+      return fetch(`${CLIENT_UPLOAD_ENDPOINT}/files`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.arrayBuffer();
+        })
+        .then((buffer) => {
+          // Handle the buffer containing your files data here
+          return new File([buffer], 'file.mp4', { type: 'video/mp4' });
+          // return new Blob([buffer], { type: 'application/octet-stream' });
+        });
+      // .catch((error) => {
+      //   console.error(
+      //     'There has been a problem with your fetch operation:',
+      //     error,
+      //   );
+      // });
     } catch (err) {
       console.error(err);
     }

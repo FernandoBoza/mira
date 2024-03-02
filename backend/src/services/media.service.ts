@@ -5,6 +5,7 @@ import { appendFile, mkdir } from "fs/promises";
 import { getFileFormat } from "../../../utils";
 import type { CustomContext, CustomFileType, FileError } from "../types.ts";
 import { API_UPLOAD_PATH } from "../../../utils/constants.ts";
+import type { BunFile } from "bun";
 
 export default class MediaService {
   constructor() {}
@@ -26,9 +27,9 @@ export default class MediaService {
   public getAllFilesFromUploads = async () => {
     const glob = new Bun.Glob(`${API_UPLOAD_PATH}/*`);
 
-    const files: string[] = [];
+    const files: BunFile[] = [];
     for (const file of glob.scanSync({ onlyFiles: false })) {
-      files.push(file);
+      files.push(Bun.file(file));
     }
 
     return files;
