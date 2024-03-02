@@ -39,19 +39,22 @@ export default class MediaService {
     c: CustomContext<P>,
     isLargeFile?: boolean,
   ): Promise<Response> => {
+    const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
+
     const filesArray = this.getFilesArray(await c.req.parseBody());
     const doesFileExist = async (filePath: string) =>
       await Bun.file(filePath).exists();
 
     if (isLargeFile) {
       for await (const file of filesArray) {
-        const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
+        const filePath = `${uploadPath}/${file.name}`;
 
         if (await doesFileExist(filePath)) {
           filesArray.splice(filesArray.indexOf(file), 1);
           break;
         } else if (file.data instanceof File) {
           const byteArray = new Uint8Array(await file.data.arrayBuffer());
+          const filePath = `${API_UPLOAD_PATH}/${file.fileName}`;
           const dirExist = (path: string) =>
             !!Array.from(new Bun.Glob(path).scanSync({ onlyFiles: false }))[0];
 
