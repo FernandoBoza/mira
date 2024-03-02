@@ -51,7 +51,7 @@ export default function App() {
               {typeof category.icon === 'string' ? (
                 <span className="text-3xl scale-125">{category.icon}</span>
               ) : (
-                <GradientIcon usePrimary Icon={category.icon} />
+                <GradientIcon Icon={category.icon} />
               )}
             </CardHeader>
             <CardContent>

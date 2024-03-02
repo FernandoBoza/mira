@@ -147,9 +147,8 @@ export const SpinnerLoader = (
 );
 
 export const GradientIcon = ({ Icon, usePrimary }: GradientIconType) => {
-  if (usePrimary) {
-    return <Icon className="stroke-1 h-10 w-10 stroke-primary" />;
-  }
+  if (usePrimary) return <Icon className="stroke-1 h-10 w-10 stroke-primary" />;
+
   return (
     <svg
       className="text-gradient stroke-current h-10 w-10"
