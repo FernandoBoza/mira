@@ -36,12 +36,4 @@ media.post(`${API_UPLOAD_ENDPOINT}-large`, async (c) => {
   }
 });
 
-media.get("/upload/files", async (c) => {
-  try {
-    return c.json(await ms.getAllFilesFromUploads());
-  } catch (e) {
-    return c.json(ms.handleUploadError(c, e));
-  }
-});
-
 export default media;

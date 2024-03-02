@@ -172,15 +172,6 @@ export default class FileService {
     signal: controller.signal,
   });
 
-  public getFiles = async () => {
-    try {
-      const res = await axios.get(`${CLIENT_UPLOAD_ENDPOINT}/files`);
-      return res.data;
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   private doesFileExist = async (fileName: string) => {
     try {
       const controller = new AbortController();
