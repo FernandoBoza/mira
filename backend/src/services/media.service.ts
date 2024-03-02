@@ -9,6 +9,10 @@ import { API_UPLOAD_PATH } from "../../../utils/constants.ts";
 export default class MediaService {
   constructor() {}
 
+  /**
+   * http://localhost:3000/media/upload/file/fileName
+   * @param c
+   */
   public getSingleFileFromUploads = async <P extends string>(
     c: CustomContext<P>,
   ) => {
@@ -17,6 +21,17 @@ export default class MediaService {
     const uploadPath = Bun.env.UPLOAD_PATH || API_UPLOAD_PATH;
     const file = Bun.file(`${uploadPath}/${fileName}`);
     return (await file.exists()) ? file : false;
+  };
+
+  public getAllFilesFromUploads = async () => {
+    const glob = new Bun.Glob(`${API_UPLOAD_PATH}/*`);
+
+    const files: string[] = [];
+    for (const file of glob.scanSync({ onlyFiles: false })) {
+      files.push(file);
+    }
+
+    return files;
   };
 
   /**
