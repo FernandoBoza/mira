@@ -1,17 +1,35 @@
+import { ReactNode, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { CloseIcon, MediaIcon } from '@/assets/icons.tsx';
 import { Pause, Play, Square } from 'lucide-react';
 import { formatBytes, getFileType } from '../../../../utils';
 import { Progress } from '@/components/ui/progress.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
+import { AudioIcon, CloseIcon, DocumentIcon, PhotoIcon, VideoIcon } from '@/assets/icons.tsx';
 // import FileService from '@/service/file.service.ts';
-import { useState } from 'react';
 
-type FileProgressProps = {
-  file: File;
-  value: number;
-};
 // const fs = new FileService();
+
+const MediaIcon: MediaIconType = {
+  image: PhotoIcon,
+  video: VideoIcon,
+  audio: AudioIcon,
+  application: DocumentIcon,
+};
+const PlayBtn = ({ style, onClick }: ButtonProps) => (
+  <Button variant={'ghost'} className={style} onClick={onClick}>
+    <Play className="w-5 h-5 group-hover:stroke-primary fill-primary" />
+  </Button>
+);
+const PauseBtn = ({ style, onClick }: ButtonProps) => (
+  <Button variant={'ghost'} className={style} onClick={onClick}>
+    <Pause className="w-5 h-5 group-hover:stroke-primary fill-primary" />
+  </Button>
+);
+const SquareBtn = ({ onClick }: { onClick: () => void }) => (
+  <Button variant={'ghost'} className="group h-auto p-1" onClick={onClick}>
+    <Square className="w-5 h-5 group-hover:stroke-primary fill-primary" />
+  </Button>
+);
 
 export const FileProgress = ({ file, value }: FileProgressProps) => {
   const [pauseResume, setPauseResume] = useState(false);
@@ -25,12 +43,10 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
     // fs.pauseUpload();
     setPauseResume(true);
   };
-
   const handleResume = () => {
     // fs.resumeUpload(file).then();
     setPauseResume(false);
   };
-
   const abortUpload = (): void => {
     // fs.pauseUpload();
     setPauseResume(false);
@@ -39,8 +55,7 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
 
   const playStyle = `group h-auto p-1 ${!pauseResume ? 'hidden' : 'block'}`;
   const pauseStyle = `group h-auto p-1 ${!pauseResume ? 'block' : 'hidden'}`;
-  const progressStatusStyle =
-    value >= 100 ? 'opacity-50 pointer-events-none mb-5' : 'mb-5';
+  const progressStatusStyle = value >= 100 ? 'opacity-50 pointer-events-none mb-5' : 'mb-5';
 
   return (
     <div className={progressStatusStyle}>
@@ -61,31 +76,27 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
         </span>
         {0 < value && value < 100 && (
           <>
-            <Button
-              variant={'ghost'}
-              className={playStyle}
-              onClick={handleResume}
-            >
-              <Play className="w-5 h-5 group-hover:stroke-primary fill-primary" />
-            </Button>
-            <Button
-              variant={'ghost'}
-              className={pauseStyle}
-              onClick={handlePause}
-            >
-              <Pause className="w-5 h-5 group-hover:stroke-primary fill-primary" />
-            </Button>
-            <Button
-              variant={'ghost'}
-              className="group h-auto p-1"
-              onClick={abortUpload}
-            >
-              <Square className="w-5 h-5 group-hover:stroke-primary fill-primary" />
-            </Button>
+            <PlayBtn style={playStyle} onClick={handleResume} />
+            <PauseBtn style={pauseStyle} onClick={handlePause} />
+            <SquareBtn onClick={abortUpload} />
           </>
         )}
       </div>
       <Progress value={value} />
     </div>
   );
+};
+
+type FileProgressProps = {
+  file: File;
+  value: number;
+};
+type ButtonProps = {
+  style: string;
+  onClick: () => void;
+};
+type MediaIconType = {
+  image: ReactNode;
+  video: ReactNode;
+  [key: string]: ReactNode;
 };

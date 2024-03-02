@@ -1,6 +1,5 @@
 // Icons are from Heroicons: https://heroicons.com/
 
-import { ReactNode } from 'react';
 import { LucideIcon } from 'lucide-react';
 
 export const ChevronDownIcon = (
@@ -167,12 +166,6 @@ export const GradientIcon = ({ Icon, usePrimary }: GradientIconType) => {
       <Icon className="stroke-1" stroke="url(#gradient)" />
     </svg>
   );
-};
-
-export type MediaIconType = {
-  image: ReactNode;
-  video: ReactNode;
-  [key: string]: ReactNode;
 };
 
 type GradientIconType = { Icon: LucideIcon; usePrimary?: boolean };
