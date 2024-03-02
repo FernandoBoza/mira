@@ -1,6 +1,12 @@
 import { Toaster } from '@/components/ui/sonner.tsx';
+import { ReactNode } from 'react';
 
-export default function Page({ children, className }) {
+type PageProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+export default function Page({ children, className }: PageProps) {
   return (
     <>
       <Toaster />
