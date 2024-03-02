@@ -9,6 +9,11 @@ import { API_UPLOAD_PATH } from "../../../utils/constants.ts";
 export default class MediaService {
   constructor() {}
 
+  /**
+   * Returns a file from the server's upload directory.
+   * i.e. api/media/upload/file/fileName
+   * @param c
+   */
   public getSingleFileFromUploads = async <P extends string>(
     c: CustomContext<P>,
   ) => {
