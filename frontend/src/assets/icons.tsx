@@ -12,11 +12,7 @@ export const ChevronDownIcon = (
     stroke="currentColor"
     className="w-6 h-6"
   >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-    />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
   </svg>
 );
 
@@ -79,11 +75,7 @@ export const CloseIcon = (
     stroke="currentColor"
     className="w-6 h-6"
   >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M6 18L18 6M6 6l12 12"
-    />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
   </svg>
 );
 
@@ -129,11 +121,7 @@ export const AudioIcon = (
 );
 
 export const CloudUploadIcon = (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
     <path
       fillRule="evenodd"
       d="M10.5 3.75a6 6 0 0 0-5.98 6.496A5.25 5.25 0 0 0 6.75 20.25H18a4.5 4.5 0 0 0 2.206-8.423 3.75 3.75 0 0 0-4.133-4.303A6.001 6.001 0 0 0 10.5 3.75Zm2.03 5.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l1.72-1.72v4.94a.75.75 0 0 0 1.5 0v-4.94l1.72 1.72a.75.75 0 1 0 1.06-1.06l-3-3Z"
@@ -159,22 +147,27 @@ export const SpinnerLoader = (
   </svg>
 );
 
-export const GradientIcon = ({ Icon }: { Icon: LucideIcon }) => (
-  <svg
-    className="text-gradient stroke-current h-10 w-10"
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-  >
-    <defs>
-      <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" style={{ stopColor: '#8B5CF6', stopOpacity: 1 }} />
-        <stop offset="100%" style={{ stopColor: '#F43F5E', stopOpacity: 1 }} />
-      </linearGradient>
-    </defs>
-    <Icon className="stroke-1" stroke="url(#gradient)" />
-  </svg>
-);
+export const GradientIcon = ({ Icon, usePrimary }: GradientIconType) => {
+  if (usePrimary) {
+    return <Icon className="stroke-1 h-10 w-10 stroke-primary" />;
+  }
+  return (
+    <svg
+      className="text-gradient stroke-current h-10 w-10"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style={{ stopColor: '#8B5CF6', stopOpacity: 1 }} />
+          <stop offset="100%" style={{ stopColor: '#F43F5E', stopOpacity: 1 }} />
+        </linearGradient>
+      </defs>
+      <Icon className="stroke-1" stroke="url(#gradient)" />
+    </svg>
+  );
+};
 
 export type MediaIconType = {
   image: ReactNode;
@@ -182,9 +175,4 @@ export type MediaIconType = {
   [key: string]: ReactNode;
 };
 
-export const MediaIcon: MediaIconType = {
-  image: PhotoIcon,
-  video: VideoIcon,
-  audio: AudioIcon,
-  application: DocumentIcon,
-};
+type GradientIconType = { Icon: LucideIcon; usePrimary?: boolean };
