@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PDFViewer } from '@/components/FilePreview/PDFViewer.tsx';
 import { getFileType } from '@/lib/utils.ts';
-import VideoPlayer from '@/components/FilePreview/VideoPlayer.tsx';
+import { VideoPlayer } from '@/components/FilePreview/VideoPlayer.tsx';
 
 export const FilePreview = ({ file }: { file: File }) => {
   const [fileUrl, setFileUrl] = useState('');
