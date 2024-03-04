@@ -70,6 +70,15 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out'
+      },
+      screens: {
+        'h-sm': { 'raw': '(min-height: 500px)' },
+        'h-md': { 'raw': '(min-height: 800px)' },
+        'h-lg': { 'raw': '(min-height: 1000px)' },
+        'h-xl': { 'raw': '(min-height: 1200px)' },
+        'h-2xl': { 'raw': '(min-height: 1400px)' },
+        'h-3xl': { 'raw': '(min-height: 1600px)' },
+        'h-4xl': { 'raw': '(min-height: 1800px)' }
       }
     }
   },

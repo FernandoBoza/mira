@@ -6,11 +6,11 @@ type PageProps = {
   className?: string;
 };
 
-export default function Page({ children, className = '' }: PageProps) {
+export default function Page({ children, className = 'px-4' }: PageProps) {
   return (
     <>
       <Toaster />
-      <main className={`px-4 ${className}`}>{children}</main>
+      <main className={`${className}`}>{children}</main>
     </>
   );
 }
