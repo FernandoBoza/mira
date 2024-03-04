@@ -2,38 +2,33 @@ import { useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card.tsx';
 import { Link } from '@tanstack/react-router';
 import { GradientIcon } from '@/assets/icons.tsx';
-import { FolderOpenDot, Images, PencilRuler } from 'lucide-react';
+import { FolderOpenDot, PencilRuler } from 'lucide-react';
 
 const categories = [
   {
-    name: 'Gallery',
-    icon: Images,
-    url: '/gallery',
-  },
-  {
     name: 'Editor',
     icon: PencilRuler,
-    url: '/editor',
+    url: '/editor'
   },
   {
     name: 'Projects',
     icon: FolderOpenDot,
-    url: '/projects',
+    url: '/projects'
   },
   {
     name: 'Help',
     icon: '🤷',
-    url: '/help',
-  },
+    url: '/help'
+  }
 ];
 
 export default function App() {
   const worker = useMemo(
     () =>
       new Worker(new URL('./web.worker.ts', import.meta.url), {
-        type: 'module',
+        type: 'module'
       }),
-    [],
+    []
   );
 
   useEffect(() => {

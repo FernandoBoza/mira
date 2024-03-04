@@ -1,13 +1,13 @@
+import { useEffect, useRef } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Theme, useThemeStore } from '@/stores/theme.store.ts';
-import { useEffect, useRef } from 'react';
 
 export const ThemeToggle = ({ className }: { className?: string }) => {
   const { theme, setTheme } = useThemeStore();
@@ -18,9 +18,7 @@ export const ThemeToggle = ({ className }: { className?: string }) => {
     sysTheme.current = window.matchMedia('(prefers-color-scheme: dark)');
 
     if (!localTheme && theme === 'system') {
-      document.documentElement.className = sysTheme.current.matches
-        ? 'dark'
-        : 'light';
+      document.documentElement.className = sysTheme.current.matches ? 'dark' : 'light';
     } else if (!localTheme) {
       document.documentElement.className = theme;
     }
@@ -44,7 +42,8 @@ export const ThemeToggle = ({ className }: { className?: string }) => {
       <DropdownMenuTrigger asChild>
         <Button className={className} variant="outline" size="icon">
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <Moon
+            className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -55,9 +54,7 @@ export const ThemeToggle = ({ className }: { className?: string }) => {
         <DropdownMenuItem onClick={() => setTheme('dark')}>
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => setTheme(sysTheme.current.matches ? 'dark' : 'light')}
-        >
+        <DropdownMenuItem onClick={() => setTheme(sysTheme.current.matches ? 'dark' : 'light')}>
           System
         </DropdownMenuItem>
       </DropdownMenuContent>
