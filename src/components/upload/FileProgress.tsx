@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { formatBytes, getFileType } from '@/lib/utils.ts';
-import { Progress } from '@/components/ui/progress.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { AudioIcon, CloseIcon, DocumentIcon, PhotoIcon, VideoIcon } from '@/assets/icons.tsx';
 
@@ -30,7 +29,7 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
           {formatBytes(size)}
         </span>
       </div>
-      <Progress value={value} />
+      {/*<Progress value={value} />*/}
     </div>
   );
 };
