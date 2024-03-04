@@ -19,7 +19,7 @@ export const DropZone = () => {
    * */
   const addFiles = useCallback(
     (files: FileList | ChangeEvent<HTMLInputElement>) => {
-      setUploadList(fs.filterFiles(files, uploadList, alreadyUploaded));
+      setUploadList(fs.filterFiles({ files, uploadList, alreadyUploaded }));
     }, [alreadyUploaded, setUploadList, uploadList]
   );
 

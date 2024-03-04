@@ -1,8 +1,7 @@
-export type UploadProgressType = {
-  [fileName: string]: number;
-};
+import { ChangeEvent } from 'react';
 
-export type AddFilesType = {
+export type FileFilterType = {
+  files: FileList | ChangeEvent<HTMLInputElement>;
   uploadList: FileList | File[];
-  setUploadList: (files: FileList | File[]) => void;
-};
+  alreadyUploaded: FileList | File[]
+}

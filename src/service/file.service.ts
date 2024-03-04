@@ -1,12 +1,12 @@
 import { toast } from 'sonner';
 import { getFileFormat } from '@/lib/utils.ts';
-import { ChangeEvent } from 'react';
+import { FileFilterType } from '@/lib/types.ts';
 
 export default class FileService {
   constructor() {
   }
 
-  public filterFiles = (files: FileList | ChangeEvent<HTMLInputElement>, uploadList: FileList | File[], alreadyUploaded: FileList | File[]): FileList | File[] => {
+  public filterFiles = ({ files, uploadList, alreadyUploaded }: FileFilterType): FileList | File[] => {
     const newFiles = files instanceof FileList ? files : files?.target?.files;
     if (newFiles) {
       return [...newFiles].filter((file) => {
