@@ -46,7 +46,7 @@ export default class FileService {
     return [];
   };
 
-  public startUploading(uploadList: FileList | File[]): Promise<any> {
+  public startUploading(uploadList: FileList | File[]): Promise<unknown> {
     console.log(uploadList);
     return new Promise((resolve) => {
       setTimeout(() => {
