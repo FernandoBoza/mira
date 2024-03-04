@@ -1,15 +1,15 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import React, { Suspense } from 'react';
-import { ThemeToggle } from '@/components/layout/theme-toggle.tsx';
+import { ThemeToggle } from '@/components/layout/ThemeToggle.tsx';
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'
     ? () => null // Render nothing in production
     : React.lazy(() =>
-        import('@tanstack/router-devtools').then((res) => ({
-          default: res.TanStackRouterDevtools,
-        })),
-      );
+      import('@tanstack/router-devtools').then((res) => ({
+        default: res.TanStackRouterDevtools
+      }))
+    );
 export const Route = createRootRoute({
   component: () => (
     <>
@@ -17,10 +17,7 @@ export const Route = createRootRoute({
         <Link to={'/'} className="[&.active]:font-bold text-2xl">
           Home
         </Link>
-        <Link to={'/upload'} className="[&.active]:font-bold text-2xl">
-          Upload
-        </Link>
-        <ThemeToggle className="ml-auto" />
+        <ThemeToggle />
       </div>
 
       <Outlet />
@@ -28,5 +25,5 @@ export const Route = createRootRoute({
         <TanStackRouterDevtools />
       </Suspense>
     </>
-  ),
+  )
 });

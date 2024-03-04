@@ -1,60 +1,15 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { Button } from '@/components/ui/button.tsx';
-import { Pause, Play, Square } from 'lucide-react';
 import { formatBytes, getFileType } from '@/lib/utils.ts';
 import { Progress } from '@/components/ui/progress.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { AudioIcon, CloseIcon, DocumentIcon, PhotoIcon, VideoIcon } from '@/assets/icons.tsx';
-// import FileService from '@/service/file.service.ts';
-
-// const fs = new FileService();
-
-const MediaIcon: MediaIconType = {
-  image: PhotoIcon,
-  video: VideoIcon,
-  audio: AudioIcon,
-  application: DocumentIcon
-};
-const PlayBtn = ({ style, onClick }: ButtonProps) => (
-  <Button variant={'ghost'} className={style} onClick={onClick}>
-    <Play className="w-5 h-5 group-hover:stroke-primary fill-primary" />
-  </Button>
-);
-const PauseBtn = ({ style, onClick }: ButtonProps) => (
-  <Button variant={'ghost'} className={style} onClick={onClick}>
-    <Pause className="w-5 h-5 group-hover:stroke-primary fill-primary" />
-  </Button>
-);
-const SquareBtn = ({ onClick }: { onClick: () => void }) => (
-  <Button variant={'ghost'} className="group h-auto p-1" onClick={onClick}>
-    <Square className="w-5 h-5 group-hover:stroke-primary fill-primary" />
-  </Button>
-);
 
 export const FileProgress = ({ file, value }: FileProgressProps) => {
-  const [pauseResume, setPauseResume] = useState(false);
-
   const { name, size, type } = file;
   const fileName = name.length > 60 ? `${name.slice(0, 60)} ...` : name;
   const fileIcon = MediaIcon[getFileType(type)];
   const removeFile = useFileStore((state) => state.removeFile);
-
-  const handlePause = () => {
-    // fs.pauseUpload();
-    setPauseResume(true);
-  };
-  const handleResume = () => {
-    // fs.resumeUpload(file).then();
-    setPauseResume(false);
-  };
-  const abortUpload = (): void => {
-    // fs.pauseUpload();
-    setPauseResume(false);
-    // TODO: need to reset progress to 0
-  };
-
-  const playStyle = `group h-auto p-1 ${!pauseResume ? 'hidden' : 'block'}`;
-  const pauseStyle = `group h-auto p-1 ${!pauseResume ? 'block' : 'hidden'}`;
   const progressStatusStyle = value >= 100 ? 'opacity-50 pointer-events-none mb-5' : 'mb-5';
 
   return (
@@ -74,29 +29,27 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
         <span className="font-bold ml-auto mr-2" id="fileSize">
           {formatBytes(size)}
         </span>
-        {0 < value && value < 100 && (
-          <>
-            <PlayBtn style={playStyle} onClick={handleResume} />
-            <PauseBtn style={pauseStyle} onClick={handlePause} />
-            <SquareBtn onClick={abortUpload} />
-          </>
-        )}
       </div>
       <Progress value={value} />
     </div>
   );
 };
 
+const MediaIcon: MediaIconType = {
+  image: PhotoIcon,
+  video: VideoIcon,
+  audio: AudioIcon,
+  application: DocumentIcon
+};
+
 type FileProgressProps = {
   file: File;
   value: number;
 };
-type ButtonProps = {
-  style: string;
-  onClick: () => void;
-};
+
 type MediaIconType = {
   image: ReactNode;
   video: ReactNode;
   [key: string]: ReactNode;
 };
+

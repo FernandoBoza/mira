@@ -5,20 +5,11 @@ import { ChangeEvent } from 'react';
 
 export default class FileService {
   private eventEmitter: EventTarget;
-  private fileProgress: UploadProgressType = {};
 
   constructor() {
     this.eventEmitter = new EventTarget();
   }
 
-  public setFileProgress = (fileName: string, progress: number) => {
-    this.fileProgress = {
-      ...this.fileProgress,
-      [fileName]: progress
-    };
-    const event = new CustomEvent('progress', { detail: this.fileProgress });
-    this.eventEmitter.dispatchEvent(event);
-  };
 
   public onProgress = (listener: (progress: UploadProgressType) => void) => {
     this.eventEmitter.addEventListener('progress', (event: Event) => {
