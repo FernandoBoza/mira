@@ -24,6 +24,7 @@
     "lucide-react": "^0.331.0",
     "react": "latest",
     "react-dom": "latest",
+    "react-resizable-panels": "^2.0.12",
     "sonner": "^1.4.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",

@@ -6,7 +6,7 @@ type PageProps = {
   className?: string;
 };
 
-export default function Page({ children, className }: PageProps) {
+export default function Page({ children, className = '' }: PageProps) {
   return (
     <>
       <Toaster />

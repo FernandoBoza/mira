@@ -13,12 +13,10 @@ const TanStackRouterDevtools =
 export const Route = createRootRoute({
   component: () => (
     <>
-      <div className="p-4 flex gap-2 items-center">
-        <Link to={'/'} className="[&.active]:font-bold text-2xl">
-          Home
-        </Link>
+      <nav className="p-4 flex gap-2 items-center">
+        <Link to={'/'} className="[&.active]:font-bold text-2xl">Home</Link>
         <ThemeToggle />
-      </div>
+      </nav>
 
       <Outlet />
       <Suspense>
