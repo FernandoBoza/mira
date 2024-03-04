@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { Pause, Play, Square } from 'lucide-react';
-import { formatBytes, getFileType } from '../../../../utils';
+import { formatBytes, getFileType } from '@/lib/utils.ts';
 import { Progress } from '@/components/ui/progress.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { AudioIcon, CloseIcon, DocumentIcon, PhotoIcon, VideoIcon } from '@/assets/icons.tsx';
@@ -13,7 +13,7 @@ const MediaIcon: MediaIconType = {
   image: PhotoIcon,
   video: VideoIcon,
   audio: AudioIcon,
-  application: DocumentIcon,
+  application: DocumentIcon
 };
 const PlayBtn = ({ style, onClick }: ButtonProps) => (
   <Button variant={'ghost'} className={style} onClick={onClick}>

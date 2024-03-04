@@ -15,23 +15,14 @@ export const FileUpload = () => {
     uploadList,
     alreadyUploaded,
     setAlreadyUploadList,
-    removeFile,
+    removeFile
   } = useFileStore();
 
   useEffect(() => {
     fs.onProgress((progress) => setUploadProgress(progress));
 
     if (uploadList && hasSubmitted) {
-      fs.startUploading(uploadList).then((files) => {
-        files?.forEach(async (filePromise) => {
-          const file = await filePromise;
-          if (file instanceof File) {
-            setAlreadyUploadList(file);
-            removeFile(file);
-          }
-        });
-        setHasSubmit(false);
-      });
+      fs.startUploading(uploadList).then();
     }
 
     return () => {
@@ -43,7 +34,7 @@ export const FileUpload = () => {
     setHasSubmit,
     alreadyUploaded,
     removeFile,
-    setAlreadyUploadList,
+    setAlreadyUploadList
   ]);
 
   return (

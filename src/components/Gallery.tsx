@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter } from '@/components/ui/card.tsx';
 import { FilePreview } from '@/components/FilePreview';
-import { formatBytes, getFileFormat, getFileName } from '../../../utils';
+import { formatBytes, getFileFormat, getFileName } from '@/lib/utils.ts';
 
 type GalleryProps = {
   files: File[] | FileList;

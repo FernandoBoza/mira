@@ -1,14 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import debounce from 'lodash.debounce';
-import {
-  Expand,
-  FastForward,
-  PauseIcon,
-  PlayIcon,
-  Rewind,
-  Volume2,
-  VolumeX,
-} from 'lucide-react';
+import { Expand, FastForward, PauseIcon, PlayIcon, Rewind, Volume2, VolumeX } from 'lucide-react';
 import { Slider } from '@/components/ui/slider.tsx';
 
 type VideoBtnType = {
@@ -107,7 +99,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
       } catch (err) {
         if (err instanceof DOMException) {
           console.log(
-            `Error attempting to enable full-screen mode: ${err.message} (${err.name})`,
+            `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
           );
         }
       }
@@ -117,7 +109,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
       } catch (err) {
         if (err instanceof DOMException) {
           console.error(
-            `Error attempting to exit full-screen mode: ${err.message} (${err.name})`,
+            `Error attempting to exit full-screen mode: ${err.message} (${err.name})`
           );
         }
       }
@@ -153,8 +145,8 @@ export const VideoPlayer = ({ src }: { src: string }) => {
           videoRef.current.currentTime = time;
         }
         setCurrentTime(time);
-      }, debounceTime),
-    [debounceTime],
+      }, 0),
+    [debounceTime]
   );
 
   return (
@@ -166,7 +158,8 @@ export const VideoPlayer = ({ src }: { src: string }) => {
         onClick={togglePlayPause}
         onTimeUpdate={handleTimeUpdate}
       />
-      <div className="absolute left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 transition-all duration-1000 ease-in-out -bottom-full opacity-0 group-hover:bottom-0 group-hover:opacity-100">
+      <div
+        className="absolute left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 transition-all duration-1000 ease-in-out -bottom-full opacity-0 group-hover:bottom-0 group-hover:opacity-100">
         <RewindBtn onClick={handleRewind} />
         <PlayPauseBtn isPlaying={isPlaying} onClick={togglePlayPause} />
         <FastForwardBtn onClick={handleFastForward} />
