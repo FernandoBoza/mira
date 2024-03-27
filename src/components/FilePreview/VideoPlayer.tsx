@@ -80,7 +80,9 @@ export const VideoPlayer = ({ src }: { src: string }) => {
       debounce((value: number[]) => {
         const time = parseFloat(`${value[0]}`);
         if (videoRef.current) {
-          videoRef.current.currentTime = time;
+          if ('currentTime' in videoRef.current) {
+            videoRef.current.currentTime = time;
+          }
         }
         setCurrentTime(time);
         // REDO strategy, pause and show timeline instead of actually scrubbing video
