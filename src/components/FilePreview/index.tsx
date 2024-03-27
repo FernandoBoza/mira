@@ -23,7 +23,7 @@ export const FilePreview = ({ file }: { file: File }) => {
 
   if (fileType === 'image') {
     return (
-      <img className="h-auto w-auto contain" src={fileUrl} alt={file.name} />
+      <img className="h-auto w-auto contain aspect-video" src={fileUrl} alt={file.name} />
     );
   }
 

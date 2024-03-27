@@ -7,7 +7,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const togglePlayPause = async () => {
     const video = videoRef?.current;
@@ -83,7 +83,8 @@ export const VideoPlayer = ({ src }: { src: string }) => {
           videoRef.current.currentTime = time;
         }
         setCurrentTime(time);
-      }, 0),
+        // REDO strategy, pause and show timeline instead of actually scrubbing video
+      }, debounceTime),
     [debounceTime]
   );
 
@@ -92,7 +93,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
       <video
         ref={videoRef}
         src={src}
-        className="w-full"
+        className="w-full h-full"
         onClick={togglePlayPause}
         onTimeUpdate={handleTimeUpdate}
       />
