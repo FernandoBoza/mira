@@ -4,6 +4,15 @@ import { getFileType } from '@/lib/utils.ts';
 import { VideoPlayer } from '@/components/FilePreview/VideoPlayer.tsx';
 
 export const FilePreview = ({ file, disablePlayBack }: { file: File, disablePlayBack?: boolean }) => {
+
+  if (!(file instanceof File)) {
+    throw new Error('Invalid prop: file must be an instance of File');
+  }
+
+  if (!file.name || !file.type || typeof file.size !== 'number') {
+    throw new Error('Invalid prop: file must have name, type, and size properties');
+  }
+
   const [fileUrl, setFileUrl] = useState('');
   const [fileType, setFileType] = useState('');
 
@@ -21,34 +30,29 @@ export const FilePreview = ({ file, disablePlayBack }: { file: File, disablePlay
     };
   }, [file]);
 
-  if (fileType === 'image') {
-    return (
-      <img className="h-auto w-auto contain aspect-auto" src={fileUrl} alt={file.name} />
-    );
-  }
-
-  if (fileType === 'video') {
-    if (file.size > 314572800) {
+  switch (fileType) {
+    case 'image':
+      return <img className="h-auto w-auto contain aspect-auto" src={fileUrl} alt={file.name} />;
+    case 'video':
+      if (file.size > 314572800) {
+        return (
+          <div className="flex h-full text-center items-center">
+            <p className="my-0 mx-auto">
+              Can't preview video, file is over 300MB
+            </p>
+          </div>
+        );
+      }
+      return <VideoPlayer disablePlayBack={disablePlayBack} src={fileUrl} />;
+    case 'audio':
       return (
-        <div className="flex h-full text-center items-center">
-          <p className="my-0 mx-auto">
-            Can't preview video, file is over 300MB
-          </p>
-        </div>
+        <audio controls>
+          <source src={fileUrl} type={file.type} />
+        </audio>
       );
-    }
-    return <VideoPlayer disablePlayBack={disablePlayBack} src={fileUrl} />;
+    case 'application':
+      return <PDFViewer fileUrl={fileUrl} />;
+    default:
+      return null;
   }
-
-  if (fileType === 'audio') {
-    return (
-      <audio controls>
-        <source src={fileUrl} type={file.type} />
-      </audio>
-    );
-  }
-
-  if (fileType === 'application') return <PDFViewer fileUrl={fileUrl} />;
-
-  return null;
 };

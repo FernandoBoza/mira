@@ -3,17 +3,23 @@ import { DropZone } from '@/components/upload/DropZone.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
 import { Gallery } from '@/components/Gallery.tsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const EditorPage = () => {
-
   const files = useFileStore().uploadList;
-  const [fileSelected, setFileSelected] = useState<File>()
-  
+  const [fileSelected, setFileSelected] = useState<File>();
+  const { uploadList } = useFileStore();
+
   const selectFile = (file: File) => {
-    setFileSelected(file)
-  }
-  
+    setFileSelected(file);
+  };
+
+  useEffect(() => {
+    if (fileSelected && ![...uploadList].includes(fileSelected)) {
+      setFileSelected(undefined);
+    }
+  }, [fileSelected, uploadList]);
+
   return (
     <ResizablePanelGroup direction="vertical" className="border">
       <ResizablePanel defaultSize={50}>

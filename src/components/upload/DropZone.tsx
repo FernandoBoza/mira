@@ -42,7 +42,7 @@ export const DropZone = () => {
         <p className="font-semibold">Drag & Drop Here or</p>
         <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
 
-        {[...uploadList].length >= 1 && <FileUpload />}
+        {[...uploadList].length >= 1 && <FileUpload inputFileRef={inputFileRef} />}
         <input
           multiple
           type="file"

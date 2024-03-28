@@ -4,14 +4,17 @@ import { formatBytes, getFileType } from '@/lib/utils.ts';
 import { useFileStore } from '@/stores/file.store.ts';
 import { AudioIcon, CloseIcon, DocumentIcon, PhotoIcon, VideoIcon } from '@/assets/icons.tsx';
 
-export const FileProgress = ({ file, value }: FileProgressProps) => {
+export const FileProgress = ({ file, value, inputFileRef }: FileProgressProps) => {
   const { name, size, type } = file;
   const fileName = name.length > 60 ? `${name.slice(0, 60)} ...` : name;
   const fileIcon = MediaIcon[getFileType(type)];
-  
-  // TODO: Implement actual remove file function from blob or w/e
   const removeFile = useFileStore((state) => state.removeFile);
   const progressStatusStyle = value >= 100 ? 'opacity-50 pointer-events-none mb-5' : 'mb-5';
+
+  const handleRemoveFile = (file: File) => {
+    removeFile(file);
+    if (inputFileRef.current) inputFileRef.current.value = '';
+  };
 
   return (
     <div className={progressStatusStyle}>
@@ -21,7 +24,7 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
           <Button
             variant={'ghost'}
             className={'h-auto p-0 hover:bg-red-700 hover:text-white'}
-            onClick={() => removeFile(file)}
+            onClick={() => handleRemoveFile(file)}
           >
             {CloseIcon}
           </Button>
@@ -46,6 +49,7 @@ const MediaIcon: MediaIconType = {
 type FileProgressProps = {
   file: File;
   value: number;
+  inputFileRef: React.RefObject<HTMLInputElement>;
 };
 
 type MediaIconType = {
