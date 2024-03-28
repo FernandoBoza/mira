@@ -3,7 +3,7 @@ import { PDFViewer } from '@/components/FilePreview/PDFViewer.tsx';
 import { getFileType } from '@/lib/utils.ts';
 import { VideoPlayer } from '@/components/FilePreview/VideoPlayer.tsx';
 
-export const FilePreview = ({ file }: { file: File }) => {
+export const FilePreview = ({ file, disablePlayBack }: { file: File, disablePlayBack?: boolean }) => {
   const [fileUrl, setFileUrl] = useState('');
   const [fileType, setFileType] = useState('');
 
@@ -23,7 +23,7 @@ export const FilePreview = ({ file }: { file: File }) => {
 
   if (fileType === 'image') {
     return (
-      <img className="h-auto w-auto contain aspect-video" src={fileUrl} alt={file.name} />
+      <img className="h-auto w-auto contain aspect-auto" src={fileUrl} alt={file.name} />
     );
   }
 
@@ -37,7 +37,7 @@ export const FilePreview = ({ file }: { file: File }) => {
         </div>
       );
     }
-    return <VideoPlayer src={fileUrl} />;
+    return <VideoPlayer disablePlayBack={disablePlayBack} src={fileUrl} />;
   }
 
   if (fileType === 'audio') {

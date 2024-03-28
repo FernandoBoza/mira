@@ -3,7 +3,7 @@ import debounce from 'lodash.debounce';
 import { Expand, FastForward, PauseIcon, PlayIcon, Rewind, Volume2, VolumeX } from 'lucide-react';
 import { Slider } from '@/components/ui/slider.tsx';
 
-export const VideoPlayer = ({ src }: { src: string }) => {
+export const VideoPlayer = ({ src, disablePlayBack }: { src: string, disablePlayBack?: boolean }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -95,7 +95,7 @@ export const VideoPlayer = ({ src }: { src: string }) => {
       <video
         ref={videoRef}
         src={src}
-        className="w-full h-full"
+        className={`w-full h-full ${disablePlayBack ? 'pointer-events-none' : ''}`}
         onClick={togglePlayPause}
         onTimeUpdate={handleTimeUpdate}
       />

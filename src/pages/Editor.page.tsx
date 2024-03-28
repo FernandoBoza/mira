@@ -2,10 +2,18 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { DropZone } from '@/components/upload/DropZone.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
+import { Gallery } from '@/components/Gallery.tsx';
+import { useState } from 'react';
 
 export const EditorPage = () => {
 
   const files = useFileStore().uploadList;
+  const [fileSelected, setFileSelected] = useState<File>()
+  
+  const selectFile = (file: File) => {
+    setFileSelected(file)
+  }
+  
   return (
     <ResizablePanelGroup direction="vertical" className="border">
       <ResizablePanel defaultSize={50}>
@@ -18,9 +26,10 @@ export const EditorPage = () => {
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={75}>
             <div className="flex h-full w-full p-6 flex-grow">
-              {[...files].map((file) => (
-                <FilePreview file={file} />
-              ))}
+              {fileSelected
+                ? <FilePreview file={fileSelected} />
+                : <div className="flex h-full items-center justify-center">Select a file to preview</div>
+              }
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
@@ -28,7 +37,7 @@ export const EditorPage = () => {
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={50}>
         <div className="flex h-full items-center justify-center p-6">
-          <span className="font-semibold">Three</span>
+          <Gallery files={files} selectFile={selectFile} />
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>
