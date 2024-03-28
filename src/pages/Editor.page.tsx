@@ -1,8 +1,12 @@
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable.tsx';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable.tsx';
 import { DropZone } from '@/components/upload/DropZone.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
-import { Gallery } from '@/components/Gallery.tsx';
+import { Gallery } from '@/components/layout/Gallery.tsx';
 import { useEffect, useState } from 'react';
 
 export const EditorPage = () => {
@@ -20,6 +24,14 @@ export const EditorPage = () => {
     }
   }, [fileSelected, uploadList]);
 
+  const RenderSection = fileSelected ? (
+    <FilePreview file={fileSelected} />
+  ) : (
+    <h1 className="flex h-full w-full text-2xl font-semibold items-center justify-center">
+      Select a file to preview
+    </h1>
+  );
+
   return (
     <ResizablePanelGroup direction="vertical" className="border">
       <ResizablePanel defaultSize={50}>
@@ -31,13 +43,7 @@ export const EditorPage = () => {
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={75}>
-            <div className="flex h-full w-full p-6 flex-grow">
-              {fileSelected
-                ? <FilePreview file={fileSelected} />
-                : <h1 className="flex h-full w-full text-2xl font-semibold items-center justify-center">Select a file to
-                  preview</h1>
-              }
-            </div>
+            <div className="flex h-full w-full p-6 flex-grow">{RenderSection}</div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>

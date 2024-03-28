@@ -8,11 +8,10 @@ type GalleryProps = {
   selectFile?: (file: File) => void;
 };
 export const Gallery = ({ files, selectFile, className = '' }: GalleryProps) => {
-
   const handleFileSelection = (file: File) => selectFile && selectFile(file);
 
   return (
-    <div className={`gap-2 grid grid-cols-4 xl:grid-cols-5 gap-4 ${className}`}>
+    <div className={`grid grid-cols-4 xl:grid-cols-5 gap-4 ${className}`}>
       {[...files].map((file) => (
         <Card
           key={`${file.name}`}
@@ -22,17 +21,13 @@ export const Gallery = ({ files, selectFile, className = '' }: GalleryProps) => 
           <CardContent className="h-full max-h-48 xl:h-60 overflow-hidden px-0">
             <FilePreview disablePlayBack={true} file={file} />
           </CardContent>
-          <CardFooter
-            className={'p-3 flex flex-col items-start'}
-          >
+          <CardFooter className={'p-3 flex flex-col items-start'}>
             <b className="text-ellipsis overflow-hidden text-nowrap w-full">
               {getFileName(file.name)}
             </b>
             <p className="flex justify-between w-full">
               {formatBytes(file.size)}
-              <span className="text-muted-foreground">
-              {getFileFormat(file.type)}
-            </span>
+              <span className="text-muted-foreground">{getFileFormat(file.type)}</span>
             </p>
           </CardFooter>
         </Card>
