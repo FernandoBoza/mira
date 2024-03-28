@@ -119,6 +119,7 @@ export const VideoPlayer = ({ src, disablePlayBack }: { src: string, disablePlay
           onValueChange={handleScrub}
           className={'cursor-pointer'}
           trackClassName={'rounded-none'}
+          onClick={(event) => event.stopPropagation()}
         />
       </div>
     </div>

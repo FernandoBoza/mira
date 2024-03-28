@@ -34,7 +34,8 @@ export const EditorPage = () => {
             <div className="flex h-full w-full p-6 flex-grow">
               {fileSelected
                 ? <FilePreview file={fileSelected} />
-                : <div className="flex h-full items-center justify-center">Select a file to preview</div>
+                : <h1 className="flex h-full w-full text-2xl font-semibold items-center justify-center">Select a file to
+                  preview</h1>
               }
             </div>
           </ResizablePanel>
