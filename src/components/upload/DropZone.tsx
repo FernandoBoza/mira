@@ -39,13 +39,13 @@ export const DropZone = () => {
 
   return (
     <div
-      className="w-full"
+      className="w-full @container"
       onDragEnter={preventDefaults}
       onDragOver={preventDefaults}
       onDrop={handleDrop}
     >
       <div className="p-4 flex flex-col items-center gap-4 w-full">
-        <div className="flex items-center justify-around w-full">
+        <div className="flex flex-col gap-2 @sm:gap-0 @sm:flex-row items-center justify-around w-full">
           <i className="text-primary h-12 w-12">{CloudUploadIcon}</i>
           <p className="font-semibold">Drag & Drop Here or</p>
           <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
