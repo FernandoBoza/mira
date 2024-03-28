@@ -9,6 +9,7 @@ export const FilePreview = ({ file, disablePlayBack }: { file: File, disablePlay
     throw new Error('Invalid prop: file must be an instance of File');
   }
 
+  // typeof file.size === 'number' is a workaround for a TypeScript/JavaScript runtime validation bug
   if (!file.name || !file.type || typeof file.size !== 'number') {
     throw new Error('Invalid prop: file must have name, type, and size properties');
   }
