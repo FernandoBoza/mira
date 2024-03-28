@@ -4,11 +4,11 @@ import { Link } from '@tanstack/react-router';
 import { GradientIcon } from '@/assets/icons.tsx';
 import { FolderOpenDot, PencilRuler } from 'lucide-react';
 
-const categories = [
+export const pages = [
   {
-    name: 'Editor',
+    name: 'Gallery',
     icon: PencilRuler,
-    url: '/editor',
+    url: '/gallery',
   },
   {
     name: 'Projects',
@@ -36,18 +36,18 @@ export default function App() {
 
   return (
     <div className="flex w-full gap-2">
-      {categories.map((category) => (
-        <Link className="grow w-1/5" to={category.url} key={category.name}>
+      {pages.map((page) => (
+        <Link className="grow w-1/5" to={page.url} key={page.name}>
           <Card className="h-40 text-center">
             <CardHeader className="items-center">
-              {typeof category.icon === 'string' ? (
-                <span className="text-3xl scale-125">{category.icon}</span>
+              {typeof page.icon === 'string' ? (
+                <span className="text-3xl scale-125">{page.icon}</span>
               ) : (
-                <GradientIcon Icon={category.icon} />
+                <GradientIcon Icon={page.icon} />
               )}
             </CardHeader>
             <CardContent>
-              <h1>{category.name}</h1>
+              <h1>{page.name}</h1>
             </CardContent>
           </Card>
         </Link>

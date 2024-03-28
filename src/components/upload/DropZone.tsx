@@ -20,7 +20,8 @@ export const DropZone = () => {
   const addFiles = useCallback(
     (files: FileList | ChangeEvent<HTMLInputElement>) => {
       setUploadList(fs.filterFiles({ files, uploadList, alreadyUploaded }));
-    }, [alreadyUploaded, setUploadList, uploadList]
+    },
+    [alreadyUploaded, setUploadList, uploadList],
   );
 
   const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {
@@ -32,15 +33,23 @@ export const DropZone = () => {
     (e: DragEvent<HTMLDivElement>) => {
       preventDefaults(e);
       addFiles(e.dataTransfer.files);
-    }, [addFiles, preventDefaults]
+    },
+    [addFiles, preventDefaults],
   );
 
   return (
-    <div className="w-full" onDragEnter={preventDefaults} onDragOver={preventDefaults} onDrop={handleDrop}>
+    <div
+      className="w-full"
+      onDragEnter={preventDefaults}
+      onDragOver={preventDefaults}
+      onDrop={handleDrop}
+    >
       <div className="p-4 flex flex-col items-center gap-4 w-full">
-        <i className="text-primary h-20 w-20">{CloudUploadIcon}</i>
-        <p className="font-semibold">Drag & Drop Here or</p>
-        <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
+        <div className="flex items-center justify-around w-full">
+          <i className="text-primary h-12 w-12">{CloudUploadIcon}</i>
+          <p className="font-semibold">Drag & Drop Here or</p>
+          <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
+        </div>
 
         {[...uploadList].length >= 1 && <FileUpload inputFileRef={inputFileRef} />}
         <input
