@@ -16,7 +16,7 @@ export const Gallery = ({ files, selectFile, className = '' }: GalleryProps) => 
         <Card
           key={`${file.name}`}
           onClick={() => handleFileSelection(file)}
-          className={'overflow-hidden flex flex-col justify-between'}
+          className={'overflow-hidden flex flex-col justify-between cursor-pointer'}
         >
           <CardContent className="h-full max-h-48 xl:h-60 overflow-hidden px-0">
             <FilePreview disablePlayBack={true} file={file} />

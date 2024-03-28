@@ -29,12 +29,13 @@ export const FileProgress = ({ file, value, inputFileRef }: FileProgressProps) =
             {CloseIcon}
           </Button>
         )}
-        <span id="fileName">{fileName}</span>
-        <span className="font-bold ml-auto mr-2" id="fileSize">
+        <span id="fileName" className="line-clamp-1">
+          {fileName}
+        </span>
+        <span className="font-bold ml-auto mr-2 text-nowrap" id="fileSize">
           {formatBytes(size)}
         </span>
       </div>
-      {/*<Progress value={value} />*/}
     </div>
   );
 };
@@ -43,7 +44,7 @@ const MediaIcon: MediaIconType = {
   image: PhotoIcon,
   video: VideoIcon,
   audio: AudioIcon,
-  application: DocumentIcon
+  application: DocumentIcon,
 };
 
 type FileProgressProps = {
@@ -57,4 +58,3 @@ type MediaIconType = {
   video: ReactNode;
   [key: string]: ReactNode;
 };
-

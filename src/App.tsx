@@ -8,22 +8,25 @@ const categories = [
   {
     name: 'Editor',
     icon: PencilRuler,
-    url: '/editor'
+    url: '/editor',
   },
   {
     name: 'Projects',
     icon: FolderOpenDot,
-    url: '/projects'
+    url: '/projects',
   },
   {
     name: 'Help',
     icon: '🤷',
-    url: '/help'
-  }
+    url: '/help',
+  },
 ];
 
 export default function App() {
-  const worker = useMemo(() => new Worker(new URL('./web.worker.ts', import.meta.url), { type: 'module' }), []);
+  const worker = useMemo(
+    () => new Worker(new URL('./web.worker.ts', import.meta.url), { type: 'module' }),
+    [],
+  );
 
   useEffect(() => {
     worker.onmessage = (event) => console.log('Worker said:', event.data);
@@ -43,7 +46,9 @@ export default function App() {
                 <GradientIcon Icon={category.icon} />
               )}
             </CardHeader>
-            <CardContent><h1 className="font-semibold text-xl">{category.name}</h1></CardContent>
+            <CardContent>
+              <h1>{category.name}</h1>
+            </CardContent>
           </Card>
         </Link>
       ))}

@@ -8,6 +8,7 @@ import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
 import { Gallery } from '@/components/layout/Gallery.tsx';
 import { useEffect, useState } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 
 export const EditorPage = () => {
   const files = useFileStore().uploadList;
@@ -27,9 +28,7 @@ export const EditorPage = () => {
   const RenderSection = fileSelected ? (
     <FilePreview file={fileSelected} />
   ) : (
-    <h1 className="flex h-full w-full text-2xl font-semibold items-center justify-center">
-      Select a file to preview
-    </h1>
+    <h1 className="flex h-full w-full items-center justify-center">Select a file to preview</h1>
   );
 
   return (
@@ -49,9 +48,9 @@ export const EditorPage = () => {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={50}>
-        <div className="flex h-full items-center justify-center p-6">
+        <ScrollArea className="flex h-full items-center justify-center p-6">
           <Gallery files={files} selectFile={selectFile} />
-        </div>
+        </ScrollArea>
       </ResizablePanel>
     </ResizablePanelGroup>
   );
