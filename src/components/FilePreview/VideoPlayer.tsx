@@ -100,7 +100,11 @@ export const VideoPlayer = ({ src, disablePlayBack }: { src: string, disablePlay
         onTimeUpdate={handleTimeUpdate}
       />
       <div
-        className="absolute left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 transition-all duration-1000 ease-in-out -bottom-20 opacity-0 group-hover:bottom-0 group-hover:opacity-100">
+        className={`${disablePlayBack
+          ? 'hidden'
+          : 'absolute left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 ' +
+          'transition-all duration-1000 ease-in-out -bottom-20 opacity-0 group-hover:bottom-0 ' +
+          'group-hover:opacity-100'}`}>
         <RewindBtn onClick={handleRewind} />
         <PlayPauseBtn isPlaying={isPlaying} onClick={togglePlayPause} />
         <FastForwardBtn onClick={handleFastForward} />

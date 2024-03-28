@@ -9,16 +9,7 @@ type GalleryProps = {
 };
 export const Gallery = ({ files, selectFile, className = '' }: GalleryProps) => {
   
-  let localSelectedFile: File | undefined
-  
-  const handleFileSelection = (file: File) => {
-    if (selectFile) {
-      selectFile(file)
-      localSelectedFile = file
-    }
-  }
-  
-  console.log(localSelectedFile?.name);
+  const handleFileSelection = (file: File) => selectFile && selectFile(file)
   
   return (
     <div className={`gap-2 grid grid-cols-4 xl:grid-cols-5 gap-4 ${className}`}>
@@ -26,12 +17,14 @@ export const Gallery = ({ files, selectFile, className = '' }: GalleryProps) => 
         <Card
           key={`${file.name}`}
           className={'overflow-hidden flex flex-col justify-between'}
-          onClick={() => handleFileSelection(file)}
         >
           <CardContent className="h-full max-h-48 xl:h-60 overflow-hidden px-0">
-            <FilePreview disablePlayBack={file.name === localSelectedFile?.name} file={file} />
+            <FilePreview disablePlayBack={true} file={file} />
           </CardContent>
-          <CardFooter className={'p-3 flex flex-col items-start'}>
+          <CardFooter
+            onClick={() => handleFileSelection(file)}
+            className={'p-3 flex flex-col items-start'}
+          >
             <b className="text-ellipsis overflow-hidden text-nowrap w-full">
               {getFileName(file.name)}
             </b>

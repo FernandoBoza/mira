@@ -8,6 +8,8 @@ export const FileProgress = ({ file, value }: FileProgressProps) => {
   const { name, size, type } = file;
   const fileName = name.length > 60 ? `${name.slice(0, 60)} ...` : name;
   const fileIcon = MediaIcon[getFileType(type)];
+  
+  // TODO: Implement actual remove file function from blob or w/e
   const removeFile = useFileStore((state) => state.removeFile);
   const progressStatusStyle = value >= 100 ? 'opacity-50 pointer-events-none mb-5' : 'mb-5';
 
