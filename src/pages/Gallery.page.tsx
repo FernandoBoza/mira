@@ -5,7 +5,7 @@ import { FileUpload } from '@/components/FileUpload';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
-import { TableView } from '@/components/Table.tsx';
+import { TableView as Table } from '@/components/Table.tsx';
 import { Grid } from '@/components/Grid.tsx';
 import { Button } from '@/components/ui/button.tsx';
 
@@ -79,7 +79,7 @@ export const GalleryPage = () => {
             />
           )}
           {view === 'table' && (
-            <TableView
+            <Table
               files={memoizedFiles}
               selectFile={selectFile}
               selectedFileName={fileSelected?.name}

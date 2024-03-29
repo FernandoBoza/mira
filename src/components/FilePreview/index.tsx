@@ -38,7 +38,12 @@ export const FilePreview = ({ file, disablePlayBack }: FilePreviewProps) => {
   switch (fileType) {
     case 'image':
       return (
-        <img className="h-auto w-auto mx-auto contain aspect-auto" src={fileUrl} alt={file.name} />
+        <img
+          loading="lazy"
+          className="h-auto w-auto mx-auto contain aspect-auto"
+          src={fileUrl}
+          alt={file.name}
+        />
       );
     case 'video':
       if (file.size > 314572800) {
