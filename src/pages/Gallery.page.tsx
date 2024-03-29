@@ -15,9 +15,8 @@ export const GalleryPage = () => {
   const { uploadList } = useFileStore();
   const [view, setView] = useState('grid');
 
-  const selectFile = (file?: File) => {
-    setFileSelected(file);
-  };
+  const MemoGrid = React.memo(Grid);
+  const MemoTable = React.memo(TableView);
 
   useEffect(() => {
     if (fileSelected && ![...uploadList].includes(fileSelected)) {
@@ -25,18 +24,13 @@ export const GalleryPage = () => {
     }
   }, [fileSelected, uploadList]);
 
-  const RenderSection = fileSelected ? (
-    <FilePreview file={fileSelected} />
-  ) : (
-    <h1 className="flex h-full w-full items-center justify-center">Select a file to preview</h1>
-  );
+  const selectFile = (file?: File) => {
+    setFileSelected(file);
+  };
 
   const toggleViews = (view: 'grid' | 'table') => {
     setView(view);
   };
-
-  const MemoGrid = React.memo(Grid);
-  const MemoTable = React.memo(TableView);
 
   return (
     <ResizablePanelGroup direction="vertical" className="border">
@@ -49,7 +43,15 @@ export const GalleryPage = () => {
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={75}>
-            <div className="flex h-full w-full p-6 flex-grow">{RenderSection}</div>
+            <div className="flex h-full w-full p-6 flex-grow">
+              {fileSelected ? (
+                <FilePreview file={fileSelected} />
+              ) : (
+                <h1 className="flex h-full w-full items-center justify-center">
+                  Select a file to preview
+                </h1>
+              )}
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
