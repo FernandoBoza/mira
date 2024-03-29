@@ -11,9 +11,9 @@ export const pages = [
     url: '/gallery',
   },
   {
-    name: 'Projects',
+    name: 'Editor',
     icon: FolderOpenDot,
-    url: '/projects',
+    url: '/editor',
   },
   {
     name: 'Help',

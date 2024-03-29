@@ -20,8 +20,8 @@ export const Route = createRootRoute({
         <Link to={'/gallery'} className="[&.active]:font-bold text-2xl">
           Gallery
         </Link>
-        <Link to={'/projects'} className="[&.active]:font-bold text-2xl">
-          Projects
+        <Link to={'/editor'} className="[&.active]:font-bold text-2xl">
+          Editor
         </Link>
         <ThemeToggle />
       </nav>

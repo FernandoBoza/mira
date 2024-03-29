@@ -16,17 +16,12 @@ import { Route as rootRoute } from './routes/__root'
 
 // Create Virtual Routes
 
-const ProjectsLazyImport = createFileRoute('/projects')()
 const HelpLazyImport = createFileRoute('/help')()
 const GalleryLazyImport = createFileRoute('/gallery')()
+const EditorLazyImport = createFileRoute('/editor')()
 const IndexLazyImport = createFileRoute('/')()
 
 // Create/Update Routes
-
-const ProjectsLazyRoute = ProjectsLazyImport.update({
-  path: '/projects',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/projects.lazy').then((d) => d.Route))
 
 const HelpLazyRoute = HelpLazyImport.update({
   path: '/help',
@@ -37,6 +32,11 @@ const GalleryLazyRoute = GalleryLazyImport.update({
   path: '/gallery',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/gallery.lazy').then((d) => d.Route))
+
+const EditorLazyRoute = EditorLazyImport.update({
+  path: '/editor',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/editor.lazy').then((d) => d.Route))
 
 const IndexLazyRoute = IndexLazyImport.update({
   path: '/',
@@ -51,16 +51,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/editor': {
+      preLoaderRoute: typeof EditorLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/gallery': {
       preLoaderRoute: typeof GalleryLazyImport
       parentRoute: typeof rootRoute
     }
     '/help': {
       preLoaderRoute: typeof HelpLazyImport
-      parentRoute: typeof rootRoute
-    }
-    '/projects': {
-      preLoaderRoute: typeof ProjectsLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -70,9 +70,9 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexLazyRoute,
+  EditorLazyRoute,
   GalleryLazyRoute,
   HelpLazyRoute,
-  ProjectsLazyRoute,
 ])
 
 /* prettier-ignore-end */
