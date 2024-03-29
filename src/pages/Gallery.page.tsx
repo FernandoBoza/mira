@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid2X2, List } from 'lucide-react';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable.tsx';
 import { FileUpload } from '@/components/FileUpload';
@@ -10,23 +10,20 @@ import { Grid } from '@/components/Grid.tsx';
 import { Button } from '@/components/ui/button.tsx';
 
 export const GalleryPage = () => {
-  const files = useFileStore().uploadList;
+  const { uploadList: files } = useFileStore();
+  const memoizedFiles = useMemo(() => files, [files]);
   const [fileSelected, setFileSelected] = useState<File>();
-  const { uploadList } = useFileStore();
   const [view, setView] = useState('grid');
 
-  const MemoGrid = React.memo(Grid);
-  const MemoTable = React.memo(TableView);
-
   useEffect(() => {
-    if (fileSelected && ![...uploadList].includes(fileSelected)) {
+    if (fileSelected && ![...files].includes(fileSelected)) {
       setFileSelected(undefined);
     }
-  }, [fileSelected, uploadList]);
+  }, [fileSelected, files]);
 
-  const selectFile = (file?: File) => {
+  const selectFile = useCallback((file?: File) => {
     setFileSelected(file);
-  };
+  }, []);
 
   const toggleViews = (view: 'grid' | 'table') => {
     setView(view);
@@ -75,10 +72,18 @@ export const GalleryPage = () => {
         </div>
         <ScrollArea className="flex h-full items-center justify-center p-6">
           {view === 'grid' && (
-            <MemoGrid files={files} selectFile={selectFile} selectedFileName={fileSelected?.name} />
+            <Grid
+              files={memoizedFiles}
+              selectFile={selectFile}
+              selectedFileName={fileSelected?.name}
+            />
           )}
           {view === 'table' && (
-            <MemoTable files={files} selectFile={selectFile} selectedFileName={fileSelected?.name} />
+            <TableView
+              files={memoizedFiles}
+              selectFile={selectFile}
+              selectedFileName={fileSelected?.name}
+            />
           )}
         </ScrollArea>
       </ResizablePanel>
