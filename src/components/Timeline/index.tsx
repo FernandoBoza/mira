@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { DragEvent, useCallback, useEffect, useRef } from 'react';
+import { useFileStore } from '@/stores/file.store.ts';
 
 type TimelineProps = {
   duration: number;
@@ -7,6 +8,16 @@ type TimelineProps = {
 
 export const Timeline = ({ duration, onScrub }: TimelineProps) => {
   const timelineRef = useRef<HTMLDivElement>(null);
+  const { draggedFile, setDraggedFile } = useFileStore();
+
+  useEffect(() => {
+    // TODO: Extract frames from the video and display them in the timeline
+  }, [duration]);
+
+  const addTrack = (track: File) => {
+    console.log(track);
+    setDraggedFile(undefined);
+  };
 
   const handleScrub = (event: React.MouseEvent) => {
     if (timelineRef.current) {
@@ -17,12 +28,28 @@ export const Timeline = ({ duration, onScrub }: TimelineProps) => {
     }
   };
 
-  useEffect(() => {
-    // TODO: Extract frames from the video and display them in the timeline
-  }, [duration]);
+  const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: DragEvent<HTMLDivElement>) => {
+      preventDefaults(e);
+      if (draggedFile) addTrack(draggedFile);
+    },
+    [draggedFile, preventDefaults],
+  );
 
   return (
-    <div ref={timelineRef} onClick={handleScrub} className="timeline">
+    <div
+      onDragEnter={preventDefaults}
+      onDragOver={preventDefaults}
+      onDrop={handleDrop}
+      ref={timelineRef}
+      onClick={handleScrub}
+      className="h-full"
+    >
       TimeLine
     </div>
   );

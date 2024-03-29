@@ -72,7 +72,7 @@ export const GalleryPage = () => {
             <List />
           </Button>
         </div>
-        <ScrollArea className="flex h-full items-center justify-center p-6">
+        <ScrollArea className="flex h-full items-center justify-center p-6 pb-20">
           {view === 'grid' && (
             <Grid
               files={memoizedFiles}

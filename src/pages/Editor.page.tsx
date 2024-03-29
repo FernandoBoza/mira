@@ -44,6 +44,7 @@ const EditorPage = () => {
           <ResizablePanel defaultSize={20}>
             <ScrollArea className="flex h-full items-center justify-center p-6">
               <Grid
+                draggable={true}
                 files={memoizedFiles}
                 selectFile={selectFile}
                 selectedFileName={fileSelected?.name}

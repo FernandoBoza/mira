@@ -1,14 +1,24 @@
 import { Card, CardContent, CardFooter } from '@/components/ui/card.tsx';
 import { FilePreview } from '@/components/FilePreview';
 import { formatBytes, getFileFormat, getFileName } from '@/lib/utils.ts';
+import { useFileStore } from '@/stores/file.store.ts';
 
 type GalleryProps = {
   files: File[] | FileList;
   selectFile?: (file?: File) => void;
   selectedFileName?: string;
   showFileDetails?: boolean;
+  draggable?: boolean;
 };
-export const Grid = ({ files, selectFile, selectedFileName, showFileDetails }: GalleryProps) => {
+export const Grid = ({
+  files,
+  selectFile,
+  selectedFileName,
+  showFileDetails,
+  draggable,
+}: GalleryProps) => {
+  const { setDraggedFile } = useFileStore();
+
   const handleFileSelection = (file: File) => {
     if (selectedFileName === file.name) {
       selectFile && selectFile(undefined);
@@ -19,12 +29,20 @@ export const Grid = ({ files, selectFile, selectedFileName, showFileDetails }: G
     }
   };
 
+  const handleDragStart = (file: File) => {
+    setDraggedFile(file);
+  };
+
   return (
     <div className={`grid ${showFileDetails ? 'grid-cols-4 xl:grid-cols-5' : 'grid-cols-2'}  gap-4`}>
       {[...files].map((file) => (
         <Card
           key={`${file.name}`}
           onClick={() => handleFileSelection(file)}
+          draggable={draggable}
+          onDragStart={() => {
+            if (draggable) handleDragStart(file);
+          }}
           className={`overflow-hidden flex flex-col justify-between cursor-pointer ${file.name === selectedFileName ? 'bg-primary/20' : ''}`}
         >
           <CardContent

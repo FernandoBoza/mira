@@ -8,12 +8,18 @@ type FileStoreType = {
   setAlreadyUploadList: (file: File) => void;
   removeFile: (file: File) => void;
   setHasSubmit: (hasSubmitted: boolean) => void;
+  draggedFile?: File;
+  setDraggedFile: (file?: File) => void;
 };
 
 export const useFileStore = create<FileStoreType>((set) => ({
   uploadList: [],
   alreadyUploaded: [],
   hasSubmitted: false,
+  draggedFile: undefined,
+  setDraggedFile: (file?: File) => {
+    set({ draggedFile: file });
+  },
   setUploadList: (files: FileList | File[]) => {
     set((state) => ({ uploadList: [...state.uploadList, ...files] }));
   },
