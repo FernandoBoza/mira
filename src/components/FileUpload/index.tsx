@@ -44,7 +44,7 @@ export const FileUpload = () => {
       onDragOver={preventDefaults}
       onDrop={handleDrop}
     >
-      <div className="p-4 flex flex-col items-center gap-4 w-full">
+      <div className="flex flex-col items-center gap-4 w-full">
         <div className="flex flex-col gap-2 @sm:gap-0 @sm:flex-row items-center justify-around w-full">
           <i className="text-primary h-12 w-12">{CloudUploadIcon}</i>
           <p className="font-semibold">Drag & Drop Here or</p>

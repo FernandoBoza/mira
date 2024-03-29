@@ -9,7 +9,6 @@ export const FileRow = ({ file, value, inputFileRef }: FileProgressProps) => {
   const fileName = name.length > 60 ? `${name.slice(0, 60)} ...` : name;
   const fileIcon = MediaIcon[getFileType(type)];
   const removeFile = useFileStore((state) => state.removeFile);
-  const progressStatusStyle = value >= 100 ? 'opacity-50 pointer-events-none mb-5' : 'mb-5';
 
   const handleRemoveFile = (file: File) => {
     removeFile(file);
@@ -17,7 +16,7 @@ export const FileRow = ({ file, value, inputFileRef }: FileProgressProps) => {
   };
 
   return (
-    <div className={progressStatusStyle}>
+    <div className="flex flex-col gap-4 w-full">
       <div className="flex items-center gap-3 mb-1">
         <i>{fileIcon}</i>
         {value < 100 && (

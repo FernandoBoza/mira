@@ -35,7 +35,9 @@ export const GalleryPage = () => {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={25}>
             <div className="flex h-full justify-center">
-              <FileUpload />
+              <ScrollArea className="p-6 w-full h-full">
+                <FileUpload />
+              </ScrollArea>
             </div>
           </ResizablePanel>
           <ResizableHandle withHandle />
@@ -74,6 +76,7 @@ export const GalleryPage = () => {
           {view === 'grid' && (
             <Grid
               files={memoizedFiles}
+              showFileDetails={true}
               selectFile={selectFile}
               selectedFileName={fileSelected?.name}
             />
