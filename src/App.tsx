@@ -29,6 +29,14 @@ export default function App() {
   );
 
   useEffect(() => {
+    // worker.onmessage = (event) => {
+    //   // Handle the frames data
+    //   const frames = event.data;
+    // };
+    //
+    // // Send the video file to the worker
+    // worker.postMessage(videoFile);
+
     worker.onmessage = (event) => console.log('Worker said:', event.data);
     worker.postMessage('Hello World');
     return () => worker.terminate();
