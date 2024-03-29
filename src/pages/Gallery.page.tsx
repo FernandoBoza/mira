@@ -6,14 +6,18 @@ import {
 import { DropZone } from '@/components/upload/DropZone.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { TableView } from '@/components/layout/Table.tsx';
+import { Gallery } from '@/components/layout/Gallery.tsx';
+import { Grid2X2, List } from 'lucide-react';
+import { Button } from '@/components/ui/button.tsx';
 
 export const GalleryPage = () => {
   const files = useFileStore().uploadList;
   const [fileSelected, setFileSelected] = useState<File>();
   const { uploadList } = useFileStore();
+  const [view, setView] = useState('grid');
 
   const selectFile = (file: File) => {
     setFileSelected(file);
@@ -30,6 +34,13 @@ export const GalleryPage = () => {
   ) : (
     <h1 className="flex h-full w-full items-center justify-center">Select a file to preview</h1>
   );
+
+  const toggleViews = (view: 'grid' | 'table') => {
+    setView(view);
+  };
+
+  const MemoGrid = React.memo(Gallery);
+  const MemoTableView = React.memo(TableView);
 
   return (
     <ResizablePanelGroup direction="vertical" className="border">
@@ -48,9 +59,25 @@ export const GalleryPage = () => {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={40}>
+        <div className="p-6 pb-0">
+          <Button
+            variant="outline"
+            onClick={() => toggleViews('grid')}
+            className={`px-2 ${view !== 'grid' ? 'opacity-50' : ''}`}
+          >
+            <Grid2X2 />
+          </Button>{' '}
+          <Button
+            variant="outline"
+            onClick={() => toggleViews('table')}
+            className={`px-2 ${view !== 'table' ? 'opacity-50' : ''}`}
+          >
+            <List />
+          </Button>
+        </div>
         <ScrollArea className="flex h-full items-center justify-center p-6">
-          {/*<Gallery files={files} selectFile={selectFile} />*/}
-          <TableView files={files} selectFile={selectFile} />
+          {view === 'grid' && <MemoGrid files={files} selectFile={selectFile} />}
+          {view === 'table' && <MemoTableView files={files} selectFile={selectFile} />}
         </ScrollArea>
       </ResizablePanel>
     </ResizablePanelGroup>
