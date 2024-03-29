@@ -1,16 +1,12 @@
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable.tsx';
+import React, { useEffect, useState } from 'react';
+import { Grid2X2, List } from 'lucide-react';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable.tsx';
 import { FileUpload } from '@/components/FileUpload';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
-import React, { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import { TableView } from '@/components/Table.tsx';
-import { Gallery } from '@/components/Gallery.tsx';
-import { Grid2X2, List } from 'lucide-react';
+import { Grid } from '@/components/Grid.tsx';
 import { Button } from '@/components/ui/button.tsx';
 
 export const GalleryPage = () => {
@@ -19,7 +15,7 @@ export const GalleryPage = () => {
   const { uploadList } = useFileStore();
   const [view, setView] = useState('grid');
 
-  const selectFile = (file: File) => {
+  const selectFile = (file?: File) => {
     setFileSelected(file);
   };
 
@@ -39,8 +35,8 @@ export const GalleryPage = () => {
     setView(view);
   };
 
-  const MemoGrid = React.memo(Gallery);
-  const MemoTableView = React.memo(TableView);
+  const MemoGrid = React.memo(Grid);
+  const MemoTable = React.memo(TableView);
 
   return (
     <ResizablePanelGroup direction="vertical" className="border">
@@ -76,8 +72,12 @@ export const GalleryPage = () => {
           </Button>
         </div>
         <ScrollArea className="flex h-full items-center justify-center p-6">
-          {view === 'grid' && <MemoGrid files={files} selectFile={selectFile} />}
-          {view === 'table' && <MemoTableView files={files} selectFile={selectFile} />}
+          {view === 'grid' && (
+            <MemoGrid files={files} selectFile={selectFile} selectedFileName={fileSelected?.name} />
+          )}
+          {view === 'table' && (
+            <MemoTable files={files} selectFile={selectFile} selectedFileName={fileSelected?.name} />
+          )}
         </ScrollArea>
       </ResizablePanel>
     </ResizablePanelGroup>

@@ -20,11 +20,20 @@ import { format } from 'date-fns';
 
 type TableViewProps = {
   files: File[] | FileList;
-  selectFile?: (file: File) => void;
+  selectFile?: (file?: File) => void;
+  selectedFileName?: string;
 };
 
-export const TableView = ({ files, selectFile }: TableViewProps) => {
-  const handleFileSelection = (file: File) => selectFile && selectFile(file);
+export const TableView = ({ files, selectFile, selectedFileName }: TableViewProps) => {
+  const handleFileSelection = (file: File) => {
+    if (selectedFileName === file.name) {
+      selectFile && selectFile(undefined);
+      return '';
+    } else {
+      selectFile && selectFile(file);
+      return file.name;
+    }
+  };
 
   return (
     <Table>
@@ -44,7 +53,11 @@ export const TableView = ({ files, selectFile }: TableViewProps) => {
       </TableHeader>
       <TableBody>
         {[...files].map((file) => (
-          <TableRow className="cursor-pointerß" onClick={() => handleFileSelection(file)}>
+          <TableRow
+            key={`${file.name}`}
+            onClick={() => handleFileSelection(file)}
+            className={`cursor-pointer ${file.name === selectedFileName ? 'bg-primary/20 hover:bg-primary/20' : ''}`}
+          >
             <TableCell className="hidden sm:table-cell">
               <FilePreview file={file} disablePlayBack={true} />
             </TableCell>
