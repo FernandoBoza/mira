@@ -6,11 +6,11 @@ import {
 import { DropZone } from '@/components/upload/DropZone.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
-import { Gallery } from '@/components/layout/Gallery.tsx';
 import { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
+import { TableView } from '@/components/layout/Table.tsx';
 
-export const EditorPage = () => {
+export const GalleryPage = () => {
   const files = useFileStore().uploadList;
   const [fileSelected, setFileSelected] = useState<File>();
   const { uploadList } = useFileStore();
@@ -33,7 +33,7 @@ export const EditorPage = () => {
 
   return (
     <ResizablePanelGroup direction="vertical" className="border">
-      <ResizablePanel defaultSize={50}>
+      <ResizablePanel defaultSize={60}>
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={25}>
             <div className="flex h-full justify-center">
@@ -47,9 +47,10 @@ export const EditorPage = () => {
         </ResizablePanelGroup>
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={50}>
+      <ResizablePanel defaultSize={40}>
         <ScrollArea className="flex h-full items-center justify-center p-6">
-          <Gallery files={files} selectFile={selectFile} />
+          {/*<Gallery files={files} selectFile={selectFile} />*/}
+          <TableView files={files} selectFile={selectFile} />
         </ScrollArea>
       </ResizablePanel>
     </ResizablePanelGroup>
