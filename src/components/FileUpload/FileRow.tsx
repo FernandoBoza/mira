@@ -4,7 +4,7 @@ import { formatBytes, getFileType } from '@/lib/utils.ts';
 import { useFileStore } from '@/stores/file.store.ts';
 import { AudioIcon, CloseIcon, DocumentIcon, PhotoIcon, VideoIcon } from '@/assets/icons.tsx';
 
-export const FileProgress = ({ file, value, inputFileRef }: FileProgressProps) => {
+export const FileRow = ({ file, value, inputFileRef }: FileProgressProps) => {
   const { name, size, type } = file;
   const fileName = name.length > 60 ? `${name.slice(0, 60)} ...` : name;
   const fileIcon = MediaIcon[getFileType(type)];

@@ -1,6 +1,6 @@
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import React, { Suspense } from 'react';
-import { ThemeToggle } from '@/components/layout/ThemeToggle.tsx';
+import { ThemeToggle } from '@/components/ThemeToggle.tsx';
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === 'production'

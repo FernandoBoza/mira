@@ -3,13 +3,13 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable.tsx';
-import { DropZone } from '@/components/upload/DropZone.tsx';
+import { FileUpload } from '@/components/FileUpload';
 import { useFileStore } from '@/stores/file.store.ts';
 import { FilePreview } from '@/components/FilePreview';
 import React, { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
-import { TableView } from '@/components/layout/Table.tsx';
-import { Gallery } from '@/components/layout/Gallery.tsx';
+import { TableView } from '@/components/Table.tsx';
+import { Gallery } from '@/components/Gallery.tsx';
 import { Grid2X2, List } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 
@@ -48,7 +48,7 @@ export const GalleryPage = () => {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel defaultSize={25}>
             <div className="flex h-full justify-center">
-              <DropZone />
+              <FileUpload />
             </div>
           </ResizablePanel>
           <ResizableHandle withHandle />

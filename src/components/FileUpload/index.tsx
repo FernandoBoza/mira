@@ -1,5 +1,5 @@
 import { ChangeEvent, DragEvent, useCallback, useRef } from 'react';
-import { FileUpload } from '@/components/upload/FileUpload.tsx';
+import { FilesContainer } from '@/components/FileUpload/FilesContainer.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { useFileStore } from '@/stores/file.store.ts';
 import { CloudUploadIcon } from '../../assets/icons.tsx';
@@ -7,7 +7,7 @@ import FileService from '@/service/file.service.ts';
 
 const fs = new FileService();
 
-export const DropZone = () => {
+export const FileUpload = () => {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const { uploadList, alreadyUploaded, setUploadList } = useFileStore();
 
@@ -51,7 +51,7 @@ export const DropZone = () => {
           <Button onClick={() => inputFileRef?.current?.click()}>Browse</Button>
         </div>
 
-        {[...uploadList].length >= 1 && <FileUpload inputFileRef={inputFileRef} />}
+        {[...uploadList].length >= 1 && <FilesContainer inputFileRef={inputFileRef} />}
         <input
           multiple
           type="file"
