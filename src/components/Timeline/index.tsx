@@ -6,11 +6,12 @@ import { useFileStore } from '@/stores/file.store.ts';
 type TimelineProps = {
   duration: number;
   onScrub: (time: number) => void;
+  selectFile?: (file?: File) => void;
 };
 
 // const ffmpeg = new FFmpeg();
 
-export const Timeline = ({ duration, onScrub }: TimelineProps) => {
+export const Timeline = ({ duration, onScrub, selectFile }: TimelineProps) => {
   const timelineRef = useRef<HTMLDivElement>(null);
   const { draggedFile, setDraggedFile } = useFileStore();
   const [frames, setFrames] = useState<string[]>([]);
@@ -25,7 +26,7 @@ export const Timeline = ({ duration, onScrub }: TimelineProps) => {
   // "video.mp4"
   // ]);
   // const data = ffmpeg.readFile("video.mp4");
-
+  //
   // const commands = ['-i', 'output.webm', '-vf', 'fps=1', 'scale=-1:480', 'output_%d.jpg'];
   //
   // useEffect(() => {
@@ -49,10 +50,14 @@ export const Timeline = ({ duration, onScrub }: TimelineProps) => {
   const generateFrames = useCallback(
     (track: File) => {
       console.log(track);
+      selectFile && selectFile(track);
+
+      // handle frame generation
+      setFrames([]); // clear frames
 
       setDraggedFile(undefined);
     },
-    [setDraggedFile],
+    [selectFile, setDraggedFile],
   );
 
   const handleScrub = (event: React.MouseEvent) => {
@@ -87,9 +92,7 @@ export const Timeline = ({ duration, onScrub }: TimelineProps) => {
       className="h-full"
     >
       TimeLine
-      {frames &&
-        frames.length > 0 &&
-        frames.map((frame, index) => <img key={index} src={frame} alt="scrub" />)}
+      {!!frames.length && frames.map((frame, index) => <img key={index} src={frame} alt="scrub" />)}
     </div>
   );
 };
