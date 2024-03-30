@@ -42,9 +42,9 @@ export const GalleryPage = () => {
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={75}>
-            <div className="flex h-full w-full p-6 flex-grow">
+            <div className="flex h-full w-full p-6 flex-grow justify-center">
               {fileSelected ? (
-                <FilePreview file={fileSelected} />
+                <FilePreview file={fileSelected} rounded={true} />
               ) : (
                 <h1 className="flex h-full w-full items-center justify-center">
                   Select a file to preview
@@ -56,7 +56,7 @@ export const GalleryPage = () => {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={40}>
-        <div className="p-6 pb-0">
+        <div className="p-4 pl-6 pb-0">
           <Button
             variant="outline"
             onClick={() => toggleViews('grid')}
@@ -72,7 +72,7 @@ export const GalleryPage = () => {
             <List />
           </Button>
         </div>
-        <ScrollArea className="flex h-full items-center justify-center p-6 pb-20">
+        <ScrollArea className="flex h-full items-center justify-center p-6 pt-4 pb-20">
           {view === 'grid' && (
             <Grid
               files={memoizedFiles}
