@@ -3,7 +3,13 @@ import debounce from 'lodash.debounce';
 import { Expand, FastForward, PauseIcon, PlayIcon, Rewind, Volume2, VolumeX } from 'lucide-react';
 import { Slider } from '@/components/ui/slider.tsx';
 
-export const VideoPlayer = ({ src, disablePlayBack }: { src: string, disablePlayBack?: boolean }) => {
+type VideoPlayerProps = {
+  src: string;
+  disablePlayBack?: boolean;
+  rounded?: boolean;
+};
+
+export const VideoPlayer = ({ src, disablePlayBack, rounded }: VideoPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -36,9 +42,7 @@ export const VideoPlayer = ({ src, disablePlayBack }: { src: string, disablePlay
         await video.requestFullscreen();
       } catch (err) {
         if (err instanceof DOMException) {
-          console.log(
-            `Error attempting to enable full-screen mode: ${err.message} (${err.name})`
-          );
+          console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
         }
       }
     } else {
@@ -46,9 +50,7 @@ export const VideoPlayer = ({ src, disablePlayBack }: { src: string, disablePlay
         await document.exitFullscreen();
       } catch (err) {
         if (err instanceof DOMException) {
-          console.error(
-            `Error attempting to exit full-screen mode: ${err.message} (${err.name})`
-          );
+          console.error(`Error attempting to exit full-screen mode: ${err.message} (${err.name})`);
         }
       }
     }
@@ -87,7 +89,7 @@ export const VideoPlayer = ({ src, disablePlayBack }: { src: string, disablePlay
         setCurrentTime(time);
         // REDO strategy, pause and show timeline instead of actually scrubbing video
       }, debounceTime),
-    [debounceTime]
+    [debounceTime],
   );
 
   return (
@@ -95,16 +97,19 @@ export const VideoPlayer = ({ src, disablePlayBack }: { src: string, disablePlay
       <video
         ref={videoRef}
         src={src}
-        className={`w-full h-full ${disablePlayBack ? 'pointer-events-none' : ''}`}
+        className={`w-full h-full ${disablePlayBack ? 'pointer-events-none' : ''} ${rounded ? 'rounded-xl' : ''}`}
         onClick={togglePlayPause}
         onTimeUpdate={handleTimeUpdate}
       />
       <div
-        className={`${disablePlayBack
-          ? 'hidden'
-          : 'absolute left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 ' +
-          'transition-all duration-1000 ease-in-out -bottom-20 opacity-0 group-hover:bottom-0 ' +
-          'group-hover:opacity-100'}`}>
+        className={`${
+          disablePlayBack
+            ? 'hidden'
+            : 'absolute left-0 right-0 flex justify-between px-4 py-2 bg-gray-900 bg-opacity-50 ' +
+              'transition-all duration-1000 ease-in-out -bottom-20 opacity-0 group-hover:bottom-0 ' +
+              'group-hover:opacity-100'
+        }`}
+      >
         <RewindBtn onClick={handleRewind} />
         <PlayPauseBtn isPlaying={isPlaying} onClick={togglePlayPause} />
         <FastForwardBtn onClick={handleFastForward} />
@@ -179,11 +184,7 @@ function ToggleFullScreenBtn({ onClick }: VideoBtnType) {
 function VolumeBtn({ isMuted, onClick }: VolumeBtnType) {
   return (
     <button onClick={onClick} className="text-white mr-4">
-      {isMuted ? (
-        <VolumeX className="w-6 h-6 fill-current" />
-      ) : (
-        <Volume2 className="w-6 h-6" />
-      )}
+      {isMuted ? <VolumeX className="w-6 h-6 fill-current" /> : <Volume2 className="w-6 h-6" />}
     </button>
   );
 }

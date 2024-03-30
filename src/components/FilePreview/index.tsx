@@ -5,10 +5,11 @@ import { VideoPlayer } from '@/components/FilePreview/VideoPlayer.tsx';
 
 type FilePreviewProps = {
   file: File;
+  rounded?: boolean;
   disablePlayBack?: boolean;
 };
 
-export const FilePreview = ({ file, disablePlayBack }: FilePreviewProps) => {
+export const FilePreview = ({ file, disablePlayBack, rounded }: FilePreviewProps) => {
   if (!(file instanceof File)) {
     throw new Error('Invalid prop: file must be an instance of File');
   }
@@ -40,7 +41,7 @@ export const FilePreview = ({ file, disablePlayBack }: FilePreviewProps) => {
       return (
         <img
           loading="lazy"
-          className="h-auto w-auto mx-auto contain aspect-auto"
+          className={`h-auto w-auto mx-auto contain aspect-auto ${rounded ? 'rounded-xl' : ''}`}
           src={fileUrl}
           alt={file.name}
         />
@@ -53,7 +54,7 @@ export const FilePreview = ({ file, disablePlayBack }: FilePreviewProps) => {
           </div>
         );
       }
-      return <VideoPlayer disablePlayBack={disablePlayBack} src={fileUrl} />;
+      return <VideoPlayer rounded={rounded} disablePlayBack={disablePlayBack} src={fileUrl} />;
     case 'audio':
       return (
         <audio controls>
