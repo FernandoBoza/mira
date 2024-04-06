@@ -67,15 +67,3 @@ export const FilePreview = ({ file, disablePlayBack, rounded }: FilePreviewProps
       return null;
   }
 };
-
-// TODO: Styles for gallery icons and smaller images
-//.h-auto.w-auto.contain.aspect-auto {
-//     max-height: 100%;
-//     margin: auto;
-//     align-items: center;
-//
-// }
-// .p-6.pt-0.h-full.max-h-48.xl\:h-60.overflow-hidden.px-0 {
-//     display: flex;
-//
-// }
