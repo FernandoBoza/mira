@@ -11,7 +11,6 @@ const EditorPage = () => {
   const memoizedFiles = useMemo(() => files, [files]);
   const [fileSelected, setFileSelected] = useState<File>();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     if (fileSelected && ![...files].includes(fileSelected)) {
@@ -22,20 +21,6 @@ const EditorPage = () => {
   const selectFile = useCallback((file?: File) => {
     setFileSelected(file);
   }, []);
-
-  const handleLoadedMetadata = () => {
-    if (videoRef.current) {
-      setDuration(videoRef.current.duration);
-    }
-  };
-
-  const handleScrub = useCallback((time: number) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = time;
-    }
-  }, []);
-
-  // const fileUrl = URL.createObjectURL(fileSelected as File);
 
   return (
     <ResizablePanelGroup direction="vertical" className="border">
@@ -48,12 +33,7 @@ const EditorPage = () => {
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={60}>
-            <EditorPreview
-              fileSelected={fileSelected}
-              videoRef={videoRef}
-              // fileUrl={fileUrl}
-              handleLoadedMetadata={handleLoadedMetadata}
-            />
+            <EditorPreview fileSelected={fileSelected} videoRef={videoRef} />
             <span>test</span>
           </ResizablePanel>
           <ResizableHandle withHandle />
@@ -66,7 +46,7 @@ const EditorPage = () => {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel defaultSize={30}>
-        <Timeline selectFile={selectFile} duration={duration} onScrub={handleScrub} />
+        <Timeline selectFile={selectFile} />
       </ResizablePanel>
     </ResizablePanelGroup>
   );
