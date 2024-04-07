@@ -78,13 +78,61 @@ export const FFMpeg = () => {
     }
   };
 
+  const transcode2 = async () => {
+    try {
+      const ffmpeg = ffmpegRef.current;
+      const fileData = await fetchFile(vidObj.vidUrl);
+      await ffmpeg.writeFile('input.mp4', new Uint8Array(fileData));
+
+      // Simplified chunk processing example
+      // Assuming 10 second chunks for a 60 second video (for demonstration)
+      const chunkLength = 10; // seconds
+      const videoDuration = 60; // should be dynamically determined
+      const numberOfChunks = Math.ceil(videoDuration / chunkLength);
+      const processedFrames = [];
+
+      for (let i = 0; i < numberOfChunks; i++) {
+        const startTime = i * chunkLength;
+        const commands = [
+          '-ss',
+          `${startTime}`,
+          '-t',
+          `${chunkLength}`,
+          '-i',
+          'input.mp4',
+          '-vf',
+          'fps=0.5,scale=-1:480',
+          `output_${i}_%d.jpg`,
+        ];
+
+        await ffmpeg.exec(commands);
+
+        const jpgFiles = await ffmpeg.ls(`/output_${i}_`);
+        for (const file of jpgFiles) {
+          const data = await ffmpeg.readFile(file);
+          let binary = '';
+          const bytes = new Uint8Array(data);
+          for (let j = 0; j < bytes.byteLength; j++) {
+            binary += String.fromCharCode(bytes[j]);
+          }
+          const base64 = window.btoa(binary);
+          processedFrames.push(`data:image/jpg;base64,${base64}`);
+        }
+      }
+
+      setFrames(processedFrames);
+    } catch (error) {
+      console.error('Error during video processing:', error);
+    }
+  };
+
   return (
     <>
       {frames.length === 0 ? (
         <>
           <video ref={videoRef} controls></video>
           <br />
-          <button onClick={transcode}>Transcode avi to mp4</button>
+          <button onClick={transcode2}>Transcode avi to mp4</button>
           <p ref={messageRef}></p>
         </>
       ) : (
