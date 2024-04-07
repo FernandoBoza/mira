@@ -1,6 +1,5 @@
-import { DragEvent, useCallback, useRef, useState } from 'react';
+import React, { DragEvent, useCallback, useRef, useState } from 'react';
 import { useFileStore } from '@/stores/file.store.ts';
-import { FFMpeg } from '@/components/FFmpeg';
 
 type TimelineProps = {
   duration: number;
@@ -55,7 +54,6 @@ export const Timeline = ({ duration, onScrub, selectFile }: TimelineProps) => {
       onClick={handleScrub}
       className="h-full"
     >
-      <FFMpeg />
       {/*TimeLine*/}
       {!!frames.length && frames.map((frame, index) => <img key={index} src={frame} alt="scrub" />)}
     </div>
