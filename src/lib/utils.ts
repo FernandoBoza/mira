@@ -26,8 +26,7 @@ export const formatBytes = (bytes: number) => {
  * @param path as string
  * @returns string with the file name
  */
-export const getFileName = (path: string | undefined) =>
-  path ? path.split('.').shift() : '';
+export const getFileName = (path: string | undefined) => (path ? path.split('.').shift() : '');
 
 /**
  * @description
@@ -37,9 +36,7 @@ export const getFileName = (path: string | undefined) =>
  */
 export const getFileType = (path: string | undefined) => {
   if (!path) return '';
-  return (
-    path.includes('.') ? path.split('.').pop() : path.split('/')[0]
-  ) as string;
+  return (path.includes('.') ? path.split('.').pop() : path.split('/')[0]) as string;
 };
 
 /**
@@ -50,7 +47,17 @@ export const getFileType = (path: string | undefined) => {
  */
 export const getFileFormat = (path: string | undefined) => {
   if (!path) return '';
-  return (
-    path.includes('.') ? path.split('.').pop() : path.split('/').pop()
-  ) as string;
+  return (path.includes('.') ? path.split('.').pop() : path.split('/').pop()) as string;
+};
+
+/**
+ * @description
+ * Convert time in seconds to minutes and seconds
+ * @param time as number
+ * @returns string with the time in minutes and seconds
+ */
+export const convertTime = (time: number) => {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${seconds}`;
 };
