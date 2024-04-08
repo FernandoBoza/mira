@@ -2,6 +2,7 @@ import { DragEvent, MouseEvent, useCallback, useEffect, useRef, useState } from 
 import { useFileStore } from '@/stores/file.store.ts';
 import { Slider } from '../ui/slider';
 import { convertTime } from '@/lib/utils.ts';
+import { Progress } from '@/components/ui/progress.tsx';
 
 type TimelineProps = {
   selectFile?: (file?: File) => void;
@@ -17,16 +18,16 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   const [timeStamp, setTimeStamp] = useState('00:00');
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [hoverTime, setHoverTime] = useState(0);
+  const [sliderValue, setSliderValue] = useState(10);
+  const [progress, setProgress] = useState(0);
 
   const handleSliderChange = (value: number[]) => {
-    console.log(value[0]);
-    // const step = value[0]
-    // const totalFrames = frames.length; // replace with your total frames
-    // const steps = step; // number of steps
-    // const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
-    //   Math.floor(i * totalFrames * 0.1),
-    // ).map((index) => frames[index]);
-    // setDisplayedFrames(framesAtIntervals);
+    setSliderValue(value[0]);
+    const steps = Math.floor((value[0] / 100) * frames.length);
+    const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
+      Math.floor((i * frames.length) / steps),
+    ).map((index) => frames[index]);
+    setDisplayedFrames(framesAtIntervals);
   };
 
   const generateFramesFromVideo = (video: HTMLVideoElement) => {
@@ -38,6 +39,7 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
     let currentFrame = 0;
 
     const generateFrame = () => {
+      setProgress(Math.floor((currentFrame / totalFrames) * 100));
       if (currentFrame >= totalFrames) {
         setLoading(false);
         video.onseeked = null; // Remove the event listener
@@ -120,16 +122,17 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
       return;
     } else if (!loading && frames.length) {
       console.log('done loading and setting frames');
-      const framesAtIntervals = Array.from({ length: 10 }, (_, i) =>
-        Math.floor(i * frames.length * 0.1),
+      const steps = Math.floor((sliderValue / 100) * frames.length);
+      const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
+        Math.floor((i * frames.length) / steps),
       ).map((index) => frames[index]);
       setDisplayedFrames(framesAtIntervals);
     }
-  }, [displayedFrames.length, frames, loading]);
+  }, [displayedFrames.length, frames, loading, sliderValue]);
 
   return (
     <div className="p-6 h-full">
-      <div>
+      <div className="flex gap-4">
         <Slider
           className="w-1/4"
           min={10}
@@ -138,10 +141,11 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
           onValueChange={handleSliderChange}
           onClick={(e) => e.stopPropagation()}
         />
+        <h5>frames on track: {displayedFrames.length}</h5>
       </div>
-      <h5>displayedFrames: {displayedFrames.length}</h5>
       <br />
-      <h5>{timeStamp}</h5>
+      {progress === 100 && <h5>{timeStamp}</h5>}
+      {loading && <Progress value={progress} />}
       <div
         onClick={handleMouseMove}
         onMouseMove={handleMouseMove}
@@ -162,7 +166,7 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
           {displayedFrames.map((frame, index) => (
             <img key={index} src={frame} className="pointer-events-none select-none" alt="frame" />
           ))}
-          {videoRef?.current?.currentTime && (
+          {videoRef?.current?.currentTime && progress === 100 && (
             <div
               style={{
                 position: 'absolute',
