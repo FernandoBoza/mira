@@ -34,7 +34,6 @@ const EditorPage = () => {
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={60}>
             <EditorPreview fileSelected={fileSelected} videoRef={videoRef} />
-            <span>test</span>
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={20}>

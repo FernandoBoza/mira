@@ -10,6 +10,8 @@ type FileStoreType = {
   setHasSubmit: (hasSubmitted: boolean) => void;
   draggedFile?: File;
   setDraggedFile: (file?: File) => void;
+  timeStamp: string;
+  setTimeStamp?: (time: string) => void;
 };
 
 export const useFileStore = create<FileStoreType>((set) => ({
@@ -17,6 +19,10 @@ export const useFileStore = create<FileStoreType>((set) => ({
   alreadyUploaded: [],
   hasSubmitted: false,
   draggedFile: undefined,
+  timeStamp: '00:00',
+  setTimeStamp: (time: string) => {
+    set({ timeStamp: time });
+  },
   setDraggedFile: (file?: File) => {
     set({ draggedFile: file });
   },

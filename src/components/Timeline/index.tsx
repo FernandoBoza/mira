@@ -10,13 +10,12 @@ type TimelineProps = {
 };
 
 export const Timeline = ({ selectFile }: TimelineProps) => {
-  const { draggedFile, setDraggedFile } = useFileStore();
+  const { draggedFile, setDraggedFile, setTimeStamp } = useFileStore();
   const timelineRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [frames, setFrames] = useState<string[]>([]);
   const [displayedFrames, setDisplayedFrames] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [timeStamp, setTimeStamp] = useState('00:00');
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [hoverTime, setHoverTime] = useState(0);
   const [sliderValue, setSliderValue] = useState(10);
@@ -41,7 +40,8 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
     let currentFrame = 0;
 
     const generateFrame = () => {
-      setProgress(Math.floor((currentFrame / totalFrames) * 100));
+      const currentProgress = Math.floor((currentFrame / totalFrames) * 100);
+      setProgress(currentProgress);
       if (currentFrame >= totalFrames) {
         setLoading(false);
         video.onseeked = null; // Remove the event listener
@@ -100,10 +100,10 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
     if (isScrubbing) {
       videoRef.current.currentTime = time;
       if (time <= 0) {
-        setTimeStamp('00:00');
+        setTimeStamp && setTimeStamp('00:00');
         return;
       }
-      setTimeStamp(convertTime(time));
+      setTimeStamp && setTimeStamp(convertTime(time));
     }
   };
 
@@ -138,7 +138,6 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
         <h5>frames on track: {displayedFrames.length}</h5>
       </div>
       <br />
-      {progress === 100 && <h5>{timeStamp}</h5>}
       {loading && <Progress value={progress} />}
       <div
         onClick={handleMouseMove}
