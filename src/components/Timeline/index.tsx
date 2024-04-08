@@ -15,6 +15,8 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   const [displayedFrames, setDisplayedFrames] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [timeStamp, setTimeStamp] = useState('00:00');
+  const [isScrubbing, setIsScrubbing] = useState(false);
+  const [hoverTime, setHoverTime] = useState(0);
 
   const handleSliderChange = (value: number[]) => {
     console.log(value[0]);
@@ -87,15 +89,27 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
     [preventDefaults, draggedFile, selectFile, setDraggedFile],
   );
 
-  const handleClick = (e: MouseEvent<HTMLDivElement>) => {
-    if (!videoRef?.current || !timelineRef?.current) return;
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (!videoRef?.current || !timelineRef?.current || !isScrubbing) return;
 
     const timelineWidth = timelineRef.current.offsetWidth;
     const clickPosition = e.clientX - timelineRef.current.getBoundingClientRect().left;
     const time = (clickPosition / timelineWidth) * videoRef.current.duration;
 
-    videoRef.current.currentTime = time;
-    setTimeStamp(convertTime(time));
+    setHoverTime(time); // Always update hoverTime
+
+    if (isScrubbing) {
+      videoRef.current.currentTime = time;
+      setTimeStamp(convertTime(time));
+    }
+  };
+
+  const handleMouseDown = () => {
+    setIsScrubbing(true);
+  };
+
+  const handleMouseUp = () => {
+    setIsScrubbing(false);
   };
 
   useEffect(() => {
@@ -125,19 +139,22 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
           onClick={(e) => e.stopPropagation()}
         />
       </div>
+      <h5>displayedFrames: {displayedFrames.length}</h5>
+      <br />
+      <h5>{timeStamp}</h5>
       <div
-        onClick={handleClick}
+        onClick={handleMouseMove}
+        onMouseMove={handleMouseMove}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
         onDragEnter={preventDefaults}
         onDragOver={preventDefaults}
         onDrop={handleDrop}
         ref={timelineRef}
-        className="h-full"
+        className="h-full relative"
         id="timeline"
       >
         <canvas id="canvas" width="500" height="300" className="hidden"></canvas>
-        <h5>displayedFrames: {displayedFrames.length}</h5>
-        <br />
-        <h5>{timeStamp}</h5>
         <div
           id="frameContainer2"
           className="h-1/3 flex overflow-x-scroll select-none pointer-events-none"
@@ -145,6 +162,17 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
           {displayedFrames.map((frame, index) => (
             <img key={index} src={frame} className="pointer-events-none select-none" alt="frame" />
           ))}
+          {videoRef?.current?.currentTime && (
+            <div
+              style={{
+                position: 'absolute',
+                left: `${(hoverTime / videoRef?.current?.duration) * 100}%`,
+                height: 'inherit',
+                width: '2px',
+                backgroundColor: 'red',
+              }}
+            ></div>
+          )}
         </div>
       </div>
     </div>

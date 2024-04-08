@@ -14,6 +14,7 @@ export function cn(...inputs: ClassValue[]) {
 export const formatBytes = (bytes: number) => {
   if (!+bytes) return '0 Bytes';
   const k = 1024;
+  // eslint-disable-next-line no-constant-condition
   const dm = 2 < 0 ? 0 : 2;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -54,10 +55,16 @@ export const getFileFormat = (path: string | undefined) => {
  * @description
  * Convert time in seconds to minutes and seconds
  * @param time as number
- * @returns string with the time in minutes and seconds
+ * @returns string with the time in minutes and seconds hh:mm:ss
  */
 export const convertTime = (time: number) => {
-  const minutes = Math.floor(time / 60);
+  const hours = Math.floor(time / 3600);
+  const minutes = Math.floor((time % 3600) / 60);
   const seconds = Math.floor(time % 60);
-  return `${minutes}:${seconds}`;
+
+  const paddedHours = hours.toString().padStart(2, '0');
+  const paddedMinutes = minutes.toString().padStart(2, '0');
+  const paddedSeconds = seconds.toString().padStart(2, '0');
+
+  return `${paddedHours}:${paddedMinutes}:${paddedSeconds}`;
 };
