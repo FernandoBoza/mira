@@ -26,9 +26,7 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
     const sliderValue = value[0];
     setSliderValue(sliderValue);
     let steps = Math.floor((sliderValue / 100) * frames.length);
-    if (steps < 10) {
-      steps = 10;
-    }
+    if (steps < 10) steps = 10;
     const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
       Math.floor((i * frames.length) / steps),
     ).map((index) => frames[index]);
@@ -39,8 +37,7 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     const { width, height } = canvas;
-    const totalFrames = Math.floor(video.duration / 2);
-    const interval = 2; // Capture a frame every 2 seconds
+    const totalFrames = Math.floor(video.duration / 2); // half of video duration
     let currentFrame = 0;
 
     const generateFrame = () => {
@@ -51,7 +48,7 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
         return;
       } else {
         setLoading(true);
-        video.currentTime = currentFrame * interval;
+        video.currentTime = currentFrame * 2; // Capture a frame every 2 seconds
         video.onseeked = () => {
           ctx.drawImage(video, 0, 0, width, height);
           const data = canvas.toDataURL('image/jpeg');
@@ -77,19 +74,15 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
       e.stopPropagation();
       if (draggedFile) {
         selectFile && selectFile(draggedFile);
-        const url = URL.createObjectURL(draggedFile);
 
-        // Create a video element
+        const url = URL.createObjectURL(draggedFile);
         const video = document.createElement('video');
+
         videoRef.current = video;
-        // When the metadata is loaded, log the duration
         video.onloadedmetadata = () => {
           generateFramesFromVideo(video);
         };
-
-        // Set the source of the video element to the uploaded file
         video.src = url;
-
         setDraggedFile(undefined);
       }
     },
@@ -98,36 +91,32 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!videoRef?.current || !timelineRef?.current || !isScrubbing) return;
-
     const timelineWidth = timelineRef.current.offsetWidth;
     const clickPosition = e.clientX - timelineRef.current.getBoundingClientRect().left;
     const time = (clickPosition / timelineWidth) * videoRef.current.duration;
 
-    setHoverTime(time); // Always update hoverTime
+    setHoverTime(time);
 
     if (isScrubbing) {
       videoRef.current.currentTime = time;
+      if (time <= 0) {
+        setTimeStamp('00:00');
+        return;
+      }
       setTimeStamp(convertTime(time));
     }
   };
 
-  const handleMouseDown = () => {
-    setIsScrubbing(true);
-  };
-
-  const handleMouseUp = () => {
-    setIsScrubbing(false);
+  const handleMouseDirection = (direction: 'up' | 'down') => {
+    setIsScrubbing(direction === 'down');
   };
 
   useEffect(() => {
-    if (loading) {
-      console.log('... loading');
-      return;
-    } else if (!loading && frames.length && displayedFrames.length) {
+    if (loading || (!loading && frames.length && displayedFrames.length)) {
       return;
     } else if (!loading && frames.length) {
-      console.log('done loading and setting frames');
-      const steps = Math.floor((sliderValue / 100) * frames.length);
+      let steps = Math.floor((sliderValue / 100) * frames.length);
+      if (steps < 10) steps = 10;
       const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
         Math.floor((i * frames.length) / steps),
       ).map((index) => frames[index]);
@@ -154,24 +143,24 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
       <div
         onClick={handleMouseMove}
         onMouseMove={handleMouseMove}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
+        onMouseDown={() => handleMouseDirection('down')}
+        onMouseUp={() => handleMouseDirection('up')}
         onDragEnter={preventDefaults}
         onDragOver={preventDefaults}
         onDrop={handleDrop}
         ref={timelineRef}
-        className="h-full relative"
+        className="h-1/3 relative border border-primary rounded-lg overflow-hidden"
         id="timeline"
       >
         <canvas id="canvas" width="500" height="300" className="hidden"></canvas>
         <div
           id="frameContainer"
-          className="h-1/3 flex overflow-x-scroll select-none pointer-events-none"
+          className="h-full flex overflow-x-scroll select-none pointer-events-none"
         >
           {displayedFrames.map((frame, index) => (
             <img key={index} src={frame} className="pointer-events-none select-none" alt="frame" />
           ))}
-          {videoRef?.current?.currentTime && progress === 100 && (
+          {progress === 100 && (
             <ScrubTracker hoverTime={hoverTime} duration={videoRef?.current?.duration as number} />
           )}
         </div>
