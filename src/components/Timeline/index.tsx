@@ -3,6 +3,7 @@ import { useFileStore } from '@/stores/file.store.ts';
 import { Slider } from '../ui/slider';
 import { convertTime } from '@/lib/utils.ts';
 import { Progress } from '@/components/ui/progress.tsx';
+import { ScrubTracker } from '@/components/Timeline/ScrubTracker.tsx';
 
 type TimelineProps = {
   selectFile?: (file?: File) => void;
@@ -22,8 +23,12 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   const [progress, setProgress] = useState(0);
 
   const handleSliderChange = (value: number[]) => {
-    setSliderValue(value[0]);
-    const steps = Math.floor((value[0] / 100) * frames.length);
+    const sliderValue = value[0];
+    setSliderValue(sliderValue);
+    let steps = Math.floor((sliderValue / 100) * frames.length);
+    if (steps < 10) {
+      steps = 10;
+    }
     const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
       Math.floor((i * frames.length) / steps),
     ).map((index) => frames[index]);
@@ -160,22 +165,14 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
       >
         <canvas id="canvas" width="500" height="300" className="hidden"></canvas>
         <div
-          id="frameContainer2"
+          id="frameContainer"
           className="h-1/3 flex overflow-x-scroll select-none pointer-events-none"
         >
           {displayedFrames.map((frame, index) => (
             <img key={index} src={frame} className="pointer-events-none select-none" alt="frame" />
           ))}
           {videoRef?.current?.currentTime && progress === 100 && (
-            <div
-              style={{
-                position: 'absolute',
-                left: `${(hoverTime / videoRef?.current?.duration) * 100}%`,
-                height: 'inherit',
-                width: '2px',
-                backgroundColor: 'red',
-              }}
-            ></div>
+            <ScrubTracker hoverTime={hoverTime} duration={videoRef?.current?.duration as number} />
           )}
         </div>
       </div>
