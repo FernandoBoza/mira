@@ -1,7 +1,7 @@
 import { Card, CardContent, CardFooter } from '@/components/ui/card.tsx';
 import { FilePreview } from '@/components/FilePreview';
 import { formatBytes, getFileFormat, getFileName } from '@/lib/utils.ts';
-import { useFileStore } from '@/stores/file.store.ts';
+import { useEditorStore } from '@/stores/editor.store.ts';
 
 type GalleryProps = {
   files: File[] | FileList;
@@ -17,7 +17,7 @@ export const Grid = ({
   showFileDetails,
   draggable,
 }: GalleryProps) => {
-  const { setDraggedFile } = useFileStore();
+  const { setDraggedFile } = useEditorStore();
 
   const handleFileSelection = (file: File) => {
     if (selectedFileName === file.name) {

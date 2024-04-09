@@ -1,14 +1,15 @@
-import { useFileStore } from '@/stores/file.store.ts';
+import { useEditorStore } from '@/stores/editor.store.ts';
+import { RefObject } from 'react';
 
 type EditorPreviewProps = {
   fileSelected?: File;
-  videoRef?: React.RefObject<HTMLVideoElement>;
+  videoRef?: RefObject<HTMLVideoElement>;
   fileUrl?: string;
   handleLoadedMetadata?: () => void;
 };
 
 export const EditorPreview = ({ fileSelected }: EditorPreviewProps) => {
-  const { timeStamp } = useFileStore();
+  const { timeStamp } = useEditorStore();
   return (
     <div className="flex h-full w-full p-6 flex-grow">
       {fileSelected ? (

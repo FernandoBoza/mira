@@ -1,5 +1,5 @@
 import { DragEvent, MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { useFileStore } from '@/stores/file.store.ts';
+import { useEditorStore } from '@/stores/editor.store.ts';
 import { Slider } from '../ui/slider';
 import { convertTime } from '@/lib/utils.ts';
 import { Progress } from '@/components/ui/progress.tsx';
@@ -10,7 +10,7 @@ type TimelineProps = {
 };
 
 export const Timeline = ({ selectFile }: TimelineProps) => {
-  const { draggedFile, setDraggedFile, setTimeStamp } = useFileStore();
+  const { draggedFile, setDraggedFile, setTimeStamp } = useEditorStore();
   const timelineRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [frames, setFrames] = useState<string[]>([]);

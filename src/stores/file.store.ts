@@ -6,26 +6,14 @@ type FileStoreType = {
   hasSubmitted: boolean;
   setUploadList: (files: FileList | File[]) => void;
   setAlreadyUploadList: (file: File) => void;
-  removeFile: (file: File) => void;
   setHasSubmit: (hasSubmitted: boolean) => void;
-  draggedFile?: File;
-  setDraggedFile: (file?: File) => void;
-  timeStamp: string;
-  setTimeStamp?: (time: string) => void;
+  removeFile: (file: File) => void;
 };
 
 export const useFileStore = create<FileStoreType>((set) => ({
   uploadList: [],
   alreadyUploaded: [],
   hasSubmitted: false,
-  draggedFile: undefined,
-  timeStamp: '00:00',
-  setTimeStamp: (time: string) => {
-    set({ timeStamp: time });
-  },
-  setDraggedFile: (file?: File) => {
-    set({ draggedFile: file });
-  },
   setUploadList: (files: FileList | File[]) => {
     set((state) => ({ uploadList: [...state.uploadList, ...files] }));
   },
