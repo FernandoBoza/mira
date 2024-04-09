@@ -156,13 +156,12 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
           min={10}
           step={10}
           max={100}
+          value={[sliderValue]}
           onValueChange={handleSliderChange}
           onClick={(e) => e.stopPropagation()}
         />
         <h5>frames on track: {displayedFrames.length}</h5>
       </div>
-      <br />
-      {loading && <Progress value={progress} />}
       <div
         onClick={handleMouseMove}
         onMouseMove={handleMouseMove}
@@ -171,10 +170,14 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
         onDragEnter={preventDefaults}
         onDragOver={preventDefaults}
         onDrop={handleDrop}
-        ref={timelineRef}
         className="h-1/3 relative border border-primary rounded-lg overflow-hidden"
         id="timeline"
       >
+        {loading && (
+          <div className="p-6">
+            <Progress value={progress} />
+          </div>
+        )}
         <canvas id="canvas" width="500" height="300" className="hidden"></canvas>
         <div
           id="frameContainer"
