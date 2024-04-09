@@ -1,4 +1,4 @@
-import { DragEvent, MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { DragEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useEditorStore } from '@/stores/editor.store.ts';
 import { Slider } from '../ui/slider';
 import { convertTime } from '@/lib/utils.ts';
@@ -23,18 +23,23 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   const [progress, setProgress] = useState(0);
   const [scale, setScale] = useState(10);
 
+  const steps = useMemo(() => {
+    let steps = Math.floor((sliderValue / 100) * frames.length);
+    if (steps < 10) steps = 10;
+    return steps;
+  }, [frames.length, sliderValue]);
+
   const handleSliderChange = useCallback(
     (value: number[]) => {
+      if (!frames.length) return;
       const sliderValue = value[0];
       setSliderValue(sliderValue);
-      let steps = Math.floor((sliderValue / 100) * frames.length);
-      if (steps < 10) steps = 10;
       const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
         Math.floor((i * frames.length) / steps),
       ).map((index) => frames[index]);
       setDisplayedFrames(framesAtIntervals);
     },
-    [frames],
+    [frames, steps],
   );
 
   useEffect(() => {
@@ -149,14 +154,12 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
     if (loading || (!loading && frames.length && displayedFrames.length)) {
       return;
     } else if (!loading && frames.length) {
-      let steps = Math.floor((sliderValue / 100) * frames.length);
-      if (steps < 10) steps = 10;
       const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
         Math.floor((i * frames.length) / steps),
       ).map((index) => frames[index]);
       setDisplayedFrames(framesAtIntervals);
     }
-  }, [displayedFrames.length, frames, loading, sliderValue]);
+  }, [displayedFrames.length, frames, loading, sliderValue, steps]);
 
   return (
     <div className="p-6 h-full" id="container" ref={containerRef}>
