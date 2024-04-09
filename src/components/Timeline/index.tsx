@@ -20,17 +20,41 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   const [hoverTime, setHoverTime] = useState(0);
   const [sliderValue, setSliderValue] = useState(10);
   const [progress, setProgress] = useState(0);
+  const [scale, setScale] = useState(10);
 
-  const handleSliderChange = (value: number[]) => {
-    const sliderValue = value[0];
-    setSliderValue(sliderValue);
-    let steps = Math.floor((sliderValue / 100) * frames.length);
-    if (steps < 10) steps = 10;
-    const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
-      Math.floor((i * frames.length) / steps),
-    ).map((index) => frames[index]);
-    setDisplayedFrames(framesAtIntervals);
-  };
+  const handleSliderChange = useCallback(
+    (value: number[]) => {
+      const sliderValue = value[0];
+      setSliderValue(sliderValue);
+      let steps = Math.floor((sliderValue / 100) * frames.length);
+      if (steps < 10) steps = 10;
+      const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
+        Math.floor((i * frames.length) / steps),
+      ).map((index) => frames[index]);
+      setDisplayedFrames(framesAtIntervals);
+    },
+    [frames],
+  );
+
+  useEffect(() => {
+    const handleWheel = (event: { preventDefault: () => void; deltaY: number }) => {
+      event.preventDefault();
+      setScale((prevScale) => {
+        const val = prevScale - event.deltaY * 0.1;
+        if (val <= 10) return 10;
+        if (val >= 100) return 100;
+        handleSliderChange([val]);
+        return val;
+      });
+    };
+
+    const timelineElement = timelineRef.current;
+    timelineElement?.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      timelineElement?.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleSliderChange, scale, sliderValue]);
 
   const generateFramesFromVideo = (video: HTMLVideoElement) => {
     const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -125,7 +149,7 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   }, [displayedFrames.length, frames, loading, sliderValue]);
 
   return (
-    <div className="p-6 h-full">
+    <div className="p-6 h-full" ref={timelineRef}>
       <div className="flex gap-4">
         <Slider
           className="w-1/4"
