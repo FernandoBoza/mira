@@ -12,6 +12,7 @@ type TimelineProps = {
 export const Timeline = ({ selectFile }: TimelineProps) => {
   const { draggedFile, setDraggedFile, setTimeStamp } = useEditorStore();
   const timelineRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [frames, setFrames] = useState<string[]>([]);
   const [displayedFrames, setDisplayedFrames] = useState<string[]>([]);
@@ -37,7 +38,11 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   );
 
   useEffect(() => {
-    const handleWheel = (event: { preventDefault: () => void; deltaY: number }) => {
+    const handleWheel = (event: {
+      preventDefault: () => void;
+      stopPropagation: () => void;
+      deltaY: number;
+    }) => {
       event.preventDefault();
       setScale((prevScale) => {
         const val = prevScale - event.deltaY * 0.1;
@@ -46,13 +51,18 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
         handleSliderChange([val]);
         return val;
       });
+      event.stopPropagation();
     };
 
     const timelineElement = timelineRef.current;
     timelineElement?.addEventListener('wheel', handleWheel, { passive: false });
 
+    const containerElement = containerRef.current;
+    containerElement?.addEventListener('wheel', handleWheel, { passive: false });
+
     return () => {
       timelineElement?.removeEventListener('wheel', handleWheel);
+      containerElement?.removeEventListener('wheel', handleWheel);
     };
   }, [handleSliderChange, scale, sliderValue]);
 
@@ -149,7 +159,7 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   }, [displayedFrames.length, frames, loading, sliderValue]);
 
   return (
-    <div className="p-6 h-full" ref={timelineRef}>
+    <div className="p-6 h-full" id="container" ref={containerRef}>
       <div className="flex gap-4">
         <Slider
           className="w-1/4"
@@ -163,6 +173,7 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
         <h5>frames on track: {displayedFrames.length}</h5>
       </div>
       <div
+        ref={timelineRef}
         onClick={handleMouseMove}
         onMouseMove={handleMouseMove}
         onMouseDown={() => handleMouseDirection('down')}
