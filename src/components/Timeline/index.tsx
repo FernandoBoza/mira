@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Slider } from '../ui/slider';
+import { ScrubTracker } from '@/components/Timeline/ScrubTracker.tsx';
 import { Track } from '@/components/Timeline/Track.tsx';
 
 type TimelineProps = { selectFile?: (file?: File) => void };
@@ -44,21 +45,17 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
     };
   }, [handleSliderChange, scale, sliderValue]);
 
+  const track1 = Track({ selectFile, timelineRef, scale, sliderValue });
+  const track2 = Track({ selectFile, timelineRef, scale, sliderValue });
+
   return (
     <div className="p-6 h-full flex flex-col justify-between" id="container" ref={containerRef}>
-      <div id="track-container" className="flex flex-col gap-2">
-        <Track
-          selectFile={selectFile}
-          timelineRef={timelineRef}
-          scale={scale}
-          sliderValue={sliderValue}
-        />
-        <Track
-          selectFile={selectFile}
-          timelineRef={timelineRef}
-          scale={scale}
-          sliderValue={sliderValue}
-        />
+      <div id="track-container" className="flex flex-col gap-2 relative overflow-hidden rounded">
+        {track1.element}
+        {track2.element}
+        {(track1.progress || track2.progress) === 100 && (
+          <ScrubTracker hoverTime={track1.hoverTime} duration={track1.duration as number} />
+        )}
       </div>
       <Slider
         className="w-1/4"

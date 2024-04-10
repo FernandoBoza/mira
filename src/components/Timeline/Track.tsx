@@ -1,5 +1,4 @@
 import { Progress } from '@/components/ui/progress.tsx';
-import { ScrubTracker } from '@/components/Timeline/ScrubTracker.tsx';
 import {
   DragEvent,
   MouseEvent,
@@ -123,36 +122,38 @@ export const Track = ({ selectFile, timelineRef, scale, sliderValue }: TrackProp
     }
   }, [displayedFrames.length, frames, loading, sliderValue, scale]);
 
-  return (
-    <div
-      ref={timelineRef}
-      onClick={handleMouseMove}
-      onMouseMove={handleMouseMove}
-      onMouseDown={() => handleMouseDirection('down')}
-      onMouseUp={() => handleMouseDirection('up')}
-      onDragEnter={preventDefaults}
-      onDragOver={preventDefaults}
-      onDrop={handleDrop}
-      className="h-10 relative border border-primary hover:border-blue-500 rounded-lg overflow-hidden"
-      id="timeline"
-    >
-      {loading && (
-        <div className="p-6">
-          <Progress value={progress} />
-        </div>
-      )}
-      <canvas id="canvas" width="500" height="300" className="hidden"></canvas>
+  return {
+    hoverTime,
+    duration: videoRef.current?.duration,
+    progress,
+    element: (
       <div
-        id="frameContainer"
-        className="h-full flex overflow-x-scroll select-none pointer-events-none"
+        ref={timelineRef}
+        onClick={handleMouseMove}
+        onMouseMove={handleMouseMove}
+        onMouseDown={() => handleMouseDirection('down')}
+        onMouseUp={() => handleMouseDirection('up')}
+        onDragEnter={preventDefaults}
+        onDragOver={preventDefaults}
+        onDrop={handleDrop}
+        className="h-10 relative border border-primary hover:border-blue-500 rounded-lg overflow-hidden"
+        id="timeline"
       >
-        {displayedFrames.map((frame, index) => (
-          <img key={index} src={frame} className="pointer-events-none select-none" alt="frame" />
-        ))}
-        {progress === 100 && (
-          <ScrubTracker hoverTime={hoverTime} duration={videoRef?.current?.duration as number} />
+        {loading && (
+          <div className="p-6">
+            <Progress value={progress} />
+          </div>
         )}
+        <canvas id="canvas" width="500" height="300" className="hidden"></canvas>
+        <div
+          id="frameContainer"
+          className="h-full flex overflow-x-scroll select-none pointer-events-none"
+        >
+          {displayedFrames.map((frame, index) => (
+            <img key={index} src={frame} className="pointer-events-none select-none" alt="frame" />
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    ),
+  };
 };
