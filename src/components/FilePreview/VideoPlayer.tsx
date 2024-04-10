@@ -42,7 +42,7 @@ export const VideoPlayer = ({ src, disablePlayBack, rounded }: VideoPlayerProps)
         await video.requestFullscreen();
       } catch (err) {
         if (err instanceof DOMException) {
-          console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+          console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
         }
       }
     } else {
