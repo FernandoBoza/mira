@@ -4,6 +4,23 @@ import { ScrubTracker } from '@/components/Timeline/ScrubTracker.tsx';
 import { Track } from '@/components/Timeline/Track.tsx';
 
 type TimelineProps = { selectFile?: (file?: File) => void };
+type TimeLineTicksProps = {
+  scale: number;
+};
+
+export const TimeLineTicks: React.FC<TimeLineTicksProps> = ({ scale }) => {
+  const totalDuration = 60 * 60; // 60 minutes in seconds
+  const tickInterval = totalDuration / scale; // Calculate the interval between ticks based on the scale
+
+  const ticks = Array.from({ length: scale }, (_, i) => {
+    const seconds = i * tickInterval;
+    const date = new Date(seconds * 1000);
+    const timeString = date.toISOString().substr(11, 8); // Convert seconds to hh:mm:ss format
+    return <div key={i}>{timeString}</div>;
+  });
+
+  return <div className="flex w-full justify-evenly">{ticks}</div>;
+};
 
 export const Timeline = ({ selectFile }: TimelineProps) => {
   const timelineRef = useRef<HTMLDivElement | null>(null);
@@ -50,9 +67,11 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
 
   return (
     <div className="p-6 h-full flex flex-col justify-between" id="container" ref={containerRef}>
+      {/*<TimeLineTicks scale={scale} />*/}
+
       <div id="track-container" className="flex flex-col gap-2 relative overflow-hidden rounded">
         {track1.element}
-        {track2.element}
+        {/*{track2.element}*/}
         {(track1.progress || track2.progress) === 100 && (
           <ScrubTracker hoverTime={track1.hoverTime} duration={track1.duration as number} />
         )}
