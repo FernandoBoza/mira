@@ -140,8 +140,8 @@ export const Track = ({ selectFile, timelineRef, scale, sliderValue }: TrackProp
         id="timeline"
       >
         {loading && (
-          <div className="p-6">
-            <Progress value={progress} />
+          <div className="flex justify-center items-center h-full">
+            <Progress className="rounded-none" value={progress} />
           </div>
         )}
         <canvas id="canvas" width="500" height="300" className="hidden"></canvas>
