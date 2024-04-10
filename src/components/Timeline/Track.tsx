@@ -1,12 +1,11 @@
 import { Progress } from '@/components/ui/progress.tsx';
 import { ScrubTracker } from '@/components/Timeline/ScrubTracker.tsx';
 import {
-  Dispatch,
   DragEvent,
   MouseEvent,
   MutableRefObject,
-  SetStateAction,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -14,28 +13,22 @@ import { convertTime } from '@/lib/utils.ts';
 import { useEditorStore } from '@/stores/editor.store.ts';
 
 type TrackProps = {
-  loading: boolean;
-  displayedFrames: string[];
   selectFile?: (file?: File) => void;
-  setLoading: (loading: boolean) => void;
-  setFrames: Dispatch<SetStateAction<string[]>>;
   timelineRef: MutableRefObject<HTMLDivElement | null>;
+  scale: number;
+  sliderValue: number;
 };
 
-export const Track = ({
-  loading,
-  displayedFrames,
-  selectFile,
-  setLoading,
-  setFrames,
-  timelineRef,
-}: TrackProps) => {
+export const Track = ({ selectFile, timelineRef, scale, sliderValue }: TrackProps) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const { draggedFile, setDraggedFile, setTimeStamp } = useEditorStore();
   const [isScrubbing, setIsScrubbing] = useState(false);
   const [hoverTime, setHoverTime] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [frames, setFrames] = useState<string[]>([]);
+  const [displayedFrames, setDisplayedFrames] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const preventDefaults = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -116,6 +109,19 @@ export const Track = ({
     },
     [preventDefaults, draggedFile, setLoading, setFrames, selectFile, videoRef, setDraggedFile],
   );
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    } else if (!loading && frames.length) {
+      let newSteps = Math.floor((sliderValue / 100) * frames.length);
+      if (newSteps < 10) newSteps = 10;
+      const framesAtIntervals = Array.from({ length: newSteps }, (_, i) =>
+        Math.floor((i * frames.length) / newSteps),
+      ).map((index) => frames[index]);
+      setDisplayedFrames(framesAtIntervals);
+    }
+  }, [displayedFrames.length, frames, loading, sliderValue, scale]);
 
   return (
     <div
