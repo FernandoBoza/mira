@@ -133,7 +133,7 @@ export const Track = ({ selectFile, timelineRef, scale, sliderValue }: TrackProp
       onDragEnter={preventDefaults}
       onDragOver={preventDefaults}
       onDrop={handleDrop}
-      className="h-20 relative border border-primary rounded-lg overflow-hidden"
+      className="h-10 relative border border-primary hover:border-blue-500 rounded-lg overflow-hidden"
       id="timeline"
     >
       {loading && (

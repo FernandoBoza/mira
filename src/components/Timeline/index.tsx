@@ -45,24 +45,30 @@ export const Timeline = ({ selectFile }: TimelineProps) => {
   }, [handleSliderChange, scale, sliderValue]);
 
   return (
-    <div className="p-6 h-full" id="container" ref={containerRef}>
-      <Track
-        selectFile={selectFile}
-        timelineRef={timelineRef}
-        scale={scale}
-        sliderValue={sliderValue}
-      />
-      <div className="flex gap-4">
-        <Slider
-          className="w-1/4"
-          min={10}
-          step={10}
-          max={100}
-          value={[sliderValue]}
-          onValueChange={handleSliderChange}
-          onClick={(e) => e.stopPropagation()}
+    <div className="p-6 h-full flex flex-col justify-between" id="container" ref={containerRef}>
+      <div id="track-container" className="flex flex-col gap-2">
+        <Track
+          selectFile={selectFile}
+          timelineRef={timelineRef}
+          scale={scale}
+          sliderValue={sliderValue}
+        />
+        <Track
+          selectFile={selectFile}
+          timelineRef={timelineRef}
+          scale={scale}
+          sliderValue={sliderValue}
         />
       </div>
+      <Slider
+        className="w-1/4"
+        min={10}
+        step={10}
+        max={100}
+        value={[sliderValue]}
+        onValueChange={handleSliderChange}
+        onClick={(e) => e.stopPropagation()}
+      />
     </div>
   );
 };
