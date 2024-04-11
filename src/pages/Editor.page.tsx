@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFileStore } from '@/stores/file.store.ts';
 import { Grid } from '@/components/Grid.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
-import { EditorPreview } from '@/EditorPreview';
+import { EditorPreview } from '@/components/EditorPreview';
 
 const EditorPage = () => {
   const { uploadList: files } = useFileStore();
