@@ -71,6 +71,7 @@ export const Track = ({ selectFile, timelineRef, scale, sliderValue }: TrackProp
         const generateFrame = () => {
           const currentProgress = Math.floor((currentFrame / totalFrames) * 100);
           setProgress(currentProgress);
+
           if (currentFrame >= totalFrames) {
             setLoading(false);
             video.onseeked = null; // Remove the event listener
@@ -113,10 +114,10 @@ export const Track = ({ selectFile, timelineRef, scale, sliderValue }: TrackProp
     if (loading) {
       return;
     } else if (!loading && frames.length) {
-      let newSteps = Math.floor((sliderValue / 100) * frames.length);
-      if (newSteps < 10) newSteps = 10;
-      const framesAtIntervals = Array.from({ length: newSteps }, (_, i) =>
-        Math.floor((i * frames.length) / newSteps),
+      let steps = Math.floor((sliderValue / 100) * frames.length);
+      if (steps < 10) steps = 10;
+      const framesAtIntervals = Array.from({ length: steps }, (_, i) =>
+        Math.floor((i * frames.length) / steps),
       ).map((index) => frames[index]);
       setDisplayedFrames(framesAtIntervals);
     }
@@ -141,13 +142,13 @@ export const Track = ({ selectFile, timelineRef, scale, sliderValue }: TrackProp
       >
         {loading && (
           <div className="flex justify-center items-center h-full">
-            <Progress className="rounded-none" value={progress} />
+            <Progress className="rounded-none h-full" value={progress} />
           </div>
         )}
-        <canvas id="canvas" width="500" height="300" className="hidden"></canvas>
+        <canvas id="canvas" width="60" height="36" className="hidden"></canvas>
         <div
           id="frameContainer"
-          className="h-full flex overflow-x-scroll select-none pointer-events-none"
+          className="h-full flex overflow-x-scroll select-none pointer-events-none w-fit rounded border border-purple-400"
         >
           {displayedFrames.map((frame, index) => (
             <img key={index} src={frame} className="pointer-events-none select-none" alt="frame" />
